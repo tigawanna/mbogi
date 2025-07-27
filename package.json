@@ -57,7 +57,6 @@
     "react-native-paper": "^5.14.5",
     "react-native-paper-dropdown": "^2.3.1",
     "react-native-paper-tabs": "^0.11.4",
-    "react-native-react-query-devtools": "^1.5.1",
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
