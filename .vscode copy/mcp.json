@@ -1,0 +1,28 @@
+{
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "pocketbase-admin-email",
+      "description": "PocketBase Admin Email",
+      "password": false
+    },
+    {
+      "type": "promptString", 
+      "id": "pocketbase-admin-password",
+      "description": "PocketBase Admin Password",
+      "password": true
+    }
+  ],
+  "servers": {
+    "pocketbaseServer": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["/home/dennis/Desktop/code/mcp/pocketbase-mcp/build/index.js"],
+      "env": {
+        "POCKETBASE_URL": "http://127.0.0.1:8090",
+        "POCKETBASE_ADMIN_EMAIL": "${input:pocketbase-admin-email}",
+        "POCKETBASE_ADMIN_PASSWORD": "${input:pocketbase-admin-password}"
+      }
+    }
+  }
+}
