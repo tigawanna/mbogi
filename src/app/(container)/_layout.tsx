@@ -1,33 +1,22 @@
-// import { LoadingFallback } from "@/components/state-screens/LoadingFallback";
-// import { queryClient } from "@/lib/tanstack/client";
-// import { useExtrenalDevTools } from "@/lib/tanstack/external-dev-tools";
-// import { viewerQueryOptions } from "@/lib/tanstack/operations/user";
-// import { useQuery } from "@tanstack/react-query";
-
 import { LoadingFallback } from "@/components/state-screens/LoadingFallback";
+import { viewerQueryOptions } from "@/data/viewer/query-options";
 import { queryClient } from "@/lib/tanstack/query/client";
 import { useExtrenalDevTools } from "@/lib/tanstack/query/external-dev-tools";
+import { useQuery } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 
 // this grouped routes  (contaner) layout exists because tanstcak query provider is defined in the root layout making it hard to useQuery to check for logged i user in that layout
 
 export default function ContainerLayout() {
   useExtrenalDevTools(queryClient);
-  // const { data, isPending } = useQuery(viewerQueryOptions());
-  const isPending = false;
-
-  // const { isValidatingTokens, isTokensPresent } = useAuthState();
-  // const { isPending: isVerifyingTokens, data: isVerifyingTokensData } = useQuery({
-  //   queryKey: ["trakt_tokens_state"],
-  //   queryFn: () => isTokensPresent(),
-  // });
+  const { data, isPending } = useQuery(viewerQueryOptions());
 
   if (isPending) {
     return <LoadingFallback />;
   }
 
   // User is authenticated if they have either PocketBase auth or Trakt auth
-  const isAuthenticated = true;
+  const isAuthenticated = !!data?.id;
 
   return (
     <Stack>
