@@ -5,8 +5,8 @@
 // import { useQuery } from "@tanstack/react-query";
 
 import { LoadingFallback } from "@/components/state-screens/LoadingFallback";
-import { queryClient } from "@/lib/tanstack/setup/client";
-import { useExtrenalDevTools } from "@/lib/tanstack/setup/external-dev-tools";
+import { queryClient } from "@/lib/tanstack/query/client";
+import { useExtrenalDevTools } from "@/lib/tanstack/query/external-dev-tools";
 import { Stack } from "expo-router";
 
 // this grouped routes  (contaner) layout exists because tanstcak query provider is defined in the root layout making it hard to useQuery to check for logged i user in that layout

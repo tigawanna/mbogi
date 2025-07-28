@@ -1,21 +1,21 @@
+import { asyncStoragePersister, queryClient } from "@/lib/tanstack/query/client";
+import { useAppState, useOnlineManager } from "@/lib/tanstack/query/react-native-setup-hooks";
+import { focusManager } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import { Slot } from "expo-router";
-import "react-native-reanimated";
-import { useAppState, useOnlineManager } from "@/lib/tanstack/setup/react-native-setup-hooks";
-import { focusManager } from "@tanstack/react-query";
 import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
 import { AppStateStatus, Platform } from "react-native";
-import { StatusBar } from "expo-status-bar";
-import { asyncStoragePersister, queryClient } from "@/lib/tanstack/setup/client";
+import "react-native-reanimated";
 
+import { GlobalSnackbar } from "@/components/react-native-paper/snackbar/GlobalSnackbar";
 import { useThemeSetup } from "@/hooks/theme/use-theme-setup";
 import { useSettingsStore } from "@/store/settings-store";
-import { PaperProvider } from "react-native-paper";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { GlobalSnackbar } from "@/components/react-native-paper/snackbar/GlobalSnackbar";
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { PaperProvider } from "react-native-paper";
 
 SplashScreen.preventAutoHideAsync();
 
