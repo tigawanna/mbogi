@@ -21,7 +21,9 @@
         "monochromeImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "usesCleartextTraffic": true,
+      "package": "com.tigawanna.mbogi"
     },
     "web": {
       "bundler": "metro",

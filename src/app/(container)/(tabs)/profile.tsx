@@ -1,10 +1,11 @@
+import { ProfileScreenComponent } from "@/components/auth/profile/ProfileScreenComponent";
 import { StyleSheet } from "react-native";
-import { Surface,Text } from "react-native-paper";
+import { Surface } from "react-native-paper";
 
 export default function Profile() {
   return (
     <Surface style={{ ...styles.container }}>
-      <Text>Profile Screen</Text>
+    <ProfileScreenComponent />
     </Surface>
   );
 }

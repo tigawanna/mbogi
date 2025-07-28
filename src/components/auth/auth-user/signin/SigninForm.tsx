@@ -51,6 +51,7 @@ export function LoginForm({ onForgotPassword, onSwitchToSignup }: LoginFormProps
         'Login Failed',
         error?.message || 'Please check your credentials and try again.'
       );
+      console.log("Login error:", error.message);
     },
     meta: {
       invalidates: [['viewer']],
