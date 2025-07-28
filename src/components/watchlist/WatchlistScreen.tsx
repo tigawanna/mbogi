@@ -90,7 +90,11 @@ export function WatchlistScreen() {
   }
   return (
     <View style={{ ...styles.container }}>
-      <Text variant="titleLarge">WatchlistScreen</Text>
+      {watchlist.map((item)=>{
+        return(
+          <Text key={item.id}>{item.title}</Text>
+        )
+      })}
     </View>
   );
 }

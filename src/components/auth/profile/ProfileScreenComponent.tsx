@@ -7,7 +7,6 @@ import {
   Avatar,
   Card,
   Chip,
-  Divider,
   Surface,
   Text,
   useTheme,
@@ -200,30 +199,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 4,
   },
-  detailsCard: {
-    marginHorizontal: 20,
-    marginBottom: 16,
-    borderRadius: 16,
-    elevation: 2,
-  },
-  cardHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
-    paddingBottom: 12,
-  },
-  cardTitle: {
-    fontWeight: "600",
-    marginLeft: 12,
-  },
-  detailRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    marginBottom: 8,
-    borderRadius: 12,
-  },
   iconContainer: {
     width: 40,
     height: 40,
@@ -231,21 +206,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginRight: 16,
-  },
-  detailContent: {
-    flex: 1,
-  },
-  detailLabel: {
-    fontSize: 12,
-    fontWeight: "500",
-    opacity: 0.7,
-    marginBottom: 4,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
-  detailValue: {
-    fontSize: 15,
-    fontWeight: "500",
   },
   logoutContainer: {
     marginHorizontal: 20,
