@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Divider, Surface, Text, useTheme } from "react-native-paper";
-import { EmailVerificationForm } from "./EmailVerificationForm";
-import { OauthLogin } from "./OauthLogin";
+import { SuccessMessage } from "../others/SuccessMessage";
 import { SignupForm } from "./SignupForm";
-import { SuccessMessage } from "./SuccessMessage";
+import { EmailVerificationForm } from "../others/EmailVerificationForm";
+import { OauthLogin } from "../signin/OauthLogin";
 
 type SignupState = 
   | 'signup'
   | 'verificationSent'
   | 'emailVerification';
 
-export function SignupScreenComponent() {
+export function SignupScreen() {
   const { colors } = useTheme();
   const [signupState, setSignupState] = useState<SignupState>('signup');
   const [email, setEmail] = useState('');

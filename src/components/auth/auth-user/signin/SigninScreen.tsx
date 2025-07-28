@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Divider, Surface, Text, useTheme } from "react-native-paper";
-import { EmailVerificationForm } from "./EmailVerificationForm";
-import { ForgotPasswordForm } from "./ForgotPasswordForm";
-import { LoginForm } from "./LoginForm";
+
+import { EmailVerificationForm } from "../others/EmailVerificationForm";
+import { ForgotPasswordForm } from "../others/ForgotPasswordForm";
+import { ResetPasswordForm } from "../others/ResetPasswordForm";
+import { LoginForm } from "./SigninForm";
+import { SuccessMessage } from "../others/SuccessMessage";
 import { OauthLogin } from "./OauthLogin";
-import { ResetPasswordForm } from "./ResetPasswordForm";
-import { SuccessMessage } from "./SuccessMessage";
 
 type AuthState = 
   | 'login'
@@ -16,7 +17,7 @@ type AuthState =
   | 'resetSent'
   | 'verificationSent';
 
-export function LoginScreenComponent() {
+export function SigninScreen() {
   const { colors } = useTheme();
   const [authState, setAuthState] = useState<AuthState>('login');
   const [email, setEmail] = useState('');

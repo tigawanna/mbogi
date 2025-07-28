@@ -7,7 +7,7 @@ import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 import { Platform, Pressable, StyleSheet, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
-import { LoadingIndicatorDots } from "../../state-screens/LoadingIndicatorDots";
+import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { viewerQueryOptions } from "@/data/viewer/query-options";
 
 export function OauthLogin() {
