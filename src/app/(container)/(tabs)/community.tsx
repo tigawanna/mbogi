@@ -1,13 +1,14 @@
 import React from "react";
-import { Surface, Text } from "react-native-paper";
+import { Surface } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native";
+import { CommunityWatchlistScreen } from "@/components/watchlist/community/CommunityWatchlistScreen";
 
 export default function CommunityRoute() {
   const { top } = useSafeAreaInsets();
   return (
     <Surface style={[styles.container, { paddingTop: top + 12 }]}>
-      <Text>Community Screen</Text>
+      <CommunityWatchlistScreen />
     </Surface>
   );
 }

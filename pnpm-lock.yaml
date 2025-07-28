@@ -45,8 +45,8 @@ importers:
         specifier: ^5.83.0
         version: 5.83.0(@tanstack/react-query@5.83.0(react@19.0.0))(react@19.0.0)
       '@tigawanna/typed-pocketbase':
-        specifier: ^0.1.0
-        version: 0.1.0(pocketbase@0.26.2)
+        specifier: ^0.1.1
+        version: 0.1.1(pocketbase@0.26.2)
       expo:
         specifier: ~53.0.20
         version: 53.0.20(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.5(@babel/core@7.28.0)(@types/react@19.0.14)(react@19.0.0)))(babel-plugin-react-compiler@19.1.0-rc.2)(react-native-webview@13.13.5(react-native@0.79.5(@babel/core@7.28.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.5(@babel/core@7.28.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
@@ -1136,8 +1136,8 @@ packages:
     peerDependencies:
       react: ^18 || ^19
 
-  '@tigawanna/typed-pocketbase@0.1.0':
-    resolution: {integrity: sha512-CT3ZDlrPnQEbuH73+VcochlqSNNvVIjYvMwAEfuhEGkkuuII7sBRq4uJWSJcMlRk/p+PyO7y5U7DJM51rs+9Rw==}
+  '@tigawanna/typed-pocketbase@0.1.1':
+    resolution: {integrity: sha512-LKfzCbN+9ALaPgQyKNuEUQ3fLatvUR6ofUZSKiwM+H8c//GoaPCqQgtQc5wkaB2xKTTD2PoHsPpp9wwAEZ3LyQ==}
     hasBin: true
     peerDependencies:
       pocketbase: '>=0.23.0 <0.27.0'
@@ -5669,7 +5669,7 @@ snapshots:
       '@tanstack/query-core': 5.83.0
       react: 19.0.0
 
-  '@tigawanna/typed-pocketbase@0.1.0(pocketbase@0.26.2)':
+  '@tigawanna/typed-pocketbase@0.1.1(pocketbase@0.26.2)':
     dependencies:
       commander: 13.1.0
       pocketbase: 0.26.2

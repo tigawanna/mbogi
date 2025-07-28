@@ -28,7 +28,6 @@ export async function runCommand(command: string): Promise<string> {
   }
 }
 
-
 const PB_TYPES_DIR = "./src/lib/pb/types";
 const filter_collection = "";
 
@@ -41,7 +40,16 @@ export async function callCliDirectly() {
   if (!url || !email || !password) {
     throw new Error("Missing required environment variables: PB_URL, PB_EMAIL, PB_PASSWORD");
   }
-  const commands = ["npx", "@tigawanna/typed-pocketbase", "--email", email, "--password", password];
+  const commands = [
+    "npx",
+    "@tigawanna/typed-pocketbase",
+    "--email",
+    email,
+    "--password",
+    password,
+    "--type",
+    "zod,ts",
+  ];
   if (url && url.length > 0) {
     commands.push("--url", url);
   }

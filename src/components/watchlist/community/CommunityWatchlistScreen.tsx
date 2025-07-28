@@ -1,16 +1,31 @@
+import { communityWatchlistCollection, myWatchlistCollection } from "@/data/watchlist/collections";
+import { ilike } from "@tanstack/db";
+import { useLiveQuery } from "@tanstack/react-db";
+import React from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
 import { Searchbar, Text, useTheme } from "react-native-paper";
-import { useLiveQuery } from "@tanstack/react-db";
-import { watchlistCollection } from "@/data/watchlist/collection";
-import React from "react";
-import { useWatchlistSearch } from "./hooks";
-import { EmptyRoadSVG } from "../shared/svg/empty";
-import { LoadingIndicatorDots } from "../state-screens/LoadingIndicatorDots";
+import { EmptyRoadSVG } from "../../shared/svg/empty";
+import { LoadingIndicatorDots } from "../../state-screens/LoadingIndicatorDots";
+import { useWatchlistSearch } from "../hooks";
 
-export function WatchlistScreen() {
-  const { data: watchlist, isLoading, isError } = useLiveQuery((query) =>
-    query.from({ watchlist: watchlistCollection })
+export function CommunityWatchlistScreen() {
+  const { searchQuery } = useWatchlistSearch();
+  const {
+    data: watchlist,
+    isLoading,
+    isError,
+  } = useLiveQuery(
+    (query) =>
+      query
+        .from({
+          watchlist: communityWatchlistCollection({
+            keyword: searchQuery,
+          }),
+        })
+        .where(({ watchlist }) => ilike(watchlist.title, `%${searchQuery}%`)),
+    [searchQuery]
   );
+
   const { colors } = useTheme();
   // console.log("watchlist data", data);
   if (isLoading) {
@@ -89,13 +104,13 @@ export function WatchlistScreen() {
     );
   }
   return (
-    <View style={{ ...styles.container }}>
-      {watchlist.map((item)=>{
-        return(
-          <Text key={item.id}>{item.title}</Text>
-        )
-      })}
-    </View>
+    <WatchlistScreenScafold>
+      <View style={{ ...styles.container }}>
+        {watchlist.map((item) => {
+          return <Text key={item.id}>{item.title}</Text>;
+        })}
+      </View>
+    </WatchlistScreenScafold>
   );
 }
 

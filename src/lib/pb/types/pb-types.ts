@@ -150,7 +150,6 @@ export interface ViewCollectionRecord {
 
 type MaybeArray<T> = T | T[];
 
-// ===== _mfas block =====
 // ===== _mfas =====
 
 export interface MfasResponse extends BaseCollectionResponse {
@@ -191,7 +190,6 @@ export interface MfasCollection {
 	relations: Record<string, never>;
 }
 
-// ===== _otps block =====
 // ===== _otps =====
 
 export interface OtpsResponse extends BaseCollectionResponse {
@@ -229,7 +227,6 @@ export interface OtpsCollection {
 	relations: Record<string, never>;
 }
 
-// ===== _externalAuths block =====
 // ===== _externalAuths =====
 
 export interface ExternalAuthsResponse extends BaseCollectionResponse {
@@ -273,7 +270,6 @@ export interface ExternalAuthsCollection {
 	relations: Record<string, never>;
 }
 
-// ===== _authOrigins block =====
 // ===== _authOrigins =====
 
 export interface AuthOriginsResponse extends BaseCollectionResponse {
@@ -314,7 +310,6 @@ export interface AuthOriginsCollection {
 	relations: Record<string, never>;
 }
 
-// ===== _superusers block =====
 // ===== _superusers =====
 
 export interface SuperusersResponse extends AuthCollectionResponse {
@@ -356,7 +351,6 @@ export interface SuperusersCollection {
 	relations: Record<string, never>;
 }
 
-// ===== users block =====
 // ===== users =====
 
 export interface UsersResponse extends AuthCollectionResponse {
@@ -417,7 +411,6 @@ export interface UsersCollection {
 	};
 }
 
-// ===== _secrets block =====
 // ===== _secrets =====
 
 export interface SecretsResponse extends BaseCollectionResponse {
@@ -455,7 +448,6 @@ export interface SecretsCollection {
 	relations: Record<string, never>;
 }
 
-// ===== watchlist block =====
 // ===== watchlist =====
 
 export interface WatchlistResponse extends BaseCollectionResponse {
@@ -463,9 +455,9 @@ export interface WatchlistResponse extends BaseCollectionResponse {
 	id: string;
 	title: string;
 	overview: string;
-	user_id: Array<string>;
+	user_id: string;
 	items: Array<string>;
-	visibility: Array<'public' | 'private' | 'followers_only'>;
+	visibility: '' | 'public' | 'private' | 'followers_only';
 	is_collaborative: boolean;
 	created: string;
 	updated: string;
@@ -475,9 +467,9 @@ export interface WatchlistCreate extends BaseCollectionCreate {
 	id?: string;
 	title?: string;
 	overview?: string;
-	user_id: MaybeArray<string>;
+	user_id: string;
 	items?: MaybeArray<string>;
-	visibility?: MaybeArray<'public' | 'private' | 'followers_only'>;
+	visibility?: '' | 'public' | 'private' | 'followers_only';
 	is_collaborative?: boolean;
 	created?: string | Date;
 	updated?: string | Date;
@@ -487,15 +479,11 @@ export interface WatchlistUpdate extends BaseCollectionUpdate {
 	id: string;
 	title?: string;
 	overview?: string;
-	user_id: MaybeArray<string>;
-	'user_id+'?: MaybeArray<string>;
-	'user_id-'?: MaybeArray<string>;
+	user_id: string;
 	items?: MaybeArray<string>;
 	'items+'?: MaybeArray<string>;
 	'items-'?: MaybeArray<string>;
-	visibility?: MaybeArray<'public' | 'private' | 'followers_only'>;
-	'visibility+'?: MaybeArray<'public' | 'private' | 'followers_only'>;
-	'visibility-'?: MaybeArray<'public' | 'private' | 'followers_only'>;
+	visibility?: '' | 'public' | 'private' | 'followers_only';
 	is_collaborative?: boolean;
 	created?: string | Date;
 	updated?: string | Date;
@@ -514,13 +502,12 @@ export interface WatchlistCollection {
 	};
 }
 
-// ===== watchlist_likes block =====
 // ===== watchlist_likes =====
 
 export interface WatchlistLikesResponse extends BaseCollectionResponse {
 	collectionName: 'watchlist_likes';
 	id: string;
-	user_id: Array<string>;
+	user_id: string;
 	watchlist_item_id: string;
 	created: string;
 	updated: string;
@@ -528,7 +515,7 @@ export interface WatchlistLikesResponse extends BaseCollectionResponse {
 
 export interface WatchlistLikesCreate extends BaseCollectionCreate {
 	id?: string;
-	user_id: MaybeArray<string>;
+	user_id: string;
 	watchlist_item_id: string;
 	created?: string | Date;
 	updated?: string | Date;
@@ -536,9 +523,7 @@ export interface WatchlistLikesCreate extends BaseCollectionCreate {
 
 export interface WatchlistLikesUpdate extends BaseCollectionUpdate {
 	id: string;
-	user_id: MaybeArray<string>;
-	'user_id+'?: MaybeArray<string>;
-	'user_id-'?: MaybeArray<string>;
+	user_id: string;
 	watchlist_item_id: string;
 	created?: string | Date;
 	updated?: string | Date;
@@ -557,7 +542,6 @@ export interface WatchlistLikesCollection {
 	};
 }
 
-// ===== watchlist_items block =====
 // ===== watchlist_items =====
 
 export interface WatchlistItemsResponse extends BaseCollectionResponse {
@@ -571,8 +555,8 @@ export interface WatchlistItemsResponse extends BaseCollectionResponse {
 	release_date: string;
 	vote_average: number;
 	genre_ids: Record<string, any> | Array<any> | null;
-	media_type: Array<'movie' | 'tv'>;
-	added_by: Array<string>;
+	media_type: 'movie' | 'tv';
+	added_by: string;
 	personal_rating: number;
 	notes: string;
 	created: string;
@@ -589,8 +573,8 @@ export interface WatchlistItemsCreate extends BaseCollectionCreate {
 	release_date?: string | Date;
 	vote_average?: number;
 	genre_ids?: Record<string, any> | Array<any> | null;
-	media_type: MaybeArray<'movie' | 'tv'>;
-	added_by: MaybeArray<string>;
+	media_type: 'movie' | 'tv';
+	added_by: string;
 	personal_rating?: number;
 	notes?: string;
 	created?: string | Date;
@@ -611,12 +595,8 @@ export interface WatchlistItemsUpdate extends BaseCollectionUpdate {
 	'vote_average+'?: number;
 	'vote_average-'?: number;
 	genre_ids?: Record<string, any> | Array<any> | null;
-	media_type: MaybeArray<'movie' | 'tv'>;
-	'media_type+'?: MaybeArray<'movie' | 'tv'>;
-	'media_type-'?: MaybeArray<'movie' | 'tv'>;
-	added_by: MaybeArray<string>;
-	'added_by+'?: MaybeArray<string>;
-	'added_by-'?: MaybeArray<string>;
+	media_type: 'movie' | 'tv';
+	added_by: string;
 	personal_rating?: number;
 	'personal_rating+'?: number;
 	'personal_rating-'?: number;
@@ -640,34 +620,36 @@ export interface WatchlistItemsCollection {
 	};
 }
 
-// ===== watched_list block =====
 // ===== watched_list =====
 
 export interface WatchedListResponse extends BaseCollectionResponse {
 	collectionName: 'watched_list';
 	id: string;
-	user_id: Array<string>;
+	user_id: string;
 	items: Array<string>;
+	field: Array<'happy' | 'sad' | 'anxious' | 'sorry'>;
 	created: string;
 	updated: string;
 }
 
 export interface WatchedListCreate extends BaseCollectionCreate {
 	id?: string;
-	user_id: MaybeArray<string>;
+	user_id: string;
 	items?: MaybeArray<string>;
+	field?: MaybeArray<'happy' | 'sad' | 'anxious' | 'sorry'>;
 	created?: string | Date;
 	updated?: string | Date;
 }
 
 export interface WatchedListUpdate extends BaseCollectionUpdate {
 	id: string;
-	user_id: MaybeArray<string>;
-	'user_id+'?: MaybeArray<string>;
-	'user_id-'?: MaybeArray<string>;
+	user_id: string;
 	items?: MaybeArray<string>;
 	'items+'?: MaybeArray<string>;
 	'items-'?: MaybeArray<string>;
+	field?: MaybeArray<'happy' | 'sad' | 'anxious' | 'sorry'>;
+	'field+'?: MaybeArray<'happy' | 'sad' | 'anxious' | 'sorry'>;
+	'field-'?: MaybeArray<'happy' | 'sad' | 'anxious' | 'sorry'>;
 	created?: string | Date;
 	updated?: string | Date;
 }
@@ -685,39 +667,32 @@ export interface WatchedListCollection {
 	};
 }
 
-// ===== follows block =====
 // ===== follows =====
 
 export interface FollowsResponse extends BaseCollectionResponse {
 	collectionName: 'follows';
 	id: string;
-	follower_id: Array<string>;
-	following_id: Array<string>;
-	status: Array<'pending' | 'accepted' | 'blocked'>;
+	follower_id: string;
+	following_id: string;
+	status: '' | 'pending' | 'accepted' | 'blocked';
 	created: string;
 	updated: string;
 }
 
 export interface FollowsCreate extends BaseCollectionCreate {
 	id?: string;
-	follower_id: MaybeArray<string>;
-	following_id: MaybeArray<string>;
-	status?: MaybeArray<'pending' | 'accepted' | 'blocked'>;
+	follower_id: string;
+	following_id: string;
+	status?: '' | 'pending' | 'accepted' | 'blocked';
 	created?: string | Date;
 	updated?: string | Date;
 }
 
 export interface FollowsUpdate extends BaseCollectionUpdate {
 	id: string;
-	follower_id: MaybeArray<string>;
-	'follower_id+'?: MaybeArray<string>;
-	'follower_id-'?: MaybeArray<string>;
-	following_id: MaybeArray<string>;
-	'following_id+'?: MaybeArray<string>;
-	'following_id-'?: MaybeArray<string>;
-	status?: MaybeArray<'pending' | 'accepted' | 'blocked'>;
-	'status+'?: MaybeArray<'pending' | 'accepted' | 'blocked'>;
-	'status-'?: MaybeArray<'pending' | 'accepted' | 'blocked'>;
+	follower_id: string;
+	following_id: string;
+	status?: '' | 'pending' | 'accepted' | 'blocked';
 	created?: string | Date;
 	updated?: string | Date;
 }
@@ -735,13 +710,12 @@ export interface FollowsCollection {
 	};
 }
 
-// ===== user_profiles block =====
 // ===== user_profiles =====
 
 export interface UserProfilesResponse extends BaseCollectionResponse {
 	collectionName: 'user_profiles';
 	id: string;
-	user_id: Array<string>;
+	user_id: string;
 	bio: string;
 	location: string;
 	website: string;
@@ -755,7 +729,7 @@ export interface UserProfilesResponse extends BaseCollectionResponse {
 
 export interface UserProfilesCreate extends BaseCollectionCreate {
 	id?: string;
-	user_id: MaybeArray<string>;
+	user_id: string;
 	bio?: string;
 	location?: string;
 	website?: string | URL;
@@ -769,9 +743,7 @@ export interface UserProfilesCreate extends BaseCollectionCreate {
 
 export interface UserProfilesUpdate extends BaseCollectionUpdate {
 	id: string;
-	user_id: MaybeArray<string>;
-	'user_id+'?: MaybeArray<string>;
-	'user_id-'?: MaybeArray<string>;
+	user_id: string;
 	bio?: string;
 	location?: string;
 	website?: string | URL;
@@ -801,15 +773,14 @@ export interface UserProfilesCollection {
 	};
 }
 
-// ===== notifications block =====
 // ===== notifications =====
 
 export interface NotificationsResponse extends BaseCollectionResponse {
 	collectionName: 'notifications';
 	id: string;
-	recipient_id: Array<string>;
-	sender_id: Array<string>;
-	type: Array<'follow_request' | 'follow_accepted' | 'watchlist_shared' | 'watchlist_liked'>;
+	recipient_id: string;
+	sender_id: string;
+	type: 'follow_request' | 'follow_accepted' | 'watchlist_shared' | 'watchlist_liked';
 	message: string;
 	is_read: boolean;
 	related_id: string;
@@ -819,9 +790,9 @@ export interface NotificationsResponse extends BaseCollectionResponse {
 
 export interface NotificationsCreate extends BaseCollectionCreate {
 	id?: string;
-	recipient_id: MaybeArray<string>;
-	sender_id?: MaybeArray<string>;
-	type: MaybeArray<'follow_request' | 'follow_accepted' | 'watchlist_shared' | 'watchlist_liked'>;
+	recipient_id: string;
+	sender_id?: string;
+	type: 'follow_request' | 'follow_accepted' | 'watchlist_shared' | 'watchlist_liked';
 	message?: string;
 	is_read?: boolean;
 	related_id?: string;
@@ -831,15 +802,9 @@ export interface NotificationsCreate extends BaseCollectionCreate {
 
 export interface NotificationsUpdate extends BaseCollectionUpdate {
 	id: string;
-	recipient_id: MaybeArray<string>;
-	'recipient_id+'?: MaybeArray<string>;
-	'recipient_id-'?: MaybeArray<string>;
-	sender_id?: MaybeArray<string>;
-	'sender_id+'?: MaybeArray<string>;
-	'sender_id-'?: MaybeArray<string>;
-	type: MaybeArray<'follow_request' | 'follow_accepted' | 'watchlist_shared' | 'watchlist_liked'>;
-	'type+'?: MaybeArray<'follow_request' | 'follow_accepted' | 'watchlist_shared' | 'watchlist_liked'>;
-	'type-'?: MaybeArray<'follow_request' | 'follow_accepted' | 'watchlist_shared' | 'watchlist_liked'>;
+	recipient_id: string;
+	sender_id?: string;
+	type: 'follow_request' | 'follow_accepted' | 'watchlist_shared' | 'watchlist_liked';
 	message?: string;
 	is_read?: boolean;
 	related_id?: string;
@@ -877,4 +842,4 @@ export type Schema = {
 	follows: FollowsCollection;
 	user_profiles: UserProfilesCollection;
 	notifications: NotificationsCollection;
-}
+};
