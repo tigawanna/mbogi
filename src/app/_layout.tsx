@@ -1,3 +1,4 @@
+import "react-native-reanimated";
 import { asyncStoragePersister, queryClient } from "@/lib/tanstack/query/client";
 import { useAppState, useOnlineManager } from "@/lib/tanstack/query/react-native-setup-hooks";
 import { focusManager } from "@tanstack/react-query";
@@ -7,7 +8,6 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
 import { AppStateStatus, Platform } from "react-native";
-import "react-native-reanimated";
 
 import { GlobalSnackbar } from "@/components/react-native-paper/snackbar/GlobalSnackbar";
 import { useThemeSetup } from "@/hooks/theme/use-theme-setup";

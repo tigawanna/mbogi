@@ -65,34 +65,7 @@ export function ProfileScreenComponent() {
     );
   }
 
-  const detailItems = [
-    {
-      icon: "badge",
-      label: "User ID",
-      value: user.id,
-      selectable: true,
-    },
-    {
-      icon: "email",
-      label: "Email Address",
-      value: user.emailVisibility ? user.email : "Hidden for privacy",
-      selectable: user.emailVisibility,
-    },
-    {
-      icon: "visibility",
-      label: "Email Visibility",
-      value: user.emailVisibility ? "Public" : "Private",
-      selectable: false,
-    },
-    {
-      icon: "key",
-      label: "Token Key",
-      value: user.tokenKey
-        ? `${user.tokenKey.substring(0, 12)}...`
-        : "Not available",
-      selectable: true,
-    },
-  ];
+
 
   return (
     <View style={styles.container}>
@@ -140,7 +113,7 @@ export function ProfileScreenComponent() {
               </Text>
 
               <Chip
-                icon={user.verified ? "verified" : "error"}
+                icon={user.verified ? "account-check" : "error"}
                 mode="flat"
                 style={[
                   styles.statusChip,
