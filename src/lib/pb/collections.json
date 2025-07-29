@@ -1361,6 +1361,22 @@
       },
       {
         "hidden": false,
+        "id": "select1542800728",
+        "maxSelect": 2,
+        "name": "field",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "select",
+        "values": [
+          "happy",
+          "sad",
+          "anxious",
+          "sorry"
+        ]
+      },
+      {
+        "hidden": false,
         "id": "autodate2990389176",
         "name": "created",
         "onCreate": true,
@@ -1382,7 +1398,7 @@
     ],
     "indexes": [],
     "created": "2025-07-25 22:02:02.471Z",
-    "updated": "2025-07-25 22:02:02.471Z",
+    "updated": "2025-07-28 05:39:44.824Z",
     "system": false
   },
   {

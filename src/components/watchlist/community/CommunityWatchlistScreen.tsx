@@ -1,15 +1,20 @@
-import { communityWatchlistCollection, myWatchlistCollection } from "@/data/watchlist/collections";
+import { communityWatchlistCollection } from "@/data/watchlist/collections";
 import { ilike } from "@tanstack/db";
 import { useLiveQuery } from "@tanstack/react-db";
 import React from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
-import { Searchbar, Text, useTheme } from "react-native-paper";
+import { DataTable, Searchbar, Text, useTheme } from "react-native-paper";
 import { EmptyRoadSVG } from "../../shared/svg/empty";
 import { LoadingIndicatorDots } from "../../state-screens/LoadingIndicatorDots";
 import { useWatchlistSearch } from "../hooks";
+import { useCommunityWatchListPageoptionsStore } from "@/data/watchlist/watchlist-stores";
+
 
 export function CommunityWatchlistScreen() {
   const { searchQuery } = useWatchlistSearch();
+  const pageOptions = useCommunityWatchListPageoptionsStore((state) => state.options);
+  const setPageOptions = useCommunityWatchListPageoptionsStore((state) => state.setOptions);
+  const { colors } = useTheme();
   const {
     data: watchlist,
     isLoading,
@@ -26,7 +31,6 @@ export function CommunityWatchlistScreen() {
     [searchQuery]
   );
 
-  const { colors } = useTheme();
   // console.log("watchlist data", data);
   if (isLoading) {
     return (
@@ -110,6 +114,21 @@ export function CommunityWatchlistScreen() {
           return <Text key={item.id}>{item.title}</Text>;
         })}
       </View>
+      {pageOptions.totalPages > 1 && (
+        <DataTable.Pagination
+          page={pageOptions.page}
+          numberOfPages={pageOptions.totalPages}
+          onPageChange={(page) => {
+            setPageOptions({
+              ...pageOptions,
+              page: page - 1, // DataTable uses 1-based index
+            });
+          }}
+          label={`Page ${pageOptions.page + 1} of ${pageOptions.totalPages}`}
+          showFastPaginationControls
+          // style={styles.pagination}
+        />
+      )}
     </WatchlistScreenScafold>
   );
 }
