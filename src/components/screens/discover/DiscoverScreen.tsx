@@ -1,17 +1,17 @@
 import React, { useState } from "react";
-import { StyleSheet, useWindowDimensions, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Searchbar, useTheme } from "react-native-paper";
 import { Tabs, TabScreen, TabsProvider } from "react-native-paper-tabs";
 
-import { DiscoverMoviesScreen } from "./movies/DiscoverMoviesScreen";
-import { DiscoverTVScreen } from "./tv/DiscoverTVScreen";
 import { router, useLocalSearchParams } from "expo-router";
-import { SearchResultsScreen } from "./search/SearchResultsScreen";
 import {
-  FilterButton,
   DiscoverFeedFilters,
+  FilterButton,
   useHasActiveFilters,
 } from "./filters/DiscoverFeedFilters";
+import { DiscoverMoviesScreen } from "./movies/DiscoverMoviesScreen";
+import { SearchResultsScreen } from "./search/SearchResultsScreen";
+import { DiscoverTVScreen } from "./tv/DiscoverTVScreen";
 
 export function DiscoverScreen() {
   const { colors } = useTheme();
@@ -54,27 +54,27 @@ interface DiscoverScreenProps {
 export function DiscoverScreenScaffold({ children }: DiscoverScreenProps) {
   const { colors } = useTheme();
   const { searchQuery, setSearchQuery } = useDiscoverScreenSearch();
-  const { width } = useWindowDimensions();
 
   const hasActiveFilters = useHasActiveFilters();
   const [showFilters, setShowFilters] = useState(false);
 
-  const searchContainerWidth = width * 0.95;
-
   return (
     <View style={styles.scaffoldContainer}>
-      <View style={[styles.searchContainer, { width:"99%" }]}>
+      <View style={[styles.searchContainer, { width: "99%" }]}>
         <Searchbar
-          placeholder="Search Test"
+          placeholder="Search "
           onChangeText={(term) => setSearchQuery(term)}
           value={searchQuery}
-          style={[styles.searchBar, { width:"75%" }]}
+          style={[styles.searchBar, { width: "75%" }]}
           inputStyle={styles.searchInput}
           iconColor={colors.onSurfaceVariant}
           placeholderTextColor={colors.onSurfaceVariant}
         />
         <FilterButton onPress={() => setShowFilters(true)} hasActiveFilters={hasActiveFilters} />
-        <DiscoverFeedFilters visible={showFilters} onDismiss={() => setShowFilters(false)} />
+        <DiscoverFeedFilters 
+          visible={showFilters} 
+          onDismiss={() => setShowFilters(false)} 
+        />
       </View>
       {children}
     </View>

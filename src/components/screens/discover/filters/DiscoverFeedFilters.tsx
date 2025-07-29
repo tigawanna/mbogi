@@ -112,14 +112,14 @@ export function DiscoverFeedFilters({ visible, onDismiss }: DiscoverFeedFiltersP
 
   const styles = StyleSheet.create({
     modal: {
-      backgroundColor: theme.colors.surface,
+      flex: 1,
       margin: 20,
       borderRadius: 12,
-      maxHeight: "90%",
     },
     surface: {
       flex: 1,
       borderRadius: 12,
+      padding: 16,
     },
     header: {
       flexDirection: "row",
@@ -155,6 +155,7 @@ export function DiscoverFeedFilters({ visible, onDismiss }: DiscoverFeedFiltersP
     },
     sliderContainer: {
       marginBottom: 16,
+      width: "100%",
     },
     sliderLabels: {
       flexDirection: "row",
@@ -177,7 +178,7 @@ export function DiscoverFeedFilters({ visible, onDismiss }: DiscoverFeedFiltersP
     },
   });
 
-  // Simple slider component replacement
+  // Beautiful modern slider component
   const SimpleSlider = ({
     value,
     onValueChange,
@@ -203,31 +204,125 @@ export function DiscoverFeedFilters({ visible, onDismiss }: DiscoverFeedFiltersP
       onValueChange(newValue);
     };
 
+    const progress = ((value - minimumValue) / (maximumValue - minimumValue)) * 100;
+    const canDecrease = value > minimumValue;
+    const canIncrease = value < maximumValue;
+
     return (
-      <View style={styles.sliderContainer}>
-        <Text variant="bodyMedium" style={{ marginBottom: 8 }}>
-          {label}: {value}
-        </Text>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-          <Button mode="outlined" onPress={handleDecrease} compact>
-            -
-          </Button>
-          <Text variant="bodyLarge" style={{ minWidth: 60, textAlign: "center" }}>
-            {value}
+      <Surface style={[styles.sliderContainer, { 
+        backgroundColor: theme.colors.surfaceVariant,
+        borderRadius: 16,
+        padding: 16,
+      }]}>
+        {/* Header with label and value */}
+        <View style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 16,
+        }}>
+          <Text variant="titleSmall" style={{ 
+            color: theme.colors.onSurfaceVariant,
+            fontWeight: '600'
+          }}>
+            {label}
           </Text>
-          <Button mode="outlined" onPress={handleIncrease} compact>
-            +
-          </Button>
+          <Surface style={{
+            backgroundColor: theme.colors.primaryContainer,
+            paddingHorizontal: 12,
+            paddingVertical: 6,
+            borderRadius: 12,
+          }}>
+            <Text variant="labelLarge" style={{ 
+              color: theme.colors.onPrimaryContainer,
+              fontWeight: '700'
+            }}>
+              {value}
+            </Text>
+          </Surface>
         </View>
-        <View style={styles.sliderLabels}>
-          <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+
+        {/* Visual progress bar */}
+        <View style={{
+          height: 6,
+          backgroundColor: theme.colors.outline,
+          borderRadius: 3,
+          marginBottom: 16,
+          overflow: 'hidden',
+        }}>
+          <View style={{
+            height: '100%',
+            width: `${progress}%`,
+            backgroundColor: theme.colors.primary,
+            borderRadius: 3,
+          }} />
+        </View>
+
+        {/* Control buttons */}
+        <View style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 20,
+        }}>
+          <IconButton
+            icon="minus"
+            mode="contained-tonal"
+            size={24}
+            onPress={handleDecrease}
+            disabled={!canDecrease}
+            style={{
+              backgroundColor: canDecrease ? theme.colors.secondaryContainer : theme.colors.surfaceDisabled,
+            }}
+            iconColor={canDecrease ? theme.colors.onSecondaryContainer : theme.colors.onSurfaceDisabled}
+          />
+          
+          <Surface style={{
+            backgroundColor: theme.colors.surface,
+            paddingHorizontal: 20,
+            paddingVertical: 8,
+            borderRadius: 20,
+            minWidth: 80,
+            alignItems: 'center',
+            elevation: 2,
+          }}>
+            <Text variant="headlineSmall" style={{ 
+              color: theme.colors.onSurface,
+              fontWeight: '600'
+            }}>
+              {value}
+            </Text>
+          </Surface>
+
+          <IconButton
+            icon="plus"
+            mode="contained-tonal"
+            size={24}
+            onPress={handleIncrease}
+            disabled={!canIncrease}
+            style={{
+              backgroundColor: canIncrease ? theme.colors.secondaryContainer : theme.colors.surfaceDisabled,
+            }}
+            iconColor={canIncrease ? theme.colors.onSecondaryContainer : theme.colors.onSurfaceDisabled}
+          />
+        </View>
+
+        {/* Range labels */}
+        <View style={[styles.sliderLabels, { marginTop: 12 }]}>
+          <Text variant="bodySmall" style={{ 
+            color: theme.colors.onSurfaceVariant,
+            fontWeight: '500'
+          }}>
             {minimumValue}
           </Text>
-          <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+          <Text variant="bodySmall" style={{ 
+            color: theme.colors.onSurfaceVariant,
+            fontWeight: '500'
+          }}>
             {maximumValue}
           </Text>
         </View>
-      </View>
+      </Surface>
     );
   };
 
