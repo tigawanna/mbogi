@@ -1,31 +1,33 @@
+import { useLiveQuery } from '@tanstack/react-db';
+import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { DataTable, Searchbar, Text, useTheme } from 'react-native-paper';
-import { router, useLocalSearchParams } from 'expo-router';
 
-import { LoadingIndicatorDots } from '@/components/state-screens/LoadingIndicatorDots';
 import { EmptyRoadSVG } from '@/components/shared/svg/empty';
+import { LoadingIndicatorDots } from '@/components/state-screens/LoadingIndicatorDots';
+import { popularMoviesCollection } from '@/data/discover/discover-query-collection';
+import { DiscoverMoviesFlatList } from './DiscoverMoviesFlatList';
 
 export function DiscoverMoviesScreen() {
   const { colors } = useTheme();
 
-  // TODO: Replace with actual data fetching
-  const { isLoading, isError, data } = {
-    isLoading: false,
-    isError: false,
-    data: [
-      { id: '1', title: 'Item 1' },
-      { id: '2', title: 'Item 2' },
-      { id: '3', title: 'Item 3' },
-    ],
-  };
+  // Pagination state
+  const [currentPage, setCurrentPage] = React.useState(1);
 
-  // TODO: Replace with actual pagination logic
-  const { page, setPage, totalPages } = {
-    totalPages: 3,
-    page: 1,
-    setPage: (page: number) => {},
-  };
+  // Fetch data using TanStack DB live query
+  const { data: queryResult, isLoading, isError } = useLiveQuery(
+    (query) =>
+      query.from({
+        movies: popularMoviesCollection(currentPage),
+      }),
+    [currentPage]
+  );
+
+  // Extract movies and pagination data
+  const data = queryResult || [];
+  const totalPages = 3; // TODO: Get from API response metadata
+  const page = currentPage - 1; // Convert to 0-based for pagination component
 
   if (isLoading) {
     return (
@@ -106,20 +108,15 @@ export function DiscoverMoviesScreen() {
 
   return (
     <DiscoverMoviesScreenScaffold>
-      <View style={styles.container}>
-        {/* TODO: Replace with actual list rendering */}
-        {data.map((item) => {
-          return <Text key={item.id}>{item.title}</Text>;
-        })}
-      </View>
+      <DiscoverMoviesFlatList list={data} />
       {totalPages > 1 && (
         <DataTable.Pagination
           page={page}
           numberOfPages={totalPages}
-          onPageChange={(page) => {
-            setPage(page - 1);
+          onPageChange={(pageNumber) => {
+            setCurrentPage(pageNumber + 1); // Convert back to 1-based
           }}
-          label={`Page ${page + 1} of totalPages`}
+          label={`Page ${page + 1} of ${totalPages}`}
           showFastPaginationControls
         />
       )}
@@ -173,13 +170,6 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  container: {
-    flex: 1,
-    height: '100%',
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   searchBar: {
     elevation: 0,

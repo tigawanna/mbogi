@@ -4,9 +4,11 @@ import { useLiveQuery } from "@tanstack/react-db";
 import React from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
 import { Searchbar, Text, useTheme } from "react-native-paper";
-import { EmptyRoadSVG } from "../../shared/svg/empty";
-import { LoadingIndicatorDots } from "../../state-screens/LoadingIndicatorDots";
+
+
 import { useWatchlistSearch } from "../hooks";
+import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
+import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 
 export function MyWatchlistScreen() {
   const { searchQuery } = useWatchlistSearch();
