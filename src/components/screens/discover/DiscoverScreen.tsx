@@ -12,10 +12,12 @@ import {
 import { DiscoverMoviesScreen } from "./movies/DiscoverMoviesScreen";
 import { SearchResultsScreen } from "./search/SearchResultsScreen";
 import { DiscoverTVScreen } from "./tv/DiscoverTVScreen";
+import { useDiscoverFiltersStore } from "./filters/discover-fliters-store";
 
 export function DiscoverScreen() {
   const { colors } = useTheme();
   const { searchQuery } = useDiscoverScreenSearch();
+  const { setActiveTab } = useDiscoverFiltersStore();
 
   // Show search results if there's a search query
   if (searchQuery.trim().length > 0) {
@@ -32,7 +34,9 @@ export function DiscoverScreen() {
   return (
     <DiscoverScreenScaffold>
       <View style={styles.container}>
-        <TabsProvider defaultIndex={0}>
+        <TabsProvider defaultIndex={0} 
+        onChangeIndex={(index) => setActiveTab(index===0 ? 'movie' : 'tv')}
+        >
           <Tabs mode="fixed" style={{ backgroundColor: colors.surface }}>
             <TabScreen label="Movies" icon="movie">
               <DiscoverMoviesScreen />

@@ -8,11 +8,12 @@ import { EmptyRoadSVG } from '@/components/shared/svg/empty';
 import { LoadingIndicatorDots } from '@/components/state-screens/LoadingIndicatorDots';
 import { discoverTVCollection } from '@/data/discover/discover-query-collection';
 import { DiscoverTVFlatList } from './DiscoverTVFlatList';
+import { useDiscoverFiltersStore } from '../filters/discover-fliters-store';
 
 
 export function DiscoverTVScreen() {
   const { colors } = useTheme();
-
+  const {tvFilters}= useDiscoverFiltersStore();
   // Pagination state (removed pagination as per requirements)
   const currentPage = 1;
 
@@ -25,11 +26,11 @@ export function DiscoverTVScreen() {
     (query) =>
       query.from({
         tv: discoverTVCollection({
-          filters: { page: currentPage },
+          filters: tvFilters,
           enabled: true,
         })
       }),
-    [currentPage]
+    [currentPage, tvFilters]
   );
 
   // Extract TV shows data
