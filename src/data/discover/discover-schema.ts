@@ -164,21 +164,21 @@ export const TMDBMovieSchema = z.object({
  * Basic TV show schema for discover/search results
  */
 export const TMDBTVShowSchema = z.object({
-    id: z.number(),
-    name: z.string(),
-    original_name: z.string(),
-    overview: z.string(),
-    poster_path: z.string().nullable(),
-    backdrop_path: z.string().nullable(),
-    first_air_date: z.string(),
-    genre_ids: z.array(z.number()),
-    original_language: z.string(),
-    popularity: z.number(),
-    vote_average: z.number(),
-    vote_count: z.number(),
-    origin_country: z.array(z.string()),
-    adult: z.boolean(),
-  });
+  id: z.number(),
+  name: z.string(),
+  original_name: z.string(),
+  overview: z.string(),
+  poster_path: z.string().nullable(),
+  backdrop_path: z.string().nullable(),
+  first_air_date: z.string(),
+  genre_ids: z.array(z.number()),
+  original_language: z.string(),
+  popularity: z.number(),
+  vote_average: z.number(),
+  vote_count: z.number(),
+  origin_country: z.array(z.string()),
+  adult: z.boolean(),
+});
 
 // ============================================================================
 // Recommendations Schema
@@ -190,13 +190,13 @@ export const TMDBTVShowSchema = z.object({
  * Note: Results include media_type field to distinguish between movies and TV shows
  */
 export const RecommendationsSchema = TMDBBaseResponseSchema.extend({
-    results: z.array(
-      z.union([
-        TMDBMovieSchema.extend({ media_type: z.literal("movie") }),
-        TMDBTVShowSchema.extend({ media_type: z.literal("tv") }),
-      ])
-    ),
-  });
+  results: z.array(
+    z.union([
+      TMDBMovieSchema.extend({ media_type: z.literal("movie") }),
+      TMDBTVShowSchema.extend({ media_type: z.literal("tv") }),
+    ])
+  ),
+});
 
 /**
  * Movie details schema with extended information
@@ -236,8 +236,6 @@ export const TMDBMovieDetailsSchema = TMDBMovieSchema.omit({
 export const TMDBDiscoverMoviesResponseSchema = TMDBBaseResponseSchema.extend({
   results: z.array(TMDBMovieSchema),
 });
-
-
 
 /**
  * Episode schema for TV show details
@@ -317,8 +315,6 @@ export const TMDBTVDetailsSchema = TMDBTVShowSchema.omit({
 export const TMDBDiscoverTVResponseSchema = TMDBBaseResponseSchema.extend({
   results: z.array(TMDBTVShowSchema),
 });
-
-
 
 // ============================================================================
 // Season Details Schema
@@ -408,6 +404,102 @@ export const TMDBDiscoverResponseSchema = z.union([
   TMDBDiscoverMoviesResponseSchema.extend({ content_type: z.literal("movie") }),
   TMDBDiscoverTVResponseSchema.extend({ content_type: z.literal("tv") }),
 ]);
+
+// ============================================================================
+// Parameter Types for SDK
+// ============================================================================
+
+/**
+ * Discover Movies Parameters
+ */
+// export interface DiscoverMoviesParams {
+//   sort_by?: string;
+//   page?: number;
+//   with_genres?: string;
+//   year?: string;
+//   primary_release_year?: string;
+//   "vote_average.gte"?: number;
+//   "vote_count.gte"?: number;
+//   with_cast?: string;
+//   with_crew?: string;
+//   with_companies?: string;
+//   with_keywords?: string;
+//   include_adult?: boolean;
+//   include_video?: boolean;
+//   language?: string;
+//   region?: string;
+//   "release_date.gte"?: string;
+//   "release_date.lte"?: string;
+//   with_release_type?: string;
+//   certification_country?: string;
+//   certification?: string;
+//   "certification.lte"?: string;
+//   with_original_language?: string;
+//   without_genres?: string;
+//   without_keywords?: string;
+//   without_companies?: string;
+//   "vote_average.lte"?: number;
+//   "vote_count.lte"?: number;
+//   "with_runtime.gte"?: number;
+//   "with_runtime.lte"?: number;
+// }
+
+/**
+ * Discover TV Shows Parameters
+ */
+// export interface DiscoverTVParams {
+//   sort_by?: string;
+//   page?: number;
+//   with_genres?: string;
+//   first_air_date_year?: string;
+//   "vote_average.gte"?: number;
+//   "vote_count.gte"?: number;
+//   with_networks?: string;
+//   with_companies?: string;
+//   with_keywords?: string;
+//   include_null_first_air_dates?: boolean;
+//   language?: string;
+//   timezone?: string;
+//   "first_air_date.gte"?: string;
+//   "first_air_date.lte"?: string;
+//   with_original_language?: string;
+//   without_genres?: string;
+//   without_keywords?: string;
+//   without_companies?: string;
+//   "vote_average.lte"?: number;
+//   "vote_count.lte"?: number;
+//   "with_runtime.gte"?: number;
+//   "with_runtime.lte"?: number;
+//   screened_theatrically?: boolean;
+//   with_status?: string;
+//   with_type?: string;
+// }
+
+/**
+ * Search Parameters
+ */
+// export interface SearchParams {
+//   query: string;
+//   page?: number;
+//   include_adult?: boolean;
+//   language?: string;
+//   region?: string;
+// }
+
+/**
+ * Details Parameters
+ */
+// export interface DetailsParams {
+//   language?: string;
+//   append_to_response?: string;
+// }
+
+/**
+ * Season Details Parameters
+ */
+// export interface SeasonDetailsParams {
+//   language?: string;
+// }
 
 // ============================================================================
 // Type Exports
