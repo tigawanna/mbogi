@@ -6,10 +6,11 @@ import { Searchbar, Text, useTheme } from 'react-native-paper';
 
 import { EmptyRoadSVG } from '@/components/shared/svg/empty';
 import { LoadingIndicatorDots } from '@/components/state-screens/LoadingIndicatorDots';
-import { popularMoviesCollection } from '@/data/discover/discover-query-collection';
-import { DiscoverMoviesFlatList } from './DiscoverMoviesFlatList';
+import { popularTVCollection } from '@/data/discover/discover-query-collection';
+import { DiscoverTVFlatList } from './DiscoverTVFlatList';
 
-export function DiscoverMoviesScreen() {
+
+export function DiscoverTVScreen() {
   const { colors } = useTheme();
 
   // Pagination state (removed pagination as per requirements)
@@ -19,27 +20,27 @@ export function DiscoverMoviesScreen() {
   const { data: queryResult, isLoading, isError } = useLiveQuery(
     (query) =>
       query.from({
-        movies: popularMoviesCollection(currentPage),
+        tv: popularTVCollection(currentPage),
       }),
     [currentPage]
   );
 
-  // Extract movies data (no pagination as per requirements)
+  // Extract TV shows data
   const data = queryResult || [];
 
   if (isLoading) {
     return (
-      <DiscoverMoviesScreenScaffold>
+      <DiscoverTVScreenScaffold>
         <View style={styles.statesContainer}>
           <LoadingIndicatorDots />
         </View>
-      </DiscoverMoviesScreenScaffold>
+      </DiscoverTVScreenScaffold>
     );
   }
 
   if (isError) {
     return (
-      <DiscoverMoviesScreenScaffold>
+      <DiscoverTVScreenScaffold>
         <View style={styles.statesContainer}>
           {__DEV__ ? (
             <View>
@@ -68,18 +69,18 @@ export function DiscoverMoviesScreen() {
             </View>
           )}
         </View>
-      </DiscoverMoviesScreenScaffold>
+      </DiscoverTVScreenScaffold>
     );
   }
 
   if (!data || data.length === 0) {
     return (
-      <DiscoverMoviesScreenScaffold>
+      <DiscoverTVScreenScaffold>
         <View style={styles.statesContainer}>
           {__DEV__ ? (
             <View>
               <Text variant='titleMedium' style={{ color: colors.error }}>
-                No items found
+                No TV shows found
               </Text>
             </View>
           ) : (
@@ -90,7 +91,7 @@ export function DiscoverMoviesScreen() {
               <Text
                 variant='headlineSmall'
                 style={[styles.emptyTitle, { color: colors.onSurface }]}>
-                No items found
+                No TV shows found
               </Text>
               <Text
                 variant='bodyMedium'
@@ -100,30 +101,30 @@ export function DiscoverMoviesScreen() {
             </View>
           )}
         </View>
-      </DiscoverMoviesScreenScaffold>
+      </DiscoverTVScreenScaffold>
     );
   }
 
   return (
-    <DiscoverMoviesScreenScaffold>
-      <DiscoverMoviesFlatList list={data} />
-    </DiscoverMoviesScreenScaffold>
+    <DiscoverTVScreenScaffold>
+      <DiscoverTVFlatList list={data} />
+    </DiscoverTVScreenScaffold>
   );
 }
 
-interface DiscoverMoviesScreenScaffoldProps {
+interface DiscoverTVScreenScaffoldProps {
   children: React.ReactNode;
 }
 
-export function DiscoverMoviesScreenScaffold({ children }: DiscoverMoviesScreenScaffoldProps) {
+export function DiscoverTVScreenScaffold({ children }: DiscoverTVScreenScaffoldProps) {
   const { colors } = useTheme();
-  const { searchQuery, setSearchQuery } = useDiscoverMoviesScreenSearch();
+  const { searchQuery, setSearchQuery } = useDiscoverTVScreenSearch();
   const { width } = useWindowDimensions();
 
   return (
     <View style={styles.scaffoldContainer}>
       <Searchbar
-        placeholder='Search DiscoverMoviesScreen'
+        placeholder='Search TV Shows'
         onChangeText={(term) => setSearchQuery(term)}
         value={searchQuery}
         style={[styles.searchBar, { width: width * 0.95 }]}
@@ -136,7 +137,7 @@ export function DiscoverMoviesScreenScaffold({ children }: DiscoverMoviesScreenS
   );
 }
 
-export function useDiscoverMoviesScreenSearch() {
+export function useDiscoverTVScreenSearch() {
   const { query } = useLocalSearchParams<{ query: string }>();
   return {
     searchQuery: query || '',
