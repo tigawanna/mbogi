@@ -1,6 +1,6 @@
 // import { getRandomValues } from 'expo-crypto'
-import EventSource from "react-native-sse";
 import "react-native-random-uuid";
+import EventSource from "react-native-sse";
 // globalThis.crypto = globalThis?.crypto ?? {}
 
 // globalThis.crypto.getRandomValues = (arr) => getRandomValues(arr as any)

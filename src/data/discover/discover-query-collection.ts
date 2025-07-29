@@ -1,9 +1,9 @@
-import { createCollection } from "@tanstack/react-db";
-import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import { queryClient } from "@/lib/tanstack/query/client";
 import { pb } from "@/lib/pb/client";
-import { 
-  TMDBDiscoverMoviesResponseSchema, 
+import { queryClient } from "@/lib/tanstack/query/client";
+import { queryCollectionOptions } from "@tanstack/query-db-collection";
+import { createCollection } from "@tanstack/react-db";
+import {
+  TMDBDiscoverMoviesResponseSchema,
   TMDBDiscoverTVResponseSchema,
   type TMDBDiscoverMoviesResponse,
   type TMDBDiscoverTVResponse,
