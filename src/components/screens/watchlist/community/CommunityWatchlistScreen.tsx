@@ -5,14 +5,10 @@ import React from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
 import { DataTable, Searchbar, Text, useTheme } from "react-native-paper";
 
+import { useWatchlistSearch } from "../hooks";
 import { useCommunityWatchListPageoptionsStore } from "@/data/watchlist/watchlist-stores";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
-
-// Custom hook for watchlist search
-import { useLocalSearchParams, router } from "expo-router";
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
 
 export function CommunityWatchlistScreen() {
@@ -213,29 +209,3 @@ const styles = StyleSheet.create({
 });
 
 
-export function useWatchlistSearch() {
-  const { query } = useLocalSearchParams<{ query: string }>();
-  return {
-    searchQuery: query || "",
-    setSearchQuery: (query: string) => {
-      router.setParams({ query });
-    },
-  };
-}
-
-interface watchlistSettings {
-  orientation: "list" | "grid";
-  setOrientation: (orientation: "list" | "grid") => void;
-}
-
-export const usewatchlistSettingsStore = create<watchlistSettings>()(
-    persist(
-      (set) => ({
-        orientation: "list",
-        setOrientation: (orientation) => set({ orientation }),
-      }),
-      {
-        name: "watchlist-settings",
-      }
-    )
-);
