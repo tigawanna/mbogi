@@ -151,7 +151,7 @@ export class TMDBSDK {
 
     // Development logging
     if (__DEV__) {
-      console.log(`🎬 TMDB Discover Movies: ${this.pb.baseUrl}${url}`);
+      console.log(`🎬 TMDB Discover Movies: ${this.pb.baseURL}${url}`);
     }
 
     return await this.pb.send(url, {
@@ -191,7 +191,7 @@ export class TMDBSDK {
 
     // Development logging
     if (__DEV__) {
-      console.log(`📺 TMDB Discover TV: ${this.pb.baseUrl}${url}`);
+      console.log(`📺 TMDB Discover TV: ${this.pb.baseURL}${url}`);
     }
 
     return await this.pb.send(url, {
@@ -230,7 +230,7 @@ export class TMDBSDK {
 
     // Development logging
     if (__DEV__) {
-      console.log(`🔍 TMDB Search: ${this.pb.baseUrl}${url}`);
+      console.log(`🔍 TMDB Search: ${this.pb.baseURL}${url}`);
     }
 
     return await this.pb.send(url, {
@@ -273,7 +273,7 @@ export class TMDBSDK {
 
     // Development logging
     if (__DEV__) {
-      console.log(`🎭 TMDB Movie Details: ${this.pb.baseUrl}${url}`);
+      console.log(`🎭 TMDB Movie Details: ${this.pb.baseURL}${url}`);
     }
 
     return await this.pb.send(url, {
@@ -316,7 +316,7 @@ export class TMDBSDK {
 
     // Development logging
     if (__DEV__) {
-      console.log(`📻 TMDB TV Details: ${this.pb.baseUrl}${url}`);
+      console.log(`📻 TMDB TV Details: ${this.pb.baseURL}${url}`);
     }
 
     return await this.pb.send(url, {
@@ -365,7 +365,7 @@ export class TMDBSDK {
 
     // Development logging
     if (__DEV__) {
-      console.log(`📺 TMDB TV Season Details: ${this.pb.baseUrl}${url}`);
+      console.log(`📺 TMDB TV Season Details: ${this.pb.baseURL}${url}`);
     }
 
     return await this.pb.send(url, {
