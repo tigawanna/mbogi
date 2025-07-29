@@ -1,12 +1,9 @@
 import { createCollection } from "@tanstack/react-db";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { queryClient } from "@/lib/tanstack/query/client";
-import z from "zod";
 import { pb } from "@/lib/pb/client";
 import { WatchlistResponseSchema } from "@/lib/pb/types/pb-zod";
 import { and, eq, like, or } from "@tigawanna/typed-pocketbase";
-import { id } from "zod/v4/locales";
-import { queryOptions } from "@tanstack/react-query";
 import { useCommunityWatchListPageoptionsStore } from "./watchlist-stores";
 
 export const myWatchlistCollection = () => {
