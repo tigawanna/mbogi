@@ -1,12 +1,12 @@
 import { useLiveQuery } from '@tanstack/react-db';
 import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
-import { Searchbar, Text, useTheme } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { Text, useTheme } from 'react-native-paper';
 
 import { EmptyRoadSVG } from '@/components/shared/svg/empty';
 import { LoadingIndicatorDots } from '@/components/state-screens/LoadingIndicatorDots';
-import { popularMoviesCollection } from '@/data/discover/discover-query-collection';
+import { discoverMoviesCollection } from '@/data/discover/discover-query-collection';
 import { DiscoverMoviesFlatList } from './DiscoverMoviesFlatList';
 
 export function DiscoverMoviesScreen() {
@@ -19,7 +19,10 @@ export function DiscoverMoviesScreen() {
   const { data: queryResult, isLoading, isError } = useLiveQuery(
     (query) =>
       query.from({
-        movies: popularMoviesCollection(currentPage),
+        movies: discoverMoviesCollection({
+          filters: { page: currentPage },
+          enabled: true,
+      }),
       }),
     [currentPage]
   );
@@ -116,21 +119,8 @@ interface DiscoverMoviesScreenScaffoldProps {
 }
 
 export function DiscoverMoviesScreenScaffold({ children }: DiscoverMoviesScreenScaffoldProps) {
-  const { colors } = useTheme();
-  const { searchQuery, setSearchQuery } = useDiscoverMoviesScreenSearch();
-  const { width } = useWindowDimensions();
-
   return (
     <View style={styles.scaffoldContainer}>
-      <Searchbar
-        placeholder='Search DiscoverMoviesScreen'
-        onChangeText={(term) => setSearchQuery(term)}
-        value={searchQuery}
-        style={[styles.searchBar, { width: width * 0.95 }]}
-        inputStyle={styles.searchInput}
-        iconColor={colors.onSurfaceVariant}
-        placeholderTextColor={colors.onSurfaceVariant}
-      />
       {children}
     </View>
   );
@@ -157,13 +147,6 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  searchBar: {
-    elevation: 0,
-  },
-  searchInput: {
-    fontSize: 16,
-    width: '100%',
   },
   emptyContainer: {
     flex: 1,

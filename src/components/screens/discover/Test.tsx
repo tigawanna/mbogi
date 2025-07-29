@@ -1,53 +1,45 @@
-import { useLiveQuery } from '@tanstack/react-db';
-import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { DataTable, Searchbar, Text, useTheme } from 'react-native-paper';
+import { router, useLocalSearchParams } from 'expo-router';
 
-import { EmptyRoadSVG } from '@/components/shared/svg/empty';
 import { LoadingIndicatorDots } from '@/components/state-screens/LoadingIndicatorDots';
-import { DiscoverTVFlatList } from './DiscoverTVFlatList';
-import { discoverMoviesCollection, discoverTVCollection } from '@/data/discover/discover-query-collection';
+import { EmptyRoadSVG } from '@/components/shared/svg/empty';
 
-
-export function DiscoverTVScreen() {
+export function Test() {
   const { colors } = useTheme();
 
-  // Pagination state (removed pagination as per requirements)
-  const currentPage = 1;
+  // TODO: Replace with actual data fetching
+  const { isLoading, isError, data } = {
+    isLoading: false,
+    isError: false,
+    data: [
+      { id: '1', title: 'Item 1' },
+      { id: '2', title: 'Item 2' },
+      { id: '3', title: 'Item 3' },
+    ],
+  };
 
-  // Fetch data using TanStack DB live query
-  const {
-    data: queryResult,
-    isLoading,
-    isError,
-  } = useLiveQuery(
-    (query) =>
-      query.from({
-        tv: discoverTVCollection({
-          filters: { page: currentPage },
-          enabled: true,
-        })
-      }),
-    [currentPage]
-  );
-
-  // Extract TV shows data
-  const data = queryResult || [];
+  // TODO: Replace with actual pagination logic
+  const { page, setPage, totalPages } = {
+    totalPages: 3,
+    page: 1,
+    setPage: (page: number) => {},
+  };
 
   if (isLoading) {
     return (
-      <DiscoverTVScreenScaffold>
+      <TestScaffold>
         <View style={styles.statesContainer}>
           <LoadingIndicatorDots />
         </View>
-      </DiscoverTVScreenScaffold>
+      </TestScaffold>
     );
   }
 
   if (isError) {
     return (
-      <DiscoverTVScreenScaffold>
+      <TestScaffold>
         <View style={styles.statesContainer}>
           {__DEV__ ? (
             <View>
@@ -76,18 +68,18 @@ export function DiscoverTVScreen() {
             </View>
           )}
         </View>
-      </DiscoverTVScreenScaffold>
+      </TestScaffold>
     );
   }
 
   if (!data || data.length === 0) {
     return (
-      <DiscoverTVScreenScaffold>
+      <TestScaffold>
         <View style={styles.statesContainer}>
           {__DEV__ ? (
             <View>
               <Text variant='titleMedium' style={{ color: colors.error }}>
-                No TV shows found
+                No items found
               </Text>
             </View>
           ) : (
@@ -98,7 +90,7 @@ export function DiscoverTVScreen() {
               <Text
                 variant='headlineSmall'
                 style={[styles.emptyTitle, { color: colors.onSurface }]}>
-                No TV shows found
+                No items found
               </Text>
               <Text
                 variant='bodyMedium'
@@ -108,30 +100,59 @@ export function DiscoverTVScreen() {
             </View>
           )}
         </View>
-      </DiscoverTVScreenScaffold>
+      </TestScaffold>
     );
   }
 
   return (
-    <DiscoverTVScreenScaffold>
-      <DiscoverTVFlatList list={data} />
-    </DiscoverTVScreenScaffold>
+    <TestScaffold>
+      <View style={styles.container}>
+        {/* TODO: Replace with actual list rendering */}
+        {data.map((item) => {
+          return <Text key={item.id}>{item.title}</Text>;
+        })}
+      </View>
+      {totalPages > 1 && (
+        <DataTable.Pagination
+          page={page}
+          numberOfPages={totalPages}
+          onPageChange={(page) => {
+            setPage(page - 1);
+          }}
+          label={`Page ${page + 1} of totalPages`}
+          showFastPaginationControls
+        />
+      )}
+    </TestScaffold>
   );
 }
 
-interface DiscoverTVScreenScaffoldProps {
+interface TestScaffoldProps {
   children: React.ReactNode;
 }
 
-export function DiscoverTVScreenScaffold({ children }: DiscoverTVScreenScaffoldProps) {
-return (
+export function TestScaffold({ children }: TestScaffoldProps) {
+  const { colors } = useTheme();
+  const { searchQuery, setSearchQuery } = useTestSearch();
+  const { width } = useWindowDimensions();
+
+  return (
     <View style={styles.scaffoldContainer}>
+      <Searchbar
+        placeholder='Search Test'
+        onChangeText={(term) => setSearchQuery(term)}
+        value={searchQuery}
+        style={[styles.searchBar, { width: width * 0.95 }]}
+        inputStyle={styles.searchInput}
+        iconColor={colors.onSurfaceVariant}
+        placeholderTextColor={colors.onSurfaceVariant}
+      />
       {children}
     </View>
   );
 }
 
-export function useDiscoverTVScreenSearch() {
+export function useTestSearch() {
   const { query } = useLocalSearchParams<{ query: string }>();
   return {
     searchQuery: query || '',
@@ -152,6 +173,20 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  container: {
+    flex: 1,
+    height: '100%',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  searchBar: {
+    elevation: 0,
+  },
+  searchInput: {
+    fontSize: 16,
+    width: '100%',
   },
   emptyContainer: {
     flex: 1,

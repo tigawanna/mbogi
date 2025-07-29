@@ -236,108 +236,108 @@ export const discoverTVCollection = ({
 /**
  * Pre-configured collection for popular movies
  */
-export const popularMoviesCollection = (page: number = 1) => 
-  discoverMoviesCollection({
-    filters: {
-      sort_by: "popularity.desc",
-      page,
-      "vote_count.gte": 100,
-    },
-  });
+// export const popularMoviesCollection = (page: number = 1) => 
+//   discoverMoviesCollection({
+//     filters: {
+//       sort_by: "popularity.desc",
+//       page,
+//       "vote_count.gte": 100,
+//     },
+//   });
 
-/**
- * Pre-configured collection for top rated movies
- */
-export const topRatedMoviesCollection = (page: number = 1) => 
-  discoverMoviesCollection({
-    filters: {
-      sort_by: "vote_average.desc",
-      page,
-      "vote_count.gte": 1000,
-    },
-  });
+// /**
+//  * Pre-configured collection for top rated movies
+//  */
+// export const topRatedMoviesCollection = (page: number = 1) => 
+//   discoverMoviesCollection({
+//     filters: {
+//       sort_by: "vote_average.desc",
+//       page,
+//       "vote_count.gte": 1000,
+//     },
+//   });
 
-/**
- * Pre-configured collection for now playing movies
- */
-export const nowPlayingMoviesCollection = (page: number = 1) => {
-  const today = new Date().toISOString().split('T')[0];
-  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+// /**
+//  * Pre-configured collection for now playing movies
+//  */
+// export const nowPlayingMoviesCollection = (page: number = 1) => {
+//   const today = new Date().toISOString().split('T')[0];
+//   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
   
-  return discoverMoviesCollection({
-    filters: {
-      sort_by: "release_date.desc",
-      page,
-      "release_date.gte": thirtyDaysAgo,
-      "release_date.lte": today,
-    },
-  });
-};
+//   return discoverMoviesCollection({
+//     filters: {
+//       sort_by: "release_date.desc",
+//       page,
+//       "release_date.gte": thirtyDaysAgo,
+//       "release_date.lte": today,
+//     },
+//   });
+// };
 
-/**
- * Pre-configured collection for popular TV shows
- */
-export const popularTVCollection = (page: number = 1) => 
-  discoverTVCollection({
-    filters: {
-      sort_by: "popularity.desc",
-      page,
-      "vote_count.gte": 100,
-    },
-  });
+// /**
+//  * Pre-configured collection for popular TV shows
+//  */
+// export const popularTVCollection = (page: number = 1) => 
+//   discoverTVCollection({
+//     filters: {
+//       sort_by: "popularity.desc",
+//       page,
+//       "vote_count.gte": 100,
+//     },
+//   });
 
-/**
- * Pre-configured collection for top rated TV shows
- */
-export const topRatedTVCollection = (page: number = 1) => 
-  discoverTVCollection({
-    filters: {
-      sort_by: "vote_average.desc",
-      page,
-      "vote_count.gte": 500,
-    },
-  });
+// /**
+//  * Pre-configured collection for top rated TV shows
+//  */
+// export const topRatedTVCollection = (page: number = 1) => 
+//   discoverTVCollection({
+//     filters: {
+//       sort_by: "vote_average.desc",
+//       page,
+//       "vote_count.gte": 500,
+//     },
+//   });
 
-/**
- * Pre-configured collection for airing today TV shows
- */
-export const airingTodayTVCollection = (page: number = 1) => {
-  const today = new Date().toISOString().split('T')[0];
+// /**
+//  * Pre-configured collection for airing today TV shows
+//  */
+// export const airingTodayTVCollection = (page: number = 1) => {
+//   const today = new Date().toISOString().split('T')[0];
   
-  return discoverTVCollection({
-    filters: {
-      sort_by: "first_air_date.desc",
-      page,
-      "first_air_date.gte": today,
-      "first_air_date.lte": today,
-    },
-  });
-};
+//   return discoverTVCollection({
+//     filters: {
+//       sort_by: "first_air_date.desc",
+//       page,
+//       "first_air_date.gte": today,
+//       "first_air_date.lte": today,
+//     },
+//   });
+// };
 
-// ============================================================================
-// Genre-based Collections
-// ============================================================================
+// // ============================================================================
+// // Genre-based Collections
+// // ============================================================================
 
-/**
- * Creates a collection for movies of specific genres
- */
-export const moviesByGenreCollection = (genreIds: number[], page: number = 1) => 
-  discoverMoviesCollection({
-    filters: {
-      with_genres: genreIds.join(','),
-      sort_by: "popularity.desc",
-      page,
-    },
-  });
+// /**
+//  * Creates a collection for movies of specific genres
+//  */
+// export const moviesByGenreCollection = (genreIds: number[], page: number = 1) => 
+//   discoverMoviesCollection({
+//     filters: {
+//       with_genres: genreIds.join(','),
+//       sort_by: "popularity.desc",
+//       page,
+//     },
+//   });
 
-/**
- * Creates a collection for TV shows of specific genres
- */
-export const tvShowsByGenreCollection = (genreIds: number[], page: number = 1) => 
-  discoverTVCollection({
-    filters: {
-      with_genres: genreIds.join(','),
-      sort_by: "popularity.desc",
-      page,
-    },
-  });
+// /**
+//  * Creates a collection for TV shows of specific genres
+//  */
+// export const tvShowsByGenreCollection = (genreIds: number[], page: number = 1) => 
+//   discoverTVCollection({
+//     filters: {
+//       with_genres: genreIds.join(','),
+//       sort_by: "popularity.desc",
+//       page,
+//     },
+//   });
