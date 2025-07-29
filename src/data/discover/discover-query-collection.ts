@@ -10,6 +10,9 @@ import {
   type TMDBMovie,
   type TMDBTVShow
 } from "./discover-zod-schema";
+import { createTMDBSDK, SearchParams } from "./discover-sdk";
+
+const tmdbSdk = createTMDBSDK(pb);
 
 // ============================================================================
 // Filter Interfaces - Centralized Types
@@ -102,6 +105,13 @@ export interface DiscoverTVCollectionProps {
   filters?: DiscoverTVFilters;
   enabled?: boolean;
 }
+/**
+ * Props for Discover TV Shows Collection  
+ */
+export interface DiscoverSearchCollectionProps {
+  filters?: SearchParams;
+  enabled?: boolean;
+}
 
 /**
  * Creates a query collection for discovering movies with filters
@@ -129,34 +139,13 @@ export const discoverMoviesCollection = ({
   return createCollection(
     queryCollectionOptions({
       queryKey: ["tmdb", "discover", "movies", filters],
-      queryFn: async (): Promise<TMDBMovie[]> => {
-        // Build query string from filters
-        const queryString = new URLSearchParams();
-        
-        Object.entries(filters).forEach(([key, value]) => {
-          if (value !== undefined && value !== null && value !== "") {
-            queryString.append(key, String(value));
-          }
-        });
-
-        const url = `/api/tmdb/discover/movies${
-          queryString.toString() ? `?${queryString.toString()}` : ""
-        }`;
-
-        // Development logging
-        if (__DEV__) {
-          console.log(`🎬 TMDB Discover Movies Collection: ${url}`);
-        }
-
-        // Make API call using PocketBase
-        const data: TMDBDiscoverMoviesResponse = await pb.send(url, {
-          method: "GET",
-        });
-        
-        // Validate response with Zod schema
-        const validatedData = TMDBDiscoverMoviesResponseSchema.parse(data);
-        
-        return validatedData.results;
+      queryFn: async () => {
+       const response = await tmdbSdk.discoverMovies({
+         sort_by: "popularity.desc",
+         page: 1,
+         ...filters,
+       });
+       return response.results
       },
       queryClient,
       enabled,
@@ -192,38 +181,35 @@ export const discoverTVCollection = ({
   return createCollection(
     queryCollectionOptions({
       queryKey: ["tmdb", "discover", "tv", filters],
-      queryFn: async (): Promise<TMDBTVShow[]> => {
-        // Build query string from filters
-        const queryString = new URLSearchParams();
-        
-        Object.entries(filters).forEach(([key, value]) => {
-          if (value !== undefined && value !== null && value !== "") {
-            queryString.append(key, String(value));
-          }
+      queryFn: async () => {
+        const response = await tmdbSdk.discoverTV({
+          sort_by: "popularity.desc",
+          page: 1,
+          ...filters,
         });
-
-        const url = `/api/tmdb/discover/tv${
-          queryString.toString() ? `?${queryString.toString()}` : ""
-        }`;
-
-        // Development logging
-        if (__DEV__) {
-          console.log(`📺 TMDB Discover TV Collection: ${url}`);
-        }
-
-        // Make API call using PocketBase
-        const data: TMDBDiscoverTVResponse = await pb.send(url, {
-          method: "GET",
-        });
-        
-        // Validate response with Zod schema
-        const validatedData = TMDBDiscoverTVResponseSchema.parse(data);
-        
-        return validatedData.results;
+        return response.results;
       },
       queryClient,
       enabled,
       getKey: (tvShow: TMDBTVShow) => tvShow.id.toString(),
+      schema: TMDBDiscoverTVResponseSchema.shape.results,
+    })
+  );
+};
+export const discoverSearchCollection = ({ 
+  filters={query:''}, 
+  enabled = true 
+}: DiscoverSearchCollectionProps) => {
+  return createCollection(
+    queryCollectionOptions({
+      queryKey: ["tmdb", "search", filters],
+      queryFn: async ()=> {
+        const response = await tmdbSdk.search(filters)
+          return response.results;
+      },
+      queryClient,
+      enabled,
+      getKey: (result) => result.id.toString(),
       schema: TMDBDiscoverTVResponseSchema.shape.results,
     })
   );
@@ -330,14 +316,14 @@ export const discoverTVCollection = ({
 //     },
 //   });
 
-// /**
-//  * Creates a collection for TV shows of specific genres
-//  */
-// export const tvShowsByGenreCollection = (genreIds: number[], page: number = 1) => 
-//   discoverTVCollection({
-//     filters: {
-//       with_genres: genreIds.join(','),
-//       sort_by: "popularity.desc",
-//       page,
-//     },
-//   });
+/**
+ * Creates a collection for TV shows of specific genres
+ */
+export const tvShowsByGenreCollection = (genreIds: number[], page: number = 1) => 
+  discoverTVCollection({
+    filters: {
+      with_genres: genreIds.join(','),
+      sort_by: "popularity.desc",
+      page,
+    },
+  });

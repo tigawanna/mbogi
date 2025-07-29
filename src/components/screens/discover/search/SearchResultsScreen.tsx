@@ -5,23 +5,40 @@ import { Text, useTheme } from 'react-native-paper';
 
 import { EmptyRoadSVG } from '@/components/shared/svg/empty';
 import { LoadingIndicatorDots } from '@/components/state-screens/LoadingIndicatorDots';
+import { useLiveQuery } from '@tanstack/react-db';
+import { discoverSearchCollection } from '@/data/discover/discover-query-collection';
+import { SearchResultsFlatList } from './SearchResultsFlatList';
 
 interface SearchResultsScreenProps{
     searchQuery: string;
 }
 export function SearchResultsScreen({ searchQuery }: SearchResultsScreenProps) {
+  const {
+    data,
+    isLoading,
+    isError,
+  } = useLiveQuery(
+    (query) =>
+      query.from({
+        movies: discoverSearchCollection({
+          filters: { query: searchQuery },
+          enabled: true,
+        }),
+      }),
+    [searchQuery]
+  );
   const { colors } = useTheme();
 
   // TODO: Replace with actual data fetching
-  const { isLoading, isError, data } = {
-    isLoading: false,
-    isError: false,
-    data: [
-      { id: '1', title: 'Item 1' },
-      { id: '2', title: 'Item 2' },
-      { id: '3', title: 'Item 3' },
-    ],
-  };
+  // const { isLoading, isError, data } = {
+  //   isLoading: false,
+  //   isError: false,
+  //   data: [
+  //     { id: '1', title: 'Item 1' },
+  //     { id: '2', title: 'Item 2' },
+  //     { id: '3', title: 'Item 3' },
+  //   ],
+  // };
 
   // TODO: Replace with actual pagination logic
   const { page, setPage, totalPages } = {
@@ -109,12 +126,7 @@ export function SearchResultsScreen({ searchQuery }: SearchResultsScreenProps) {
 
   return (
     <SearchResultsScreenScaffold>
-      <View style={styles.container}>
-        {/* TODO: Replace with actual list rendering */}
-        {data.map((item) => {
-          return <Text key={item.id}>{item.title}</Text>;
-        })}
-      </View>
+      <SearchResultsFlatList searchresults={data} />
     </SearchResultsScreenScaffold>
   );
 }

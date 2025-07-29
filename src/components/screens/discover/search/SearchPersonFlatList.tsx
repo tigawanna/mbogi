@@ -1,6 +1,6 @@
 import type { TMDBPerson } from '@/data/discover/discover-zod-schema';
 import { FlatList, StyleSheet } from 'react-native';
-import { SearchPersonCard } from './SearchPersonCard';
+import { SearchPersonCard } from '../person/DiscoverPersonCard';
 
 
 interface SearchPersonFlatListProps {

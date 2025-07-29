@@ -3,14 +3,14 @@ import { Image } from 'expo-image';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import { Card, Text, useTheme } from 'react-native-paper';
 
-interface SearchPersonCardProps {
+interface DiscoverPersonCardProps {
     item: TMDBPerson;
 }
 
 const { width } = Dimensions.get('window');
 const cardWidth = (width - 48) / 2; // Account for padding and gap
 
-export function SearchPersonCard({ item }: SearchPersonCardProps) {
+export function DiscoverPersonCard({ item }: DiscoverPersonCardProps) {
   const { colors } = useTheme();
   
   const imageUrl = item.profile_path 

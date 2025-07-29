@@ -6,8 +6,8 @@ import { Text, useTheme } from 'react-native-paper';
 
 import { EmptyRoadSVG } from '@/components/shared/svg/empty';
 import { LoadingIndicatorDots } from '@/components/state-screens/LoadingIndicatorDots';
+import { discoverTVCollection } from '@/data/discover/discover-query-collection';
 import { DiscoverTVFlatList } from './DiscoverTVFlatList';
-import { discoverMoviesCollection, discoverTVCollection } from '@/data/discover/discover-query-collection';
 
 
 export function DiscoverTVScreen() {

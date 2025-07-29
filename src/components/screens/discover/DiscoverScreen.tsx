@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
-import { Searchbar, Text, useTheme } from "react-native-paper";
+import { Searchbar,useTheme } from "react-native-paper";
 import { Tabs, TabScreen, TabsProvider } from "react-native-paper-tabs";
 
 import { DiscoverMoviesScreen } from "./movies/DiscoverMoviesScreen";
