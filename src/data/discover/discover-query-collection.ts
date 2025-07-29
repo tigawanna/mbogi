@@ -103,13 +103,7 @@ export interface DiscoverTVCollectionProps {
   filters?: DiscoverTVFilters;
   enabled?: boolean;
 }
-/**
- * Props for Discover TV Shows Collection  
- */
-export interface DiscoverSearchCollectionProps {
-  filters?: SearchParams;
-  enabled?: boolean;
-}
+
 
 /**
  * Creates a query collection for discovering movies with filters
@@ -194,6 +188,15 @@ export const discoverTVCollection = ({
     })
   );
 };
+
+
+/**
+ * Props for Discover TV Shows Collection  
+ */
+export interface DiscoverSearchCollectionProps {
+  filters?: SearchParams;
+  enabled?: boolean;
+}
 export const discoverSearchCollection = ({ 
   filters={query:''}, 
   enabled = true 

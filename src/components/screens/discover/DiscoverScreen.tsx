@@ -1,12 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
-import { Searchbar,useTheme } from "react-native-paper";
+import { Searchbar, useTheme } from "react-native-paper";
 import { Tabs, TabScreen, TabsProvider } from "react-native-paper-tabs";
 
 import { DiscoverMoviesScreen } from "./movies/DiscoverMoviesScreen";
 import { DiscoverTVScreen } from "./tv/DiscoverTVScreen";
 import { router, useLocalSearchParams } from "expo-router";
 import { SearchResultsScreen } from "./search/SearchResultsScreen";
+import {
+  FilterButton,
+  DiscoverFeedFilters,
+  useHasActiveFilters,
+} from "./filters/DiscoverFeedFilters";
 
 export function DiscoverScreen() {
   const { colors } = useTheme();
@@ -51,17 +56,26 @@ export function DiscoverScreenScaffold({ children }: DiscoverScreenProps) {
   const { searchQuery, setSearchQuery } = useDiscoverScreenSearch();
   const { width } = useWindowDimensions();
 
+  const hasActiveFilters = useHasActiveFilters();
+  const [showFilters, setShowFilters] = useState(false);
+
+  const searchContainerWidth = width * 0.95;
+
   return (
     <View style={styles.scaffoldContainer}>
-      <Searchbar
-        placeholder="Search Test"
-        onChangeText={(term) => setSearchQuery(term)}
-        value={searchQuery}
-        style={[styles.searchBar, { width: width * 0.95 }]}
-        inputStyle={styles.searchInput}
-        iconColor={colors.onSurfaceVariant}
-        placeholderTextColor={colors.onSurfaceVariant}
-      />
+      <View style={[styles.searchContainer, { width:"99%" }]}>
+        <Searchbar
+          placeholder="Search Test"
+          onChangeText={(term) => setSearchQuery(term)}
+          value={searchQuery}
+          style={[styles.searchBar, { width:"75%" }]}
+          inputStyle={styles.searchInput}
+          iconColor={colors.onSurfaceVariant}
+          placeholderTextColor={colors.onSurfaceVariant}
+        />
+        <FilterButton onPress={() => setShowFilters(true)} hasActiveFilters={hasActiveFilters} />
+        <DiscoverFeedFilters visible={showFilters} onDismiss={() => setShowFilters(false)} />
+      </View>
       {children}
     </View>
   );
@@ -85,6 +99,12 @@ const styles = StyleSheet.create({
   scaffoldContainer: {
     flex: 1,
     width: "100%",
+  },
+  searchContainer: {
+    flexDirection: "row",
+    gap: 4,
+    alignItems: "center",
+    paddingHorizontal: 8,
   },
   searchBar: {
     elevation: 0,
