@@ -6,7 +6,7 @@ import {
     TMDBSearchResponse,
     TMDBTVDetails,
     TMDBTVSeasonDetails,
-} from "./discover-schema";
+} from "./discover-zod-schema";
 
 // ============================================================================
 // Request Parameter Types
