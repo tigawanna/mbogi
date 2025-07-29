@@ -1,7 +1,7 @@
 // import { SignupScreenComponent } from "@/components/auth/auth-user/SignupScreenComponent";
-import { SignupScreen } from "@/components/auth/auth-user/signup/SignupScreen";
+import { SignupScreen } from "@/components/screens/auth/auth-user/signup/SignupScreen";
 import { StyleSheet } from "react-native";
-import { Surface, Text } from "react-native-paper";
+import { Surface } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Signup() {

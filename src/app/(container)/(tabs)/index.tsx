@@ -1,4 +1,4 @@
-import { MyWatchlistScreen } from "@/components/watchlist/mine/MyWatchlistScreen";
+import { MyWatchlistScreen } from "@/components/screens/watchlist/mine/MyWatchlistScreen";
 import { StyleSheet } from "react-native";
 import { Surface } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

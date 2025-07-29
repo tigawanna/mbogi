@@ -1,4 +1,4 @@
-import { ProfileScreenComponent } from "@/components/auth/profile/ProfileScreenComponent";
+import { ProfileScreenComponent } from "@/components/screens/auth/profile/ProfileScreenComponent";
 import { StyleSheet } from "react-native";
 import { Surface } from "react-native-paper";
 

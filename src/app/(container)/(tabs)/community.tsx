@@ -2,7 +2,7 @@ import React from "react";
 import { Surface } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native";
-import { CommunityWatchlistScreen } from "@/components/watchlist/community/CommunityWatchlistScreen";
+import { CommunityWatchlistScreen } from "@/components/screens/watchlist/community/CommunityWatchlistScreen";
 
 export default function CommunityRoute() {
   const { top } = useSafeAreaInsets();
