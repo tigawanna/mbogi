@@ -28,25 +28,6 @@ export function SearchResultsScreen({ searchQuery }: SearchResultsScreenProps) {
     [searchQuery]
   );
   const { colors } = useTheme();
-
-  // TODO: Replace with actual data fetching
-  // const { isLoading, isError, data } = {
-  //   isLoading: false,
-  //   isError: false,
-  //   data: [
-  //     { id: '1', title: 'Item 1' },
-  //     { id: '2', title: 'Item 2' },
-  //     { id: '3', title: 'Item 3' },
-  //   ],
-  // };
-
-  // TODO: Replace with actual pagination logic
-  const { page, setPage, totalPages } = {
-    totalPages: 3,
-    page: 1,
-    setPage: (page: number) => {},
-  };
-
   if (isLoading) {
     return (
       <SearchResultsScreenScaffold>
@@ -165,20 +146,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  container: {
-    flex: 1,
-    height: '100%',
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  searchBar: {
-    elevation: 0,
-  },
-  searchInput: {
-    fontSize: 16,
-    width: '100%',
-  },
+
   emptyContainer: {
     flex: 1,
     alignItems: 'center',

@@ -5,8 +5,6 @@ import { createCollection } from "@tanstack/react-db";
 import {
   TMDBDiscoverMoviesResponseSchema,
   TMDBDiscoverTVResponseSchema,
-  type TMDBDiscoverMoviesResponse,
-  type TMDBDiscoverTVResponse,
   type TMDBMovie,
   type TMDBTVShow
 } from "./discover-zod-schema";
