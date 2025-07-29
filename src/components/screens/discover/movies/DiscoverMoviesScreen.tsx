@@ -1,4 +1,4 @@
-import { useLiveQuery } from "@tanstack/react-db";
+import { eq, useLiveQuery } from "@tanstack/react-db";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { StyleSheet, View } from "react-native";
@@ -9,6 +9,7 @@ import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicato
 import { discoverMoviesCollection } from "@/data/discover/discover-query-collection";
 import { DiscoverMoviesFlatList } from "./DiscoverMoviesFlatList";
 import { useDiscoverFiltersStore } from "../filters/discover-fliters-store";
+// import { myWatchlistCollection } from "@/data/watchlist/collections";
 
 export function DiscoverMoviesScreen() {
   const { colors } = useTheme();
@@ -28,7 +29,13 @@ export function DiscoverMoviesScreen() {
           filters:movieFilters,
           enabled: true,
         }),
-      }),
+      })
+      // .join({
+      //     watchlist:myWatchlistCollection()
+      // },
+      // ({ movies, watchlist }) => eq(movies.id))
+        
+        ,
     [currentPage, movieFilters]
   );
 
