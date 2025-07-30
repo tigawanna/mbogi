@@ -1,4 +1,4 @@
-
+import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { tvDetailsQueryOptions } from "@/data/discover/discover-query-options";
 import { getOptimizedImageUrl } from "@/data/discover/discover-sdk";
 import { UnifiedMediaItem } from "@/data/discover/types/unified-media";
@@ -15,7 +15,6 @@ import {
   Text,
   useTheme,
 } from "react-native-paper";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface TVDetailScreenProps {
   tvId: number;
@@ -24,19 +23,32 @@ interface TVDetailScreenProps {
 
 export function TVDetailScreen({ tvId, onAddToWatchlist }: TVDetailScreenProps) {
   const { colors } = useTheme();
-  const { top } = useSafeAreaInsets();
 
-  const { data: tvShow, isLoading, error } = useQuery({
+  const {
+    data: tvShow,
+    isLoading,
+    error,
+  } = useQuery({
     ...tvDetailsQueryOptions(tvId, {
-      append_to_response: "credits,similar,videos,keywords",
+      append_to_response: "credits,similar,videos,keywords,recommendations",
     }),
   });
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { paddingTop: top }]}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.loadingContainer}>
-          <Text variant="headlineSmall">Loading TV show details...</Text>
+          <Card style={[styles.statusCard, { backgroundColor: colors.surface }]}>
+            <Card.Content style={styles.statusContent}>
+              <LoadingIndicatorDots />
+              <Text variant="titleMedium" style={[styles.statusTitle, { color: colors.onSurface }]}>
+                Loading TV Show Details
+              </Text>
+              <Text variant="bodyMedium" style={[styles.statusMessage, { color: colors.onSurfaceVariant }]}>
+                Please wait while we fetch the information...
+              </Text>
+            </Card.Content>
+          </Card>
         </View>
       </View>
     );
@@ -44,14 +56,28 @@ export function TVDetailScreen({ tvId, onAddToWatchlist }: TVDetailScreenProps) 
 
   if (error || !tvShow) {
     return (
-      <View style={[styles.container, { paddingTop: top }]}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.errorContainer}>
-          <Text variant="headlineSmall" style={{ color: colors.error }}>
-            Failed to load TV show details
-          </Text>
-          <Text variant="bodyMedium" style={{ color: colors.onSurfaceVariant }}>
-            {error?.message || "Unknown error occurred"}
-          </Text>
+          <Card style={[styles.statusCard, { backgroundColor: colors.surface }]}>
+            <Card.Content style={styles.statusContent}>
+              <Text variant="displaySmall" style={[styles.statusIcon, { color: colors.error }]}>
+                😞
+              </Text>
+              <Text variant="titleLarge" style={[styles.statusTitle, { color: colors.error }]}>
+                Failed to load TV show details
+              </Text>
+              <Text variant="bodyMedium" style={[styles.statusMessage, { color: colors.onSurfaceVariant }]}>
+                {error?.message || "Unknown error occurred"}
+              </Text>
+              <Button 
+                mode="outlined" 
+                onPress={() => window.location.reload()}
+                style={styles.retryButton}
+              >
+                Try Again
+              </Button>
+            </Card.Content>
+          </Card>
         </View>
       </View>
     );
@@ -61,12 +87,8 @@ export function TVDetailScreen({ tvId, onAddToWatchlist }: TVDetailScreenProps) 
   const backdropUrl = getOptimizedImageUrl(tvShow.backdrop_path, "backdrop", "large");
 
   const formatDateRange = (): string => {
-    const firstYear = tvShow.first_air_date
-      ? new Date(tvShow.first_air_date).getFullYear()
-      : null;
-    const lastYear = tvShow.last_air_date
-      ? new Date(tvShow.last_air_date).getFullYear()
-      : null;
+    const firstYear = tvShow.first_air_date ? new Date(tvShow.first_air_date).getFullYear() : null;
+    const lastYear = tvShow.last_air_date ? new Date(tvShow.last_air_date).getFullYear() : null;
 
     if (!firstYear) return "Unknown";
     if (!lastYear || firstYear === lastYear) {
@@ -84,17 +106,10 @@ export function TVDetailScreen({ tvId, onAddToWatchlist }: TVDetailScreenProps) 
   };
 
   return (
-    <ScrollView
-      style={[styles.container, { paddingTop: top }]}
-      showsVerticalScrollIndicator={false}
-    >
+    <ScrollView style={[styles.container]} showsVerticalScrollIndicator={false}>
       {/* Backdrop Image */}
       {backdropUrl ? (
-        <Image
-          source={{ uri: backdropUrl }}
-          style={styles.backdrop}
-          contentFit="cover"
-        />
+        <Image source={{ uri: backdropUrl }} style={styles.backdrop} contentFit="cover" />
       ) : null}
 
       {/* Main Content */}
@@ -126,8 +141,7 @@ export function TVDetailScreen({ tvId, onAddToWatchlist }: TVDetailScreenProps) 
                 {tvShow.original_name !== tvShow.name ? (
                   <Text
                     variant="titleMedium"
-                    style={[styles.originalTitle, { color: colors.onSurfaceVariant }]}
-                  >
+                    style={[styles.originalTitle, { color: colors.onSurfaceVariant }]}>
                     {tvShow.original_name}
                   </Text>
                 ) : null}
@@ -135,8 +149,7 @@ export function TVDetailScreen({ tvId, onAddToWatchlist }: TVDetailScreenProps) 
                 {tvShow.tagline ? (
                   <Text
                     variant="bodyMedium"
-                    style={[styles.tagline, { color: colors.onSurfaceVariant }]}
-                  >
+                    style={[styles.tagline, { color: colors.onSurfaceVariant }]}>
                     &ldquo;{tvShow.tagline}&rdquo;
                   </Text>
                 ) : null}
@@ -173,7 +186,8 @@ export function TVDetailScreen({ tvId, onAddToWatchlist }: TVDetailScreenProps) 
                   Latest Episode
                 </Text>
                 <Text variant="bodyMedium" style={{ fontWeight: "600" }}>
-                  S{tvShow.last_episode_to_air.season_number}E{tvShow.last_episode_to_air.episode_number}: {tvShow.last_episode_to_air.name}
+                  S{tvShow.last_episode_to_air.season_number}E
+                  {tvShow.last_episode_to_air.episode_number}: {tvShow.last_episode_to_air.name}
                 </Text>
                 <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
                   Aired: {new Date(tvShow.last_episode_to_air.air_date).toLocaleDateString()}
@@ -198,8 +212,7 @@ export function TVDetailScreen({ tvId, onAddToWatchlist }: TVDetailScreenProps) 
                       key={genre.id}
                       mode="outlined"
                       style={styles.chip}
-                      textStyle={{ color: colors.onSurfaceVariant }}
-                    >
+                      textStyle={{ color: colors.onSurfaceVariant }}>
                       {genre.name}
                     </Chip>
                   ))}
@@ -219,8 +232,7 @@ export function TVDetailScreen({ tvId, onAddToWatchlist }: TVDetailScreenProps) 
                       key={network.id}
                       mode="outlined"
                       style={styles.chip}
-                      textStyle={{ color: colors.onSurfaceVariant }}
-                    >
+                      textStyle={{ color: colors.onSurfaceVariant }}>
                       {network.name}
                     </Chip>
                   ))}
@@ -261,7 +273,7 @@ export function TVDetailScreen({ tvId, onAddToWatchlist }: TVDetailScreenProps) 
                   <Text variant="bodyMedium" style={styles.detailLabel}>
                     Created by:
                   </Text>
-                  <Text variant="bodyMedium">
+                  <Text variant="bodyMedium" style={styles.detailValue}>
                     {tvShow.created_by.map((creator) => creator.name).join(", ")}
                   </Text>
                 </View>
@@ -272,18 +284,18 @@ export function TVDetailScreen({ tvId, onAddToWatchlist }: TVDetailScreenProps) 
                   <Text variant="bodyMedium" style={styles.detailLabel}>
                     Studios:
                   </Text>
-                  <Text variant="bodyMedium">
+                  <Text variant="bodyMedium" style={styles.detailValue}>
                     {tvShow.production_companies.map((company) => company.name).join(", ")}
                   </Text>
                 </View>
               ) : null}
 
-              {tvShow.production_countries && tvShow.production_countries.length > 0 ? (
+              {tvShow.production_countries && tvShow.production_companies.length > 0 ? (
                 <View style={styles.detailRow}>
                   <Text variant="bodyMedium" style={styles.detailLabel}>
                     Countries:
                   </Text>
-                  <Text variant="bodyMedium">
+                  <Text variant="bodyMedium" style={styles.detailValue}>
                     {tvShow.production_countries.map((country) => country.name).join(", ")}
                   </Text>
                 </View>
@@ -294,7 +306,9 @@ export function TVDetailScreen({ tvId, onAddToWatchlist }: TVDetailScreenProps) 
                   <Text variant="bodyMedium" style={styles.detailLabel}>
                     Origin:
                   </Text>
-                  <Text variant="bodyMedium">{tvShow.origin_country.join(", ")}</Text>
+                  <Text variant="bodyMedium" style={styles.detailValue}>
+                    {tvShow.origin_country.join(", ")}
+                  </Text>
                 </View>
               ) : null}
             </View>
@@ -307,57 +321,57 @@ export function TVDetailScreen({ tvId, onAddToWatchlist }: TVDetailScreenProps) 
                   onPress={() => {
                     // Handle external link
                   }}
-                  style={styles.externalLink}
-                >
+                  style={styles.externalLink}>
                   Visit Official Website
                 </Button>
               </View>
             ) : null}
 
             {/* Similar TV Shows */}
-            {tvShow.recommendations && tvShow.recommendations.results && tvShow.recommendations.results.length > 0 ? (
+            {tvShow.recommendations &&
+            tvShow.recommendations.results &&
+            tvShow.recommendations.results.length > 0 ? (
               <View style={styles.section}>
                 <Text variant="titleMedium" style={styles.sectionTitle}>
                   Similar TV Shows
                 </Text>
-                <ScrollView 
-                  horizontal 
+                <ScrollView
+                  horizontal
                   showsHorizontalScrollIndicator={false}
-                  style={styles.similarScroll}
-                >
+                  style={styles.similarScroll}>
                   {tvShow.recommendations.results.slice(0, 10).map((similarShow) => (
-                    <Link key={similarShow.id} href={`/shows/${similarShow.id}`} asChild>
+                    <Link key={similarShow.id} href={`/tv/${similarShow.id}`} asChild>
                       <TouchableOpacity style={styles.similarCard}>
                         <Image
                           source={{
-                            uri: similarShow.poster_path 
+                            uri: similarShow.poster_path
                               ? `https://image.tmdb.org/t/p/w200${similarShow.poster_path}`
-                              : require('@/assets/images/poster-placeholder.jpeg')
+                              : require("@/assets/images/poster-placeholder.jpeg"),
                           }}
                           style={styles.similarPoster}
                           contentFit="cover"
-                          placeholder={require('@/assets/images/poster-placeholder.jpeg')}
+                          placeholder={require("@/assets/images/poster-placeholder.jpeg")}
                         />
-                        <Text 
-                          variant="bodySmall" 
+                        <Text
+                          variant="bodySmall"
                           numberOfLines={2}
-                          style={[styles.similarTitle, { color: colors.onSurface }]}
-                        >
-                          {'title' in similarShow ? similarShow.title : similarShow.name}
+                          style={[styles.similarTitle, { color: colors.onSurface }]}>
+                          {"title" in similarShow ? similarShow.title : similarShow.name}
                         </Text>
-                        <Text 
-                          variant="bodySmall" 
-                          style={[styles.similarYear, { color: colors.onSurfaceVariant }]}
-                        >
-                          {'release_date' in similarShow 
-                            ? similarShow.release_date ? new Date(similarShow.release_date).getFullYear() : 'TBD'
-                            : similarShow.first_air_date ? new Date(similarShow.first_air_date).getFullYear() : 'TBD'
-                          }
+                        <Text
+                          variant="bodySmall"
+                          style={[styles.similarYear, { color: colors.onSurfaceVariant }]}>
+                          {"release_date" in similarShow
+                            ? similarShow.release_date
+                              ? new Date(similarShow.release_date).getFullYear()
+                              : "TBD"
+                            : similarShow.first_air_date
+                            ? new Date(similarShow.first_air_date).getFullYear()
+                            : "TBD"}
                         </Text>
-                        <Text 
-                          variant="bodySmall" 
-                          style={[styles.similarRating, { color: colors.primary }]}
-                        >
+                        <Text
+                          variant="bodySmall"
+                          style={[styles.similarRating, { color: colors.primary }]}>
                           ⭐ {similarShow.vote_average.toFixed(1)}
                         </Text>
                       </TouchableOpacity>
@@ -389,13 +403,38 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
+  statusCard: {
+    elevation: 4,
+    borderRadius: 12,
+    marginHorizontal: 20,
+  },
+  statusContent: {
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  statusIcon: {
+    marginBottom: 16,
+  },
+  statusTitle: {
+    textAlign: 'center',
+    marginBottom: 8,
+    fontWeight: '600',
+  },
+  statusMessage: {
+    textAlign: 'center',
+    marginBottom: 16,
+    lineHeight: 18,
+  },
+  retryButton: {
+    marginTop: 8,
+  },
   backdrop: {
     width: "100%",
     height: 200,
   },
   content: {
     padding: 16,
-    marginTop: -50, // Overlap with backdrop
+    marginTop: -50,
   },
   mainCard: {
     elevation: 4,
@@ -484,6 +523,11 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginRight: 8,
     minWidth: 80,
+    flexShrink: 0,
+  },
+  detailValue: {
+    flex: 1,
+    flexWrap: 'wrap',
   },
   externalLink: {
     marginTop: 8,
@@ -502,17 +546,17 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   similarTitle: {
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 2,
   },
   similarYear: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 12,
     marginBottom: 2,
   },
   similarRating: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });

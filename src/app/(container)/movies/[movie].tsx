@@ -15,10 +15,10 @@ export default function MediaDetails() {
 
 
   return (
-    <Surface style={{ flex: 1, paddingTop: top + 12 }}>
+    <Surface style={{ flex: 1, paddingTop: top  }}>
       <Stack.Screen
         options={{
-          headerShown: true,
+          headerShown: false,
         }}
       />
       <MovieDetailScreen movieId={mediaId} />

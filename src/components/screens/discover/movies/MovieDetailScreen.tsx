@@ -1,3 +1,4 @@
+import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { movieDetailsQueryOptions } from "@/data/discover/discover-query-options";
 import { getOptimizedImageUrl } from "@/data/discover/discover-sdk";
 import { UnifiedMediaItem } from "@/data/discover/types/unified-media";
@@ -14,7 +15,6 @@ import {
   Text,
   useTheme,
 } from "react-native-paper";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface MovieDetailScreenProps {
   movieId: number;
@@ -23,19 +23,32 @@ interface MovieDetailScreenProps {
 
 export function MovieDetailScreen({ movieId, onAddToWatchlist }: MovieDetailScreenProps) {
   const { colors } = useTheme();
-  const { top } = useSafeAreaInsets();
 
-  const { data: movie, isLoading, error } = useQuery({
+  const {
+    data: movie,
+    isLoading,
+    error,
+  } = useQuery({
     ...movieDetailsQueryOptions(movieId, {
-      append_to_response: "credits,similar,videos,keywords",
+      append_to_response: "credits,similar,videos,keywords,recommendations",
     }),
   });
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { paddingTop: top }]}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.loadingContainer}>
-          <Text variant="headlineSmall">Loading movie details...</Text>
+          <Card style={[styles.statusCard, { backgroundColor: colors.surface }]}>
+            <Card.Content style={styles.statusContent}>
+              <LoadingIndicatorDots />
+              <Text variant="titleMedium" style={[styles.statusTitle, { color: colors.onSurface }]}>
+                Loading Movie Details
+              </Text>
+              <Text variant="bodyMedium" style={[styles.statusMessage, { color: colors.onSurfaceVariant }]}>
+                Please wait while we fetch the information...
+              </Text>
+            </Card.Content>
+          </Card>
         </View>
       </View>
     );
@@ -43,14 +56,28 @@ export function MovieDetailScreen({ movieId, onAddToWatchlist }: MovieDetailScre
 
   if (error || !movie) {
     return (
-      <View style={[styles.container, { paddingTop: top }]}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.errorContainer}>
-          <Text variant="headlineSmall" style={{ color: colors.error }}>
-            Failed to load movie details
-          </Text>
-          <Text variant="bodyMedium" style={{ color: colors.onSurfaceVariant }}>
-            {error?.message || "Unknown error occurred"}
-          </Text>
+          <Card style={[styles.statusCard, { backgroundColor: colors.surface }]}>
+            <Card.Content style={styles.statusContent}>
+              <Text variant="displaySmall" style={[styles.statusIcon, { color: colors.error }]}>
+                🎬
+              </Text>
+              <Text variant="titleLarge" style={[styles.statusTitle, { color: colors.error }]}>
+                Failed to load movie details
+              </Text>
+              <Text variant="bodyMedium" style={[styles.statusMessage, { color: colors.onSurfaceVariant }]}>
+                {error?.message || "Unknown error occurred"}
+              </Text>
+              <Button 
+                mode="outlined" 
+                onPress={() => window.location.reload()}
+                style={styles.retryButton}
+              >
+                Try Again
+              </Button>
+            </Card.Content>
+          </Card>
         </View>
       </View>
     );
@@ -77,7 +104,7 @@ export function MovieDetailScreen({ movieId, onAddToWatchlist }: MovieDetailScre
 
   return (
     <ScrollView
-      style={[styles.container, { paddingTop: top }]}
+      style={[styles.container]}
       showsVerticalScrollIndicator={false}
     >
       {/* Backdrop Image */}
@@ -225,7 +252,7 @@ export function MovieDetailScreen({ movieId, onAddToWatchlist }: MovieDetailScre
                   <Text variant="bodyMedium" style={styles.detailLabel}>
                     Studios:
                   </Text>
-                  <Text variant="bodyMedium">
+                  <Text variant="bodyMedium" style={styles.detailValue}>
                     {movie.production_companies.map((company) => company.name).join(", ")}
                   </Text>
                 </View>
@@ -236,7 +263,7 @@ export function MovieDetailScreen({ movieId, onAddToWatchlist }: MovieDetailScre
                   <Text variant="bodyMedium" style={styles.detailLabel}>
                     Countries:
                   </Text>
-                  <Text variant="bodyMedium">
+                  <Text variant="bodyMedium" style={styles.detailValue}>
                     {movie.production_countries.map((country) => country.name).join(", ")}
                   </Text>
                 </View>
@@ -412,8 +439,38 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginRight: 8,
     minWidth: 80,
+    flexShrink: 0,
+  },
+  detailValue: {
+    flex: 1,
+    flexWrap: 'wrap',
   },
   externalLink: {
+    marginTop: 8,
+  },
+  statusCard: {
+    elevation: 4,
+    borderRadius: 12,
+    marginHorizontal: 20,
+  },
+  statusContent: {
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  statusIcon: {
+    marginBottom: 16,
+  },
+  statusTitle: {
+    textAlign: 'center',
+    marginBottom: 8,
+    fontWeight: '600',
+  },
+  statusMessage: {
+    textAlign: 'center',
+    marginBottom: 16,
+    lineHeight: 18,
+  },
+  retryButton: {
     marginTop: 8,
   },
   similarScroll: {

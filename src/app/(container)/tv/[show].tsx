@@ -12,10 +12,10 @@ export default function MediaDetails() {
     return <Redirect href="/discover" />;
   }
   return (
-    <Surface style={{ flex: 1, paddingTop: top + 12 }}>
+    <Surface style={{ flex: 1, paddingTop: top  }}>
       <Stack.Screen
         options={{
-          headerShown: true,
+          headerShown: false,
         }}
       />
       <TVDetailScreen tvId={mediaId} />

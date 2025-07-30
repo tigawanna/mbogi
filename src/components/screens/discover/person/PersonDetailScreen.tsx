@@ -1,8 +1,9 @@
+import { LoadingIndicatorDots } from '@/components/state-screens/LoadingIndicatorDots';
 import { personDetailsQueryOptions } from '@/data/discover/discover-query-options';
 import { useQuery } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { Card, Chip, Divider, Text, useTheme } from 'react-native-paper';
+import { Button, Card, Chip, Divider, Text, useTheme } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface PersonDetailScreenProps {
@@ -13,17 +14,31 @@ export function PersonDetailScreen({ personId }: PersonDetailScreenProps) {
   const { colors } = useTheme();
   const { top } = useSafeAreaInsets();
 
-  const { data: person, isLoading, error } = useQuery({
+  const {
+    data: person,
+    isLoading,
+    error,
+  } = useQuery({
     ...personDetailsQueryOptions(personId, {
-      append_to_response: 'movie_credits,tv_credits',
+      append_to_response: "movie_credits,tv_credits,recommendations",
     }),
   });
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { paddingTop: top }]}>
+      <View style={[styles.container, { backgroundColor: colors.background, paddingTop: top }]}>
         <View style={styles.loadingContainer}>
-          <Text variant="headlineSmall">Loading person details...</Text>
+          <Card style={[styles.statusCard, { backgroundColor: colors.surface }]}>
+            <Card.Content style={styles.statusContent}>
+              <LoadingIndicatorDots />
+              <Text variant="titleMedium" style={[styles.statusTitle, { color: colors.onSurface }]}>
+                Loading Person Details
+              </Text>
+              <Text variant="bodyMedium" style={[styles.statusMessage, { color: colors.onSurfaceVariant }]}>
+                Please wait while we fetch the information...
+              </Text>
+            </Card.Content>
+          </Card>
         </View>
       </View>
     );
@@ -31,14 +46,28 @@ export function PersonDetailScreen({ personId }: PersonDetailScreenProps) {
 
   if (error || !person) {
     return (
-      <View style={[styles.container, { paddingTop: top }]}>
+      <View style={[styles.container, { backgroundColor: colors.background, paddingTop: top }]}>
         <View style={styles.errorContainer}>
-          <Text variant="headlineSmall" style={{ color: colors.error }}>
-            Failed to load person details
-          </Text>
-          <Text variant="bodyMedium" style={{ color: colors.onSurfaceVariant }}>
-            {error?.message || 'Unknown error occurred'}
-          </Text>
+          <Card style={[styles.statusCard, { backgroundColor: colors.surface }]}>
+            <Card.Content style={styles.statusContent}>
+              <Text variant="displaySmall" style={[styles.statusIcon, { color: colors.error }]}>
+                🎭
+              </Text>
+              <Text variant="titleLarge" style={[styles.statusTitle, { color: colors.error }]}>
+                Failed to load person details
+              </Text>
+              <Text variant="bodyMedium" style={[styles.statusMessage, { color: colors.onSurfaceVariant }]}>
+                {error?.message || 'Unknown error occurred'}
+              </Text>
+              <Button 
+                mode="outlined" 
+                onPress={() => window.location.reload()}
+                style={styles.retryButton}
+              >
+                Try Again
+              </Button>
+            </Card.Content>
+          </Card>
         </View>
       </View>
     );
@@ -344,5 +373,30 @@ const styles = StyleSheet.create({
   },
   link: {
     marginBottom: 4,
+  },
+  statusCard: {
+    elevation: 4,
+    borderRadius: 12,
+    marginHorizontal: 20,
+  },
+  statusContent: {
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  statusIcon: {
+    marginBottom: 16,
+  },
+  statusTitle: {
+    textAlign: 'center',
+    marginBottom: 8,
+    fontWeight: '600',
+  },
+  statusMessage: {
+    textAlign: 'center',
+    marginBottom: 16,
+    lineHeight: 18,
+  },
+  retryButton: {
+    marginTop: 8,
   },
 });
