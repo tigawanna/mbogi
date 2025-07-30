@@ -154,6 +154,7 @@ export const TMDBMovieSchema = z.object({
   vote_average: z.number(),
   vote_count: z.number(),
   video: z.boolean(),
+  watchListName: z.string().optional(),
 });
 
 // ============================================================================

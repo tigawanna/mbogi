@@ -7,13 +7,17 @@ import { Text, useTheme } from "react-native-paper";
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { discoverMoviesCollection } from "@/data/discover/discover-query-collection";
-import { DiscoverMoviesFlatList } from "./DiscoverMoviesFlatList";
+import { myWatchlistItemsCollection } from "@/data/watchlist/collections";
+import { useDiscoverMoviesViewMode } from "@/store/view-preferences-store";
 import { useDiscoverFiltersStore } from "../filters/discover-fliters-store";
+import { DiscoverMoviesFlatList } from "./DiscoverMoviesFlatList";
 // import { myWatchlistCollection } from "@/data/watchlist/collections";
 
 export function DiscoverMoviesScreen() {
   const { colors } = useTheme();
-  const {movieFilters}= useDiscoverFiltersStore();
+  const { movieFilters } = useDiscoverFiltersStore();
+  const { viewMode, setViewMode } = useDiscoverMoviesViewMode();
+  
   // Pagination state (removed pagination as per requirements)
   const currentPage = 1;
 
@@ -24,18 +28,20 @@ export function DiscoverMoviesScreen() {
     isError,
   } = useLiveQuery(
     (query) =>
-      query.from({
-        movies: discoverMoviesCollection({
-          filters:movieFilters,
-          enabled: true,
-        }),
-      })
-      // .join({
-      //     watchlist:myWatchlistCollection()
-      // },
-      // ({ movies, watchlist }) => eq(movies.id))
-        
-        ,
+      query
+        .from({
+          movies: discoverMoviesCollection({
+            filters: movieFilters,
+            enabled: true,
+          }),
+        })
+        .join({ watchlist: myWatchlistItemsCollection() }, ({ movies, watchlist }) =>
+          eq(movies.id, watchlist.id)
+        )
+        .select(({ movies, watchlist }) => ({
+          ...movies,
+          watchListName: watchlist?.watchlistTitle,
+        })),
     [currentPage, movieFilters]
   );
 

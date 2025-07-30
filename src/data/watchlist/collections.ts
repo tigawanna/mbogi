@@ -6,6 +6,26 @@ import { WatchlistResponseSchema } from "@/lib/pb/types/pb-zod";
 import { and, eq, like, or } from "@tigawanna/typed-pocketbase";
 import { useCommunityWatchListPageoptionsStore } from "./watchlist-stores";
 
+
+
+async function getUserwatchlist(userId: string) {
+  const response = await pb.from("watchlist").getFullList({
+    filter: and(eq("user_id", userId)),
+    sort: "-created",
+    select: {
+      expand: {
+        user_id: true,
+        items: true,
+      },
+    },
+  });
+
+  return response;
+}
+
+
+
+// Normal collection from the items array in the watchlist
 export const myWatchlistCollection = () => {
   const userId = pb.authStore.record?.id;
   return createCollection(
@@ -15,17 +35,8 @@ export const myWatchlistCollection = () => {
         if (!userId) {
           throw new Error("User not authenticated");
         }
-        const response = await pb.from("watchlist").getFullList({
-          filter: and(eq("user_id", userId)),
-          sort: "-created",
-          select: {
-            expand: {
-              user_id: true,
-              items: true,
-            },
-          },
-        });
-        return await response;
+        const response = await getUserwatchlist(userId);
+        return await response
       },
       queryClient: queryClient,
       enabled: !!userId,
@@ -35,6 +46,38 @@ export const myWatchlistCollection = () => {
   );
 };
 
+
+
+export const myWatchlistItemsCollection = () => {
+  const userId = pb.authStore.record?.id;
+  return createCollection(
+    queryCollectionOptions({
+      queryKey: ["watchlist", "items", userId],
+      queryFn: async () => {
+        if (!userId) {
+          throw new Error("User not authenticated");
+        }
+        const response = await getUserwatchlist(userId);
+        const watchListItems = response.flatMap((item) => {
+          return (
+            item.items.map((i) => {
+              return {
+                id: Number(i),
+                watchlistId: item.id,
+                watchlistTitle: item.title,
+              };
+            }) || []
+          );
+        });
+        return await watchListItems;
+      },
+      queryClient: queryClient,
+      enabled: !!userId,
+      getKey: (item) => item.id,
+      schema: WatchlistResponseSchema,
+    })
+  );
+};
 
 
 interface CommunityWatchlistCollectionProps {
@@ -82,8 +125,9 @@ export const communityWatchlistCollection = ({
       queryFn: async () => {
         const response = await pb.from("watchlist").getList(page, 50, {
           filter: and(
-            or(like("title", `%${keyword ?? ""}%`),
-             like("overview", `%${keyword ?? ""}%`),
+            or(
+              like("title", `%${keyword ?? ""}%`),
+              like("overview", `%${keyword ?? ""}%`),
               like("user_id.name", `%${keyword ?? ""}%`)
             ),
             eq("visibility", "public")
