@@ -3,7 +3,10 @@ import { StyleSheet, View } from "react-native";
 import { Searchbar, useTheme } from "react-native-paper";
 import { Tabs, TabScreen, TabsProvider } from "react-native-paper-tabs";
 
+import { ViewToggle } from "@/components/shared/ViewToggle";
+import { useDiscoverMoviesViewMode, useDiscoverTVViewMode } from "@/store/view-preferences-store";
 import { router, useLocalSearchParams } from "expo-router";
+import { useDiscoverFiltersStore } from "./filters/discover-fliters-store";
 import {
   DiscoverFeedFilters,
   FilterButton,
@@ -12,7 +15,6 @@ import {
 import { DiscoverMoviesScreen } from "./movies/DiscoverMoviesScreen";
 import { SearchResultsScreen } from "./search/SearchResultsScreen";
 import { DiscoverTVScreen } from "./tv/DiscoverTVScreen";
-import { useDiscoverFiltersStore } from "./filters/discover-fliters-store";
 
 export function DiscoverScreen() {
   const { colors } = useTheme();
@@ -34,9 +36,9 @@ export function DiscoverScreen() {
   return (
     <DiscoverScreenScaffold>
       <View style={styles.container}>
-        <TabsProvider defaultIndex={0} 
-        onChangeIndex={(index) => setActiveTab(index===0 ? 'movie' : 'tv')}
-        >
+        <TabsProvider
+          defaultIndex={0}
+          onChangeIndex={(index) => setActiveTab(index === 0 ? "movie" : "tv")}>
           <Tabs mode="fixed" style={{ backgroundColor: colors.surface }}>
             <TabScreen label="Movies" icon="movie">
               <DiscoverMoviesScreen />
@@ -58,9 +60,16 @@ interface DiscoverScreenProps {
 export function DiscoverScreenScaffold({ children }: DiscoverScreenProps) {
   const { colors } = useTheme();
   const { searchQuery, setSearchQuery } = useDiscoverScreenSearch();
+  const { activeTab } = useDiscoverFiltersStore();
+  const { viewMode: movieViewMode, setViewMode: setMovieViewMode } = useDiscoverMoviesViewMode();
+  const { viewMode: tvViewMode, setViewMode: setTVViewMode } = useDiscoverTVViewMode();
 
   const hasActiveFilters = useHasActiveFilters();
   const [showFilters, setShowFilters] = useState(false);
+
+  // Get current view mode and setter based on active tab
+  const currentViewMode = activeTab === "movie" ? movieViewMode : tvViewMode;
+  const setCurrentViewMode = activeTab === "movie" ? setMovieViewMode : setTVViewMode;
 
   return (
     <View style={styles.scaffoldContainer}>
@@ -69,16 +78,18 @@ export function DiscoverScreenScaffold({ children }: DiscoverScreenProps) {
           placeholder="Search "
           onChangeText={(term) => setSearchQuery(term)}
           value={searchQuery}
-          style={[styles.searchBar, { width: "75%" }]}
+          style={[styles.searchBar, { width: "60%" }]}
           inputStyle={styles.searchInput}
           iconColor={colors.onSurfaceVariant}
           placeholderTextColor={colors.onSurfaceVariant}
         />
-        <FilterButton onPress={() => setShowFilters(true)} hasActiveFilters={hasActiveFilters} />
-        <DiscoverFeedFilters 
-          visible={showFilters} 
-          onDismiss={() => setShowFilters(false)} 
+        <ViewToggle
+          viewMode={currentViewMode}
+          onViewModeChange={setCurrentViewMode}
+          variant="menu"
         />
+        <FilterButton onPress={() => setShowFilters(true)} hasActiveFilters={hasActiveFilters} />
+        <DiscoverFeedFilters visible={showFilters} onDismiss={() => setShowFilters(false)} />
       </View>
       {children}
     </View>
@@ -106,7 +117,7 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     flexDirection: "row",
-    gap: 4,
+    gap: 1,
     alignItems: "center",
     paddingHorizontal: 8,
   },

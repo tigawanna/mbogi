@@ -8,7 +8,7 @@ import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { discoverMoviesCollection } from "@/data/discover/discover-query-collection";
 import { myWatchlistItemsCollection } from "@/data/watchlist/collections";
-import { useDiscoverMoviesViewMode } from "@/store/view-preferences-store";
+
 import { useDiscoverFiltersStore } from "../filters/discover-fliters-store";
 import { DiscoverMoviesFlatList } from "./DiscoverMoviesFlatList";
 // import { myWatchlistCollection } from "@/data/watchlist/collections";
@@ -16,7 +16,7 @@ import { DiscoverMoviesFlatList } from "./DiscoverMoviesFlatList";
 export function DiscoverMoviesScreen() {
   const { colors } = useTheme();
   const { movieFilters } = useDiscoverFiltersStore();
-  const { viewMode, setViewMode } = useDiscoverMoviesViewMode();
+
   
   // Pagination state (removed pagination as per requirements)
   const currentPage = 1;

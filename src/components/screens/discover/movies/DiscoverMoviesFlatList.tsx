@@ -1,21 +1,21 @@
-import type { TMDBMovie } from '@/data/discover/discover-zod-schema';
-import { ViewMode } from '@/store/view-preferences-store';
-import { FlatList, StyleSheet } from 'react-native';
-import { DiscoverMoviesCard } from './DiscoverMoviesCard';
+import type { TMDBMovie } from "@/data/discover/discover-zod-schema";
+import { useDiscoverMoviesViewMode } from "@/store/view-preferences-store";
+import { FlatList, StyleSheet } from "react-native";
+import { DiscoverMoviesCard } from "./DiscoverMoviesCard";
 
 interface DiscoverMoviesFlatListProps {
-    list: TMDBMovie[];
-    viewMode?: ViewMode;
+  list: TMDBMovie[];
 }
 
-export function DiscoverMoviesFlatList({list, viewMode = 'list'}: DiscoverMoviesFlatListProps) {
+export function DiscoverMoviesFlatList({ list }: DiscoverMoviesFlatListProps) {
+  const { viewMode } = useDiscoverMoviesViewMode();
   const renderItem = ({ item }: { item: TMDBMovie }) => (
     <DiscoverMoviesCard item={item} viewMode={viewMode} />
   );
 
   const keyExtractor = (item: TMDBMovie) => item.id.toString();
 
-  const isGridView = viewMode === 'grid';
+  const isGridView = viewMode === "grid";
 
   return (
     <FlatList
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   row: {
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     marginBottom: 16,
   },
 });

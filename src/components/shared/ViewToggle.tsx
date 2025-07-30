@@ -1,12 +1,12 @@
 import { ViewMode } from '@/store/view-preferences-store';
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { IconButton, SegmentedButtons, useTheme } from 'react-native-paper';
+import { IconButton, Menu, SegmentedButtons, useTheme } from 'react-native-paper';
 
 interface ViewToggleProps {
   viewMode: ViewMode;
   onViewModeChange: (mode: ViewMode) => void;
-  variant?: 'segmented' | 'buttons';
+  variant?: 'segmented' | 'buttons' | 'menu';
 }
 
 export function ViewToggle({ 
@@ -15,6 +15,44 @@ export function ViewToggle({
   variant = 'buttons' 
 }: ViewToggleProps) {
   const theme = useTheme();
+  const [menuVisible, setMenuVisible] = useState(false);
+
+  const openMenu = () => setMenuVisible(true);
+  const closeMenu = () => setMenuVisible(false);
+
+  const handleMenuItemPress = (mode: ViewMode) => {
+    onViewModeChange(mode);
+    closeMenu();
+  };
+
+  if (variant === 'menu') {
+    return (
+      <Menu
+        visible={menuVisible}
+        onDismiss={closeMenu}
+        anchor={
+          <IconButton
+            icon={viewMode === 'grid' ? 'view-grid' : 'view-list'}
+            onPress={openMenu}
+            size={20}
+            iconColor={theme.colors.onSurface}
+          />
+        }
+        anchorPosition="bottom"
+      >
+        <Menu.Item
+          onPress={() => handleMenuItemPress('grid')}
+          title="Grid View"
+          leadingIcon="view-grid"
+        />
+        <Menu.Item
+          onPress={() => handleMenuItemPress('list')}
+          title="List View"
+          leadingIcon="view-list"
+        />
+      </Menu>
+    );
+  }
 
   if (variant === 'segmented') {
     return (

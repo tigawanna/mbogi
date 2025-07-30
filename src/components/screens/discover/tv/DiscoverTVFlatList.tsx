@@ -1,21 +1,21 @@
-import type { TMDBTVShow } from '@/data/discover/discover-zod-schema';
-import { ViewMode } from '@/store/view-preferences-store';
-import { FlatList, StyleSheet } from 'react-native';
-import { DiscoverTVCard } from './DiscoverTVCard';
+import type { TMDBTVShow } from "@/data/discover/discover-zod-schema";
+import { useDiscoverTVViewMode } from "@/store/view-preferences-store";
+import { FlatList, StyleSheet } from "react-native";
+import { DiscoverTVCard } from "./DiscoverTVCard";
 
 interface DiscoverTVFlatListProps {
-    list: TMDBTVShow[];
-    viewMode?: ViewMode;
+  list: TMDBTVShow[];
 }
 
-export function DiscoverTVFlatList({list, viewMode = 'grid'}: DiscoverTVFlatListProps) {
+export function DiscoverTVFlatList({ list }: DiscoverTVFlatListProps) {
+  const { viewMode } = useDiscoverTVViewMode();
   const renderItem = ({ item }: { item: TMDBTVShow }) => (
     <DiscoverTVCard item={item} viewMode={viewMode} />
   );
 
   const keyExtractor = (item: TMDBTVShow) => item.id.toString();
 
-  const isGridView = viewMode === 'grid';
+  const isGridView = viewMode === "grid";
 
   return (
     <FlatList
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   row: {
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     marginBottom: 16,
   },
 });
