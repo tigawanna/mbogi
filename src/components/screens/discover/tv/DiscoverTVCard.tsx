@@ -1,7 +1,8 @@
 import type { TMDBTVShow } from "@/data/discover/discover-zod-schema";
 import { ViewMode } from "@/store/view-preferences-store";
 import { Image } from "expo-image";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { Link } from "expo-router";
+import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Card, Text, useTheme } from "react-native-paper";
 import { DiscoverCardAction } from "../actions/DiscoverCardAction";
 
@@ -27,25 +28,31 @@ export function DiscoverTVCard({ item, viewMode = "grid" }: DiscoverTVCardProps)
       {isGridView ? (
         // Grid Layout (existing design)
         <>
-          <View style={styles.imageContainer}>
-            <Image
-              source={{
-                uri: imageUrl ? imageUrl : require("@/assets/images/poster-placeholder.jpeg"),
-              }}
-              style={styles.poster}
-              contentFit="cover"
-              transition={200}
-              placeholder={require("@/assets/images/poster-placeholder.jpeg")}
-            />
-          </View>
+          <Link href={`/shows/${item.id}`} asChild>
+            <TouchableOpacity style={styles.imageContainer}>
+              <Image
+                source={{
+                  uri: imageUrl ? imageUrl : require("@/assets/images/poster-placeholder.jpeg"),
+                }}
+                style={styles.poster}
+                contentFit="cover"
+                transition={200}
+                placeholder={require("@/assets/images/poster-placeholder.jpeg")}
+              />
+            </TouchableOpacity>
+          </Link>
 
           <Card.Content style={styles.gridContent}>
-            <Text
-              variant="titleSmall"
-              numberOfLines={2}
-              style={[styles.title, { color: colors.onSurface }]}>
-              {item.name}
-            </Text>
+            <Link href={`/shows/${item.id}`} asChild>
+              <TouchableOpacity>
+                <Text
+                  variant="titleSmall"
+                  numberOfLines={2}
+                  style={[styles.title, { color: colors.onSurface }]}>
+                  {item.name}
+                </Text>
+              </TouchableOpacity>
+            </Link>
 
             <Text variant="bodySmall" style={[styles.year, { color: colors.onSurfaceVariant }]}>
               {item.first_air_date ? new Date(item.first_air_date).getFullYear() : "TBD"}
@@ -59,40 +66,48 @@ export function DiscoverTVCard({ item, viewMode = "grid" }: DiscoverTVCardProps)
               </View>
             )}
             {/* Watchlist Action Overlay */}
-            <View style={styles.actionOverlay}>
-              <DiscoverCardAction
-                type="tv"
-                item={{
-                  ...item,
-                  media_type: "tv" as const,
-                }}
-              />
+            <View style={styles.actionOverlay} pointerEvents="box-none">
+              <TouchableOpacity onPress={(e) => e.stopPropagation()}>
+                <DiscoverCardAction
+                  type="tv"
+                  item={{
+                    ...item,
+                    media_type: "tv" as const,
+                  }}
+                />
+              </TouchableOpacity>
             </View>
           </Card.Content>
         </>
       ) : (
         // List Layout (horizontal)
         <View style={styles.listContent}>
-          <View style={styles.listImageContainer}>
-            <Image
-              source={{
-                uri: imageUrl ? imageUrl : require("@/assets/images/poster-placeholder.jpeg"),
-              }}
-              style={styles.listPoster}
-              contentFit="cover"
-              transition={200}
-              placeholder={require("@/assets/images/poster-placeholder.jpeg")}
-            />
-          </View>
+          <Link href={`/shows/${item.id}`} asChild>
+            <TouchableOpacity style={styles.listImageContainer}>
+              <Image
+                source={{
+                  uri: imageUrl ? imageUrl : require("@/assets/images/poster-placeholder.jpeg"),
+                }}
+                style={styles.listPoster}
+                contentFit="cover"
+                transition={200}
+                placeholder={require("@/assets/images/poster-placeholder.jpeg")}
+              />
+            </TouchableOpacity>
+          </Link>
 
           <View style={styles.listTextContent}>
             <View style={styles.listHeader}>
-              <Text
-                variant="titleMedium"
-                numberOfLines={2}
-                style={[styles.listTitle, { color: colors.onSurface }]}>
-                {item.name}
-              </Text>
+              <Link href={`/shows/${item.id}`} asChild>
+                <TouchableOpacity style={{ flex: 1 }}>
+                  <Text
+                    variant="titleMedium"
+                    numberOfLines={2}
+                    style={[styles.listTitle, { color: colors.onSurface }]}>
+                    {item.name}
+                  </Text>
+                </TouchableOpacity>
+              </Link>
               <View style={styles.listActionContainer}>
                 <DiscoverCardAction
                   type="tv"
@@ -149,10 +164,6 @@ const styles = StyleSheet.create({
     height: "100%",
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
-  },
-  placeholderImage: {
-    justifyContent: "center",
-    alignItems: "center",
   },
   actionOverlay: {
     position: "absolute",

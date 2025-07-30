@@ -1,19 +1,20 @@
-import { movieToUnified, UnifiedMediaItem } from "@/data/discover/types/unified-media";
+import { movieDetailsQueryOptions } from "@/data/discover/discover-query-options";
+import { getOptimizedImageUrl } from "@/data/discover/discover-sdk";
+import { UnifiedMediaItem } from "@/data/discover/types/unified-media";
 import { useQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
+import { Link } from "expo-router";
 import React from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import {
-    Button,
-    Card,
-    Chip,
-    Divider,
-    Text,
-    useTheme,
+  Button,
+  Card,
+  Chip,
+  Divider,
+  Text,
+  useTheme,
 } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { getOptimizedImageUrl } from "@/data/discover/discover-sdk";
-import { movieDetailsQueryOptions } from "@/data/discover/discover-query-options";
 
 interface MovieDetailScreenProps {
   movieId: number;
@@ -256,6 +257,59 @@ export function MovieDetailScreen({ movieId, onAddToWatchlist }: MovieDetailScre
                 </Button>
               </View>
             ) : null}
+
+            {/* Similar Movies */}
+            {movie.recommendations && movie.recommendations.results && movie.recommendations.results.length > 0 ? (
+              <View style={styles.section}>
+                <Text variant="titleMedium" style={styles.sectionTitle}>
+                  Similar Movies
+                </Text>
+                <ScrollView 
+                  horizontal 
+                  showsHorizontalScrollIndicator={false}
+                  style={styles.similarScroll}
+                >
+                  {movie.recommendations.results.slice(0, 10).map((similarMovie) => (
+                    <Link key={similarMovie.id} href={`/movies/${similarMovie.id}`} asChild>
+                      <TouchableOpacity style={styles.similarCard}>
+                        <Image
+                          source={{
+                            uri: similarMovie.poster_path 
+                              ? `https://image.tmdb.org/t/p/w200${similarMovie.poster_path}`
+                              : require('@/assets/images/poster-placeholder.jpeg')
+                          }}
+                          style={styles.similarPoster}
+                          contentFit="cover"
+                          placeholder={require('@/assets/images/poster-placeholder.jpeg')}
+                        />
+                        <Text 
+                          variant="bodySmall" 
+                          numberOfLines={2}
+                          style={[styles.similarTitle, { color: colors.onSurface }]}
+                        >
+                          {'title' in similarMovie ? similarMovie.title : similarMovie.name}
+                        </Text>
+                        <Text 
+                          variant="bodySmall" 
+                          style={[styles.similarYear, { color: colors.onSurfaceVariant }]}
+                        >
+                          {'release_date' in similarMovie 
+                            ? similarMovie.release_date ? new Date(similarMovie.release_date).getFullYear() : 'TBD'
+                            : similarMovie.first_air_date ? new Date(similarMovie.first_air_date).getFullYear() : 'TBD'
+                          }
+                        </Text>
+                        <Text 
+                          variant="bodySmall" 
+                          style={[styles.similarRating, { color: colors.primary }]}
+                        >
+                          ⭐ {similarMovie.vote_average.toFixed(1)}
+                        </Text>
+                      </TouchableOpacity>
+                    </Link>
+                  ))}
+                </ScrollView>
+              </View>
+            ) : null}
           </Card.Content>
         </Card>
       </View>
@@ -361,5 +415,30 @@ const styles = StyleSheet.create({
   },
   externalLink: {
     marginTop: 8,
+  },
+  similarScroll: {
+    marginHorizontal: -8,
+  },
+  similarCard: {
+    width: 100,
+    marginHorizontal: 8,
+  },
+  similarPoster: {
+    width: 100,
+    height: 150,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  similarTitle: {
+    fontWeight: '600',
+    marginBottom: 4,
+    lineHeight: 14,
+  },
+  similarYear: {
+    marginBottom: 2,
+    fontSize: 12,
+  },
+  similarRating: {
+    fontSize: 12,
   },
 });

@@ -1,18 +1,19 @@
 
 import { tvDetailsQueryOptions } from "@/data/discover/discover-query-options";
 import { getOptimizedImageUrl } from "@/data/discover/discover-sdk";
-import { tvToUnified, UnifiedMediaItem } from "@/data/discover/types/unified-media";
+import { UnifiedMediaItem } from "@/data/discover/types/unified-media";
 import { useQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
+import { Link } from "expo-router";
 import React from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import {
-    Button,
-    Card,
-    Chip,
-    Divider,
-    Text,
-    useTheme,
+  Button,
+  Card,
+  Chip,
+  Divider,
+  Text,
+  useTheme,
 } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -56,7 +57,6 @@ export function TVDetailScreen({ tvId, onAddToWatchlist }: TVDetailScreenProps) 
     );
   }
 
-  const unifiedTVShow = tvToUnified(tvShow);
   const posterUrl = getOptimizedImageUrl(tvShow.poster_path, "poster", "large");
   const backdropUrl = getOptimizedImageUrl(tvShow.backdrop_path, "backdrop", "large");
 
@@ -313,6 +313,59 @@ export function TVDetailScreen({ tvId, onAddToWatchlist }: TVDetailScreenProps) 
                 </Button>
               </View>
             ) : null}
+
+            {/* Similar TV Shows */}
+            {tvShow.recommendations && tvShow.recommendations.results && tvShow.recommendations.results.length > 0 ? (
+              <View style={styles.section}>
+                <Text variant="titleMedium" style={styles.sectionTitle}>
+                  Similar TV Shows
+                </Text>
+                <ScrollView 
+                  horizontal 
+                  showsHorizontalScrollIndicator={false}
+                  style={styles.similarScroll}
+                >
+                  {tvShow.recommendations.results.slice(0, 10).map((similarShow) => (
+                    <Link key={similarShow.id} href={`/shows/${similarShow.id}`} asChild>
+                      <TouchableOpacity style={styles.similarCard}>
+                        <Image
+                          source={{
+                            uri: similarShow.poster_path 
+                              ? `https://image.tmdb.org/t/p/w200${similarShow.poster_path}`
+                              : require('@/assets/images/poster-placeholder.jpeg')
+                          }}
+                          style={styles.similarPoster}
+                          contentFit="cover"
+                          placeholder={require('@/assets/images/poster-placeholder.jpeg')}
+                        />
+                        <Text 
+                          variant="bodySmall" 
+                          numberOfLines={2}
+                          style={[styles.similarTitle, { color: colors.onSurface }]}
+                        >
+                          {'title' in similarShow ? similarShow.title : similarShow.name}
+                        </Text>
+                        <Text 
+                          variant="bodySmall" 
+                          style={[styles.similarYear, { color: colors.onSurfaceVariant }]}
+                        >
+                          {'release_date' in similarShow 
+                            ? similarShow.release_date ? new Date(similarShow.release_date).getFullYear() : 'TBD'
+                            : similarShow.first_air_date ? new Date(similarShow.first_air_date).getFullYear() : 'TBD'
+                          }
+                        </Text>
+                        <Text 
+                          variant="bodySmall" 
+                          style={[styles.similarRating, { color: colors.primary }]}
+                        >
+                          ⭐ {similarShow.vote_average.toFixed(1)}
+                        </Text>
+                      </TouchableOpacity>
+                    </Link>
+                  ))}
+                </ScrollView>
+              </View>
+            ) : null}
           </Card.Content>
         </Card>
       </View>
@@ -434,5 +487,32 @@ const styles = StyleSheet.create({
   },
   externalLink: {
     marginTop: 8,
+  },
+  similarScroll: {
+    marginTop: 8,
+  },
+  similarCard: {
+    width: 120,
+    marginRight: 12,
+  },
+  similarPoster: {
+    width: 120,
+    height: 180,
+    borderRadius: 8,
+    marginBottom: 4,
+  },
+  similarTitle: {
+    textAlign: 'center',
+    marginBottom: 2,
+  },
+  similarYear: {
+    textAlign: 'center',
+    fontSize: 12,
+    marginBottom: 2,
+  },
+  similarRating: {
+    textAlign: 'center',
+    fontSize: 12,
+    fontWeight: '600',
   },
 });

@@ -1,7 +1,7 @@
-import { queryOptions } from "@tanstack/react-query";
-import { TMDBMovieDetails, TMDBTVDetails } from "./discover-zod-schema";
-import { createTMDBSDK } from "./discover-sdk";
 import { pb } from "@/lib/pb/client";
+import { queryOptions } from "@tanstack/react-query";
+import { createTMDBSDK } from "./discover-sdk";
+import { TMDBMovieDetails, TMDBPersonDetails, TMDBTVDetails } from "./discover-zod-schema";
 
 const tmdb = createTMDBSDK(pb);
 
@@ -21,6 +21,17 @@ export function tvDetailsQueryOptions(tvId: number, params?: Record<string, any>
     queryKey: ["tmdb", "tv", "details", tvId, params],
     queryFn: async (): Promise<TMDBTVDetails> => {
       return await tmdb.getTVDetails(tvId, params);
+    },
+    staleTime: 1000 * 60 * 30, // 30 minutes
+    gcTime: 1000 * 60 * 60 * 24, // 24 hours
+  });
+}
+
+export function personDetailsQueryOptions(personId: number, params?: Record<string, any>) {
+  return queryOptions({
+    queryKey: ["tmdb", "person", "details", personId, params],
+    queryFn: async (): Promise<TMDBPersonDetails> => {
+      return await tmdb.getPersonDetails(personId, params);
     },
     staleTime: 1000 * 60 * 30, // 30 minutes
     gcTime: 1000 * 60 * 60 * 24, // 24 hours

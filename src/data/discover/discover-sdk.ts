@@ -1,11 +1,12 @@
 import PocketBase from "pocketbase";
 import {
-    TMDBDiscoverMoviesResponse,
-    TMDBDiscoverTVResponse,
-    TMDBMovieDetails,
-    TMDBSearchResponse,
-    TMDBTVDetails,
-    TMDBTVSeasonDetails,
+  TMDBDiscoverMoviesResponse,
+  TMDBDiscoverTVResponse,
+  TMDBMovieDetails,
+  TMDBPersonDetails,
+  TMDBSearchResponse,
+  TMDBTVDetails,
+  TMDBTVSeasonDetails,
 } from "./discover-zod-schema";
 
 // ============================================================================
@@ -317,6 +318,51 @@ export class TMDBSDK {
     // Development logging
     if (__DEV__) {
       console.log(`📻 TMDB TV Details: ${this.pb.baseURL}${url}`);
+    }
+
+    return await this.pb.send(url, {
+      method: "GET",
+    });
+  }
+
+  /**
+   * Get detailed information about a specific TV show season
+   * @param tvId - TMDB TV show ID
+   * @param seasonNumber - Season number
+   * @param params - Optional query parameters
+   * @returns Promise that resolves to detailed TV season information
+   * @throws Error if tvId or seasonNumber is invalid
+   * 
+   * @example
+   * ```typescript
+   * const season = await tmdb.getTVSeasonDetails(1399, 1, {
+   *   append_to_response: 'credits,videos'
+   * });
+   * ```
+   */
+  async getPersonDetails(
+    id: number,
+    params: DetailsParams = {}
+  ): Promise<TMDBPersonDetails> {
+    if (!id || id <= 0) {
+      throw new Error("Valid person ID is required");
+    }
+
+    const queryString = new URLSearchParams();
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        queryString.append(key, String(value));
+      }
+    });
+
+    const url = `/api/tmdb/details/person/${id}${
+      queryString.toString() ? `?${queryString.toString()}` : ""
+    }`;
+
+    // Development logging
+    if (__DEV__) {
+      console.log(`👤 TMDB Person Details: ${this.pb.baseURL}${url}`);
     }
 
     return await this.pb.send(url, {

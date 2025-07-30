@@ -1,7 +1,8 @@
 import type { TMDBPerson } from "@/data/discover/discover-zod-schema";
 import { ViewMode } from "@/store/view-preferences-store";
 import { Image } from "expo-image";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { Link } from "expo-router";
+import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Card, Text, useTheme } from "react-native-paper";
 
 interface DiscoverPersonCardProps {
@@ -31,105 +32,109 @@ export function DiscoverPersonCard({ item, viewMode = "grid" }: DiscoverPersonCa
   const cardWidth = isGridView ? gridCardWidth : listCardWidth;
 
   return (
-    <Card style={[isGridView ? styles.gridContainer : styles.listContainer, { width: cardWidth }]}>
-      {isGridView ? (
-        // Grid Layout (existing design)
-        <>
-          <View style={styles.imageContainer}>
-            <Image
-              source={{
-                uri: imageUrl ? imageUrl : require("@/assets/images/poster-placeholder.jpeg"),
-              }}
-              style={styles.profile}
-              contentFit="cover"
-              transition={200}
-              placeholder={require("@/assets/images/poster-placeholder.jpeg")}
-            />
-          </View>
-
-          <Card.Content style={styles.gridContent}>
-            <Text
-              variant="titleSmall"
-              numberOfLines={2}
-              style={[styles.name, { color: colors.onSurface }]}>
-              {item.name}
-            </Text>
-
-            <Text
-              variant="bodySmall"
-              style={[styles.department, { color: colors.onSurfaceVariant }]}>
-              {item.known_for_department}
-            </Text>
-
-            {knownForTitle && (
-              <Text
-                variant="bodySmall"
-                numberOfLines={1}
-                style={[styles.knownFor, { color: colors.primary }]}>
-                Known for: {knownForTitle}
-              </Text>
-            )}
-          </Card.Content>
-        </>
-      ) : (
-        // List Layout (horizontal)
-        <View style={styles.listContent}>
-          <View style={styles.listImageContainer}>
-            {imageUrl ? (
-              <Image
-                source={{ uri: imageUrl }}
-                style={styles.listProfile}
-                contentFit="cover"
-                transition={200}
-              />
-            ) : (
-              <View
-                style={[
-                  styles.listProfile,
-                  styles.placeholderImage,
-                  { backgroundColor: colors.surfaceVariant },
-                ]}>
-                <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
-                  No Image
-                </Text>
+    <Link href={`/persons/${item.id}`} asChild>
+      <TouchableOpacity>
+        <Card style={[isGridView ? styles.gridContainer : styles.listContainer, { width: cardWidth }]}>
+          {isGridView ? (
+            // Grid Layout (existing design)
+            <>
+              <View style={styles.imageContainer}>
+                <Image
+                  source={{
+                    uri: imageUrl ? imageUrl : require("@/assets/images/poster-placeholder.jpeg"),
+                  }}
+                  style={styles.profile}
+                  contentFit="cover"
+                  transition={200}
+                  placeholder={require("@/assets/images/poster-placeholder.jpeg")}
+                />
               </View>
-            )}
-          </View>
 
-          <View style={styles.listTextContent}>
-            <Text
-              variant="titleMedium"
-              numberOfLines={2}
-              style={[styles.listName, { color: colors.onSurface }]}>
-              {item.name}
-            </Text>
+              <Card.Content style={styles.gridContent}>
+                <Text
+                  variant="titleSmall"
+                  numberOfLines={2}
+                  style={[styles.name, { color: colors.onSurface }]}>
+                  {item.name}
+                </Text>
 
-            <Text
-              variant="bodyMedium"
-              style={[styles.listDepartment, { color: colors.onSurfaceVariant }]}>
-              {item.known_for_department}
-            </Text>
+                <Text
+                  variant="bodySmall"
+                  style={[styles.department, { color: colors.onSurfaceVariant }]}>
+                  {item.known_for_department}
+                </Text>
 
-            {knownForTitle && (
-              <Text
-                variant="bodySmall"
-                numberOfLines={2}
-                style={[styles.listKnownFor, { color: colors.primary }]}>
-                Known for: {knownForTitle}
-              </Text>
-            )}
+                {knownForTitle && (
+                  <Text
+                    variant="bodySmall"
+                    numberOfLines={1}
+                    style={[styles.knownFor, { color: colors.primary }]}>
+                    Known for: {knownForTitle}
+                  </Text>
+                )}
+              </Card.Content>
+            </>
+          ) : (
+            // List Layout (horizontal)
+            <View style={styles.listContent}>
+              <View style={styles.listImageContainer}>
+                {imageUrl ? (
+                  <Image
+                    source={{ uri: imageUrl }}
+                    style={styles.listProfile}
+                    contentFit="cover"
+                    transition={200}
+                  />
+                ) : (
+                  <View
+                    style={[
+                      styles.listProfile,
+                      styles.placeholderImage,
+                      { backgroundColor: colors.surfaceVariant },
+                    ]}>
+                    <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
+                      No Image
+                    </Text>
+                  </View>
+                )}
+              </View>
 
-            {item.known_for && item.known_for.length > 1 && (
-              <Text
-                variant="bodySmall"
-                style={[styles.listAdditional, { color: colors.onSurfaceVariant }]}>
-                +{item.known_for.length - 1} more
-              </Text>
-            )}
-          </View>
-        </View>
-      )}
-    </Card>
+              <View style={styles.listTextContent}>
+                <Text
+                  variant="titleMedium"
+                  numberOfLines={2}
+                  style={[styles.listName, { color: colors.onSurface }]}>
+                  {item.name}
+                </Text>
+
+                <Text
+                  variant="bodyMedium"
+                  style={[styles.listDepartment, { color: colors.onSurfaceVariant }]}>
+                  {item.known_for_department}
+                </Text>
+
+                {knownForTitle && (
+                  <Text
+                    variant="bodySmall"
+                    numberOfLines={2}
+                    style={[styles.listKnownFor, { color: colors.primary }]}>
+                    Known for: {knownForTitle}
+                  </Text>
+                )}
+
+                {item.known_for && item.known_for.length > 1 && (
+                  <Text
+                    variant="bodySmall"
+                    style={[styles.listAdditional, { color: colors.onSurfaceVariant }]}>
+                    +{item.known_for.length - 1} more
+                  </Text>
+                )}
+              </View>
+            </View>
+          )}
+        </Card>
+      </TouchableOpacity>
+    </Link>
   );
 }
 

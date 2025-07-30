@@ -365,6 +365,97 @@ export const TMDBPersonSchema = z.object({
 });
 
 /**
+ * Person details schema with extended information
+ */
+export const TMDBPersonDetailsSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  original_name: z.string(),
+  profile_path: z.string().nullable(),
+  adult: z.boolean(),
+  popularity: z.number(),
+  known_for_department: z.string(),
+  biography: z.string(),
+  birthday: z.string().nullable(),
+  deathday: z.string().nullable(),
+  gender: z.number(),
+  homepage: z.string().nullable(),
+  imdb_id: z.string().nullable(),
+  place_of_birth: z.string().nullable(),
+  also_known_as: z.array(z.string()),
+  // Credits (when using append_to_response)
+  movie_credits: z.object({
+    cast: z.array(z.object({
+      id: z.number(),
+      title: z.string(),
+      original_title: z.string(),
+      overview: z.string(),
+      release_date: z.string().nullable(),
+      poster_path: z.string().nullable(),
+      backdrop_path: z.string().nullable(),
+      genre_ids: z.array(z.number()),
+      vote_average: z.number(),
+      vote_count: z.number(),
+      popularity: z.number(),
+      character: z.string(),
+      credit_id: z.string(),
+      order: z.number(),
+    })),
+    crew: z.array(z.object({
+      id: z.number(),
+      title: z.string(),
+      original_title: z.string(),
+      overview: z.string(),
+      release_date: z.string().nullable(),
+      poster_path: z.string().nullable(),
+      backdrop_path: z.string().nullable(),
+      genre_ids: z.array(z.number()),
+      vote_average: z.number(),
+      vote_count: z.number(),
+      popularity: z.number(),
+      department: z.string(),
+      job: z.string(),
+      credit_id: z.string(),
+    })),
+  }).optional(),
+  tv_credits: z.object({
+    cast: z.array(z.object({
+      id: z.number(),
+      name: z.string(),
+      original_name: z.string(),
+      overview: z.string(),
+      first_air_date: z.string().nullable(),
+      poster_path: z.string().nullable(),
+      backdrop_path: z.string().nullable(),
+      genre_ids: z.array(z.number()),
+      vote_average: z.number(),
+      vote_count: z.number(),
+      popularity: z.number(),
+      character: z.string(),
+      credit_id: z.string(),
+      episode_count: z.number(),
+    })),
+    crew: z.array(z.object({
+      id: z.number(),
+      name: z.string(),
+      original_name: z.string(),
+      overview: z.string(),
+      first_air_date: z.string().nullable(),
+      poster_path: z.string().nullable(),
+      backdrop_path: z.string().nullable(),
+      genre_ids: z.array(z.number()),
+      vote_average: z.number(),
+      vote_count: z.number(),
+      popularity: z.number(),
+      department: z.string(),
+      job: z.string(),
+      credit_id: z.string(),
+      episode_count: z.number(),
+    })),
+  }).optional(),
+});
+
+/**
  * Search result item schema (discriminated union)
  */
 export const TMDBSearchResultSchema = z.discriminatedUnion("media_type", [
@@ -454,6 +545,7 @@ export type TMDBTVSeasonDetails = z.infer<typeof TMDBTVSeasonDetailsSchema>;
 
 // Search types
 export type TMDBPerson = z.infer<typeof TMDBPersonSchema>;
+export type TMDBPersonDetails = z.infer<typeof TMDBPersonDetailsSchema>;
 export type TMDBSearchResult = z.infer<typeof TMDBSearchResultSchema>;
 export type TMDBSearchResponse = z.infer<typeof TMDBSearchResponseSchema>;
 
