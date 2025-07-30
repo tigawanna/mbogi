@@ -19,3 +19,5 @@ in some cases i want to hide the header when it's ot relevent, use `headerShown:
 type of manual safe area view addition
 
 - prefre the `@/` alias for most things including images in the /assets folder with `require("@/assets....)`, this is configured in the tsconfig.json file
+
+Movie reaalted Image should use the lace holder of  placeholder={require("@/assets/images/poster-placeholder.jpeg")

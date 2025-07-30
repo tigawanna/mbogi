@@ -1,5 +1,6 @@
-import { Stack, useLocalSearchParams } from "expo-router";
-import { Surface,Text } from "react-native-paper";
+import { TVDetailScreen } from "@/components/screens/discover/tv/TVDetailScreen";
+import { Redirect, Stack, useLocalSearchParams } from "expo-router";
+import { Surface } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function MediaDetails() {
@@ -8,23 +9,8 @@ export default function MediaDetails() {
   const mediaId = parseInt(show, 10);
 
   if (isNaN(mediaId)) {
-    return null;
+    return <Redirect href="/discover" />;
   }
-  
-  // Default to tv if no type specified
-  const mediaType = type === "movie" ? "movie" : "tv";
-  
-  if (mediaType === "tv") {
-    return (
-      <Surface style={{ flex: 1, paddingTop: top + 12 }}>
-        <Stack.Screen options={{
-          headerShown: true,
-        }}/>
-        <Text>TV Show Details for ID: {mediaId}</Text>
-      </Surface>
-    );
-  }
-
   return (
     <Surface style={{ flex: 1, paddingTop: top + 12 }}>
       <Stack.Screen
@@ -32,7 +18,7 @@ export default function MediaDetails() {
           headerShown: true,
         }}
       />
-      <Text>Movie Details for ID: {mediaId}</Text>
+      <TVDetailScreen tvId={mediaId} />
     </Surface>
   );
 }
