@@ -9,9 +9,8 @@ export interface ViewPreferences {
   discoverTV: ViewMode;
   
   // Search views
-  searchMovies: ViewMode;
-  searchTV: ViewMode;
-  searchPerson: ViewMode;
+  search: ViewMode;
+
   
   // Community/My watchlist views
   myWatchlist: ViewMode;
@@ -33,10 +32,8 @@ const DEFAULT_PREFERENCES: ViewPreferences = {
   discoverTV: 'grid',
   
   // Default to list for search (more information dense)
-  searchMovies: 'list',
-  searchTV: 'list',
-  searchPerson: 'list',
-  
+  search: 'list',
+
   // Default to grid for watchlists (more visual)
   myWatchlist: 'grid',
   communityWatchlist: 'grid',
@@ -91,26 +88,12 @@ export const useDiscoverTVViewMode = () => {
   };
 };
 
-export const useSearchMoviesViewMode = () => {
+export const useSearchResultsViewMode = () => {
   const { preferences, setViewMode } = useViewPreferencesStore();
   return {
-    viewMode: preferences.searchMovies,
-    setViewMode: (mode: ViewMode) => setViewMode('searchMovies', mode),
+    viewMode: preferences.search,
+    setViewMode: (mode: ViewMode) => setViewMode('search', mode),
   };
 };
 
-export const useSearchTVViewMode = () => {
-  const { preferences, setViewMode } = useViewPreferencesStore();
-  return {
-    viewMode: preferences.searchTV,
-    setViewMode: (mode: ViewMode) => setViewMode('searchTV', mode),
-  };
-};
 
-export const useSearchPersonViewMode = () => {
-  const { preferences, setViewMode } = useViewPreferencesStore();
-  return {
-    viewMode: preferences.searchPerson,
-    setViewMode: (mode: ViewMode) => setViewMode('searchPerson', mode),
-  };
-};

@@ -4,7 +4,7 @@ import { Searchbar, useTheme } from "react-native-paper";
 import { Tabs, TabScreen, TabsProvider } from "react-native-paper-tabs";
 
 import { ViewToggle } from "@/components/shared/ViewToggle";
-import { useDiscoverMoviesViewMode, useDiscoverTVViewMode } from "@/store/view-preferences-store";
+import { useDiscoverMoviesViewMode, useDiscoverTVViewMode, useSearchResultsViewMode } from "@/store/view-preferences-store";
 import { router, useLocalSearchParams } from "expo-router";
 import { useDiscoverFiltersStore } from "./filters/discover-fliters-store";
 import {
@@ -63,13 +63,14 @@ export function DiscoverScreenScaffold({ children }: DiscoverScreenProps) {
   const { activeTab } = useDiscoverFiltersStore();
   const { viewMode: movieViewMode, setViewMode: setMovieViewMode } = useDiscoverMoviesViewMode();
   const { viewMode: tvViewMode, setViewMode: setTVViewMode } = useDiscoverTVViewMode();
+  const { viewMode: searchViewMode, setViewMode: setSearchViewMode } = useSearchResultsViewMode();
 
   const hasActiveFilters = useHasActiveFilters();
   const [showFilters, setShowFilters] = useState(false);
 
   // Get current view mode and setter based on active tab
-  const currentViewMode = activeTab === "movie" ? movieViewMode : tvViewMode;
-  const setCurrentViewMode = activeTab === "movie" ? setMovieViewMode : setTVViewMode;
+  const currentViewMode = searchQuery.length > 1 ? searchViewMode : (activeTab === "movie" ? movieViewMode : tvViewMode);
+  const setCurrentViewMode = searchQuery.length > 1 ? setSearchViewMode : (activeTab === "movie" ? setMovieViewMode : setTVViewMode);
 
   return (
     <View style={styles.scaffoldContainer}>

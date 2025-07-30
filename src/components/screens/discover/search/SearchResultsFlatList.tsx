@@ -4,6 +4,7 @@ import { Text } from 'react-native-paper';
 import { DiscoverMoviesCard } from '../movies/DiscoverMoviesCard';
 import { DiscoverPersonCard } from '../person/DiscoverPersonCard';
 import { DiscoverTVCard } from '../tv/DiscoverTVCard';
+import { useSearchResultsViewMode } from '@/store/view-preferences-store';
 
 interface SearchResultsFlatListProps {
   searchresults: TMDBSearchResponse["results"];
@@ -12,19 +13,20 @@ interface SearchResultsFlatListProps {
 type SearchResultItem = TMDBSearchResponse["results"][number];
 
 export function SearchResultsFlatList({ searchresults }: SearchResultsFlatListProps) {
+    const { viewMode } = useSearchResultsViewMode();
   const renderItem = ({ item }: { item: SearchResultItem }) => {
     if (item.media_type === 'movie') {
       return (
-        <DiscoverMoviesCard item={item} />
+        <DiscoverMoviesCard item={item} viewMode={viewMode} />
       );
     }
     if (item.media_type === 'tv') {
       return (
-        <DiscoverTVCard item={item} />
+        <DiscoverTVCard item={item} viewMode={viewMode} />
       );
     }
     if (item.media_type === 'person') {
-      return <DiscoverPersonCard item={item} />;
+      return <DiscoverPersonCard item={item} viewMode={viewMode} />;
     }
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
