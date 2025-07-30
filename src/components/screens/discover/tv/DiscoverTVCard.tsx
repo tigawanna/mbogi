@@ -1,27 +1,25 @@
-import type { TMDBTVShow } from '@/data/discover/discover-zod-schema';
-import { ViewMode } from '@/store/view-preferences-store';
-import { Image } from 'expo-image';
-import { Dimensions, StyleSheet, View } from 'react-native';
-import { Card, Text, useTheme } from 'react-native-paper';
-import { DiscoverCardAction } from '../actions/DiscoverCardAction';
+import type { TMDBTVShow } from "@/data/discover/discover-zod-schema";
+import { ViewMode } from "@/store/view-preferences-store";
+import { Image } from "expo-image";
+import { Dimensions, StyleSheet, View } from "react-native";
+import { Card, Text, useTheme } from "react-native-paper";
+import { DiscoverCardAction } from "../actions/DiscoverCardAction";
 
 interface DiscoverTVCardProps {
-    item: TMDBTVShow;
-    viewMode?: ViewMode;
+  item: TMDBTVShow;
+  viewMode?: ViewMode;
 }
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 const gridCardWidth = (width - 48) / 2; // Account for padding and gap
 const listCardWidth = width - 32; // Account for horizontal padding
 
-export function DiscoverTVCard({ item, viewMode = 'grid' }: DiscoverTVCardProps) {
+export function DiscoverTVCard({ item, viewMode = "grid" }: DiscoverTVCardProps) {
   const { colors } = useTheme();
-  
-  const imageUrl = item.poster_path 
-    ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
-    : null;
 
-  const isGridView = viewMode === 'grid';
+  const imageUrl = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null;
+
+  const isGridView = viewMode === "grid";
   const cardWidth = isGridView ? gridCardWidth : listCardWidth;
 
   return (
@@ -30,25 +28,15 @@ export function DiscoverTVCard({ item, viewMode = 'grid' }: DiscoverTVCardProps)
         // Grid Layout (existing design)
         <>
           <View style={styles.imageContainer}>
-            {imageUrl ? (
-              <Image
-                source={{ uri: imageUrl }}
-                style={styles.poster}
-                contentFit="cover"
-                transition={200}
-              />
-            ) : (
-              <View
-                style={[
-                  styles.poster,
-                  styles.placeholderImage,
-                  { backgroundColor: colors.surfaceVariant },
-                ]}>
-                <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
-                  No Image
-                </Text>
-              </View>
-            )}
+            <Image
+              source={{
+                uri: imageUrl ? imageUrl : require("@/assets/images/poster-placeholder.jpeg"),
+              }}
+              style={styles.poster}
+              contentFit="cover"
+              transition={200}
+              placeholder={require("@/assets/images/poster-placeholder.jpeg")}
+            />
           </View>
 
           <Card.Content style={styles.gridContent}>
@@ -86,25 +74,15 @@ export function DiscoverTVCard({ item, viewMode = 'grid' }: DiscoverTVCardProps)
         // List Layout (horizontal)
         <View style={styles.listContent}>
           <View style={styles.listImageContainer}>
-            {imageUrl ? (
-              <Image
-                source={{ uri: imageUrl }}
-                style={styles.listPoster}
-                contentFit="cover"
-                transition={200}
-              />
-            ) : (
-              <View
-                style={[
-                  styles.listPoster,
-                  styles.placeholderImage,
-                  { backgroundColor: colors.surfaceVariant },
-                ]}>
-                <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
-                  No Image
-                </Text>
-              </View>
-            )}
+            <Image
+              source={{
+                uri: imageUrl ? imageUrl : require("@/assets/images/poster-placeholder.jpeg"),
+              }}
+              style={styles.listPoster}
+              contentFit="cover"
+              transition={200}
+              placeholder={require("@/assets/images/poster-placeholder.jpeg")}
+            />
           </View>
 
           <View style={styles.listTextContent}>
@@ -162,36 +140,36 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   imageContainer: {
-    width: '100%',
-    aspectRatio: 2/3, // TV show poster aspect ratio
-    position: 'relative',
+    width: "100%",
+    aspectRatio: 2 / 3, // TV show poster aspect ratio
+    position: "relative",
   },
   poster: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
   },
   placeholderImage: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   actionOverlay: {
-    position: 'absolute',
+    position: "absolute",
     top: 8,
     right: 8,
     width: 36,
     height: 36,
     borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   gridContent: {
     padding: 12,
     minHeight: 80,
   },
   title: {
-    fontWeight: '600',
+    fontWeight: "600",
     lineHeight: 18,
     marginBottom: 4,
   },
@@ -199,21 +177,21 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 4,
   },
   rating: {
-    fontWeight: '500',
+    fontWeight: "500",
   },
-  
+
   // List styles (new)
   listContainer: {
     marginBottom: 12,
     elevation: 2,
   },
   listContent: {
-    flexDirection: 'row',
+    flexDirection: "row",
     padding: 16,
   },
   listImageContainer: {
@@ -222,42 +200,42 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   listPoster: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     borderRadius: 8,
   },
   listTextContent: {
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   listHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: 8,
   },
   listTitle: {
-    fontWeight: '600',
+    fontWeight: "600",
     flex: 1,
     marginRight: 8,
   },
   listActionContainer: {
     width: 36,
     height: 36,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   listMetadata: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 16,
     marginBottom: 8,
   },
   listYear: {
-    fontWeight: '500',
+    fontWeight: "500",
   },
   listRating: {
-    fontWeight: '500',
+    fontWeight: "500",
   },
   listOverview: {
     lineHeight: 18,
