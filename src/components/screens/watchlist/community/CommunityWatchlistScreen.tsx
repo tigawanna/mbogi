@@ -2,19 +2,17 @@ import { communityWatchlistCollection } from "@/data/watchlist/collections";
 import { ilike } from "@tanstack/db";
 import { useLiveQuery } from "@tanstack/react-db";
 import React from "react";
-import { StyleSheet, useWindowDimensions, View } from "react-native";
-import { DataTable, Searchbar, Text, useTheme } from "react-native-paper";
+import { FlatList, StyleSheet, useWindowDimensions, View } from "react-native";
+import { Searchbar, Text, useTheme } from "react-native-paper";
 
-import { useWatchlistSearch } from "../hooks";
-import { useCommunityWatchListPageoptionsStore } from "@/data/watchlist/watchlist-stores";
-import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
+import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
+import { useWatchlistSearch } from "../hooks";
+import { WatchlistCard } from "../shared/WatchlistCard";
 
 
 export function CommunityWatchlistScreen() {
   const { searchQuery } = useWatchlistSearch();
-  const pageOptions = useCommunityWatchListPageoptionsStore((state) => state.options);
-  const setPageOptions = useCommunityWatchListPageoptionsStore((state) => state.setOptions);
   const { colors } = useTheme();
   const {
     data: watchlist,
@@ -110,26 +108,18 @@ export function CommunityWatchlistScreen() {
   }
   return (
     <WatchlistScreenScafold>
-      <View style={{ ...styles.container }}>
-        {watchlist.map((item) => {
-          return <Text key={item.id}>{item.title}</Text>;
-        })}
-      </View>
-      {pageOptions.totalPages > 1 && (
-        <DataTable.Pagination
-          page={pageOptions.page}
-          numberOfPages={pageOptions.totalPages}
-          onPageChange={(page) => {
-            setPageOptions({
-              ...pageOptions,
-              page: page - 1, // DataTable uses 1-based index
-            });
-          }}
-          label={`Page ${pageOptions.page + 1} of ${pageOptions.totalPages}`}
-          showFastPaginationControls
-          // style={styles.pagination}
-        />
-      )}
+      <FlatList
+        data={watchlist}
+        renderItem={({ item }) => (
+          <WatchlistCard 
+            watchlist={item} 
+            showUser={true}
+          />
+        )}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContainer}
+        showsVerticalScrollIndicator={false}
+      />
     </WatchlistScreenScafold>
   );
 }
@@ -169,12 +159,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  container: {
-    flex: 1,
-    height: "100%",
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
+  listContainer: {
+    paddingTop: 8,
+    paddingBottom: 16,
   },
   searchBar: {
     elevation: 0,

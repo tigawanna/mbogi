@@ -1,8 +1,8 @@
-import { createCollection } from "@tanstack/react-db";
-import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import { queryClient } from "@/lib/tanstack/query/client";
 import { pb } from "@/lib/pb/client";
 import { WatchlistResponseSchema } from "@/lib/pb/types/pb-zod";
+import { queryClient } from "@/lib/tanstack/query/client";
+import { queryCollectionOptions } from "@tanstack/query-db-collection";
+import { createCollection } from "@tanstack/react-db";
 import { and, eq, like, or } from "@tigawanna/typed-pocketbase";
 import { useCommunityWatchListPageoptionsStore } from "./watchlist-stores";
 
@@ -148,6 +148,39 @@ export const communityWatchlistCollection = ({
         return response.items;
       },
       queryClient: queryClient,
+      getKey: (item) => item.id,
+      schema: WatchlistResponseSchema,
+    })
+  );
+};
+
+// Function to get a single watchlist with expanded items
+async function getWatchlistById(watchlistId: string) {
+  const response = await pb.from("watchlist").getOne(watchlistId, {
+    select: {
+      expand: {
+        user_id: true,
+        items: true,
+      },
+    },
+  });
+  return response;
+}
+
+// Collection for a single watchlist with items
+export const watchlistByIdCollection = (watchlistId: string) => {
+  return createCollection(
+    queryCollectionOptions({
+      queryKey: ["watchlist", "details", watchlistId],
+      queryFn: async () => {
+        if (!watchlistId) {
+          throw new Error("Watchlist ID is required");
+        }
+        const response = await getWatchlistById(watchlistId);
+        return [response]; // Return as array for collection compatibility
+      },
+      queryClient: queryClient,
+      enabled: !!watchlistId,
       getKey: (item) => item.id,
       schema: WatchlistResponseSchema,
     })

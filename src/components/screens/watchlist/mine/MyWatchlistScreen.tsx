@@ -2,13 +2,13 @@ import { myWatchlistCollection } from "@/data/watchlist/collections";
 import { ilike } from "@tanstack/db";
 import { useLiveQuery } from "@tanstack/react-db";
 import React from "react";
-import { StyleSheet, useWindowDimensions, View } from "react-native";
+import { FlatList, StyleSheet, useWindowDimensions, View } from "react-native";
 import { Searchbar, Text, useTheme } from "react-native-paper";
 
-
-import { useWatchlistSearch } from "../hooks";
-import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
+import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
+import { useWatchlistSearch } from "../hooks";
+import { WatchlistCard } from "../shared/WatchlistCard";
 
 export function MyWatchlistScreen() {
   const { searchQuery } = useWatchlistSearch();
@@ -72,44 +72,47 @@ export function MyWatchlistScreen() {
       </WatchlistScreenScafold>
     );
   }
-  if (!watchlist) {
+  if (!watchlist || watchlist.length === 0) {
     return (
       <WatchlistScreenScafold>
         <View style={styles.statesContainer}>
-          {__DEV__ ? (
-            <View>
-              <Text variant="titleMedium" style={{ color: colors.error }}>
-                No watchlist found
-              </Text>
+          <View style={styles.emptyContainer}>
+            <View style={styles.emptyIconContainer}>
+              <EmptyRoadSVG />
             </View>
-          ) : (
-            <View style={styles.emptyContainer}>
-              <View style={styles.emptyIconContainer}>
-                <EmptyRoadSVG />
-              </View>
-              <Text
-                variant="headlineSmall"
-                style={[styles.emptyTitle, { color: colors.onSurface }]}>
-                No watchlist found
-              </Text>
-              <Text
-                variant="bodyMedium"
-                style={[styles.emptySubtitle, { color: colors.onSurfaceVariant }]}>
-                Try adjusting your filters or search terms to discover more content
-              </Text>
-            </View>
-          )}
+            <Text
+              variant="headlineSmall"
+              style={[styles.emptyTitle, { color: colors.onSurface }]}>
+              No watchlists found
+            </Text>
+            <Text
+              variant="bodyMedium"
+              style={[styles.emptySubtitle, { color: colors.onSurfaceVariant }]}>
+              {searchQuery 
+                ? "Try adjusting your search terms to find more watchlists"
+                : "Create your first watchlist to get started"
+              }
+            </Text>
+          </View>
         </View>
       </WatchlistScreenScafold>
     );
   }
+
   return (
     <WatchlistScreenScafold>
-      <View style={{ ...styles.container }}>
-        {watchlist.map((item) => {
-          return <Text key={item.id}>{item.title}</Text>;
-        })}
-      </View>
+      <FlatList
+        data={watchlist}
+        renderItem={({ item }) => (
+          <WatchlistCard 
+            watchlist={item} 
+            showUser={false}
+          />
+        )}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContainer}
+        showsVerticalScrollIndicator={false}
+      />
     </WatchlistScreenScafold>
   );
 }
@@ -149,12 +152,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  container: {
-    flex: 1,
-    height: "100%",
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
+  listContainer: {
+    paddingTop: 8,
+    paddingBottom: 16,
   },
   searchBar: {
     elevation: 0,
