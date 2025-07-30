@@ -326,17 +326,16 @@ export class TMDBSDK {
   }
 
   /**
-   * Get detailed information about a specific TV show season
-   * @param tvId - TMDB TV show ID
-   * @param seasonNumber - Season number
-   * @param params - Optional query parameters
-   * @returns Promise that resolves to detailed TV season information
-   * @throws Error if tvId or seasonNumber is invalid
+   * Get detailed information about a specific person
+   * @param id - TMDB person ID
+   * @param params - Additional parameters for the request including append_to_response
+   * @returns Promise resolving to person details response
+   * @throws Error if person ID is invalid
    * 
    * @example
    * ```typescript
-   * const season = await tmdb.getTVSeasonDetails(1399, 1, {
-   *   append_to_response: 'credits,videos'
+   * const person = await tmdb.getPersonDetails(287, {
+   *   append_to_response: 'movie_credits,tv_credits,external_ids'
    * });
    * ```
    */
@@ -356,7 +355,7 @@ export class TMDBSDK {
       }
     });
 
-    const url = `/api/tmdb/details/person/${id}${
+    const url = `/api/tmdb/person/${id}${
       queryString.toString() ? `?${queryString.toString()}` : ""
     }`;
 

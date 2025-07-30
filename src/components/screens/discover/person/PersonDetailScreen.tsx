@@ -2,7 +2,8 @@ import { LoadingIndicatorDots } from '@/components/state-screens/LoadingIndicato
 import { personDetailsQueryOptions } from '@/data/discover/discover-query-options';
 import { useQuery } from '@tanstack/react-query';
 import { Image } from 'expo-image';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Link } from 'expo-router';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Button, Card, Chip, Divider, Text, useTheme } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -20,7 +21,7 @@ export function PersonDetailScreen({ personId }: PersonDetailScreenProps) {
     error,
   } = useQuery({
     ...personDetailsQueryOptions(personId, {
-      append_to_response: "movie_credits,tv_credits,recommendations",
+      append_to_response: "movie_credits,tv_credits,external_ids",
     }),
   });
 
@@ -210,42 +211,50 @@ export function PersonDetailScreen({ personId }: PersonDetailScreenProps) {
                   showsHorizontalScrollIndicator={false}
                   style={styles.creditsScroll}
                 >
-                  {allCredits.map((credit) => (
-                    <View key={`${credit.type}-${credit.id}`} style={styles.creditCard}>
-                      <Image
-                        source={{
-                          uri: credit.poster_path 
-                            ? `https://image.tmdb.org/t/p/w200${credit.poster_path}`
-                            : require('@/assets/images/poster-placeholder.jpeg')
-                        }}
-                        style={styles.creditPoster}
-                        contentFit="cover"
-                        placeholder={require('@/assets/images/poster-placeholder.jpeg')}
-                      />
-                      <Text 
-                        variant="bodySmall" 
-                        numberOfLines={2}
-                        style={[styles.creditTitle, { color: colors.onSurface }]}
-                      >
-                        {'title' in credit ? credit.title : credit.name}
-                      </Text>
-                      <Text 
-                        variant="bodySmall" 
-                        style={[styles.creditRole, { color: colors.primary }]}
-                      >
-                        {credit.character || 'Unknown Role'}
-                      </Text>
-                      <Text 
-                        variant="bodySmall" 
-                        style={[styles.creditYear, { color: colors.onSurfaceVariant }]}
-                      >
-                        {'release_date' in credit 
-                          ? credit.release_date ? new Date(credit.release_date).getFullYear() : 'TBD'
-                          : credit.first_air_date ? new Date(credit.first_air_date).getFullYear() : 'TBD'
-                        }
-                      </Text>
-                    </View>
-                  ))}
+                  {allCredits.map((credit) => {
+                    const href = credit.type === 'movie' 
+                      ? `/movies/${credit.id}` as const
+                      : `/tv/${credit.id}` as const;
+                    
+                    return (
+                      <Link key={`${credit.type}-${credit.id}`} href={href} asChild>
+                        <TouchableOpacity style={styles.creditCard}>
+                          <Image
+                            source={{
+                              uri: credit.poster_path 
+                                ? `https://image.tmdb.org/t/p/w200${credit.poster_path}`
+                                : require('@/assets/images/poster-placeholder.jpeg')
+                            }}
+                            style={styles.creditPoster}
+                            contentFit="cover"
+                            placeholder={require('@/assets/images/poster-placeholder.jpeg')}
+                          />
+                          <Text 
+                            variant="bodySmall" 
+                            numberOfLines={2}
+                            style={[styles.creditTitle, { color: colors.onSurface }]}
+                          >
+                            {'title' in credit ? credit.title : credit.name}
+                          </Text>
+                          <Text 
+                            variant="bodySmall" 
+                            style={[styles.creditRole, { color: colors.primary }]}
+                          >
+                            {credit.character || 'Unknown Role'}
+                          </Text>
+                          <Text 
+                            variant="bodySmall" 
+                            style={[styles.creditYear, { color: colors.onSurfaceVariant }]}
+                          >
+                            {'release_date' in credit 
+                              ? credit.release_date ? new Date(credit.release_date).getFullYear() : 'TBD'
+                              : credit.first_air_date ? new Date(credit.first_air_date).getFullYear() : 'TBD'
+                            }
+                          </Text>
+                        </TouchableOpacity>
+                      </Link>
+                    );
+                  })}
                 </ScrollView>
               </View>
             )}
