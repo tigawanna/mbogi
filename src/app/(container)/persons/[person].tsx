@@ -4,8 +4,8 @@ import { Surface } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function MediaDetails() {
-  const { top } = useSafeAreaInsets();
-  const { person } = useLocalSearchParams() as { person: string; type?: string };
+  const { top,bottom } = useSafeAreaInsets();
+  const { person } = useLocalSearchParams() as { person: string };
   const personId = parseInt(person, 10);
 
   if (isNaN(personId)) {
@@ -13,10 +13,10 @@ export default function MediaDetails() {
   }
 
   return (
-    <Surface style={{ flex: 1, paddingTop: top }}>
+    <Surface style={{ flex: 1, paddingTop: top, paddingBottom: bottom }}>
       <Stack.Screen
         options={{
-          headerShown:false
+          headerShown: false,
         }}
       />
 
