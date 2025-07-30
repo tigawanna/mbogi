@@ -1,19 +1,19 @@
-import { useLiveQuery } from '@tanstack/react-db';
-import { router, useLocalSearchParams } from 'expo-router';
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
+import { eq, useLiveQuery } from "@tanstack/react-db";
+import { router, useLocalSearchParams } from "expo-router";
+import React from "react";
+import { StyleSheet, View } from "react-native";
+import { Text, useTheme } from "react-native-paper";
 
-import { EmptyRoadSVG } from '@/components/shared/svg/empty';
-import { LoadingIndicatorDots } from '@/components/state-screens/LoadingIndicatorDots';
-import { discoverTVCollection } from '@/data/discover/discover-query-collection';
-import { DiscoverTVFlatList } from './DiscoverTVFlatList';
-import { useDiscoverFiltersStore } from '../filters/discover-fliters-store';
-
+import { EmptyRoadSVG } from "@/components/shared/svg/empty";
+import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
+import { discoverTVCollection } from "@/data/discover/discover-query-collection";
+import { DiscoverTVFlatList } from "./DiscoverTVFlatList";
+import { useDiscoverFiltersStore } from "../filters/discover-fliters-store";
+import { myWatchlistItemsCollection } from "@/data/watchlist/collections";
 
 export function DiscoverTVScreen() {
   const { colors } = useTheme();
-  const {tvFilters}= useDiscoverFiltersStore();
+  const { tvFilters } = useDiscoverFiltersStore();
   // Pagination state (removed pagination as per requirements)
   const currentPage = 1;
 
@@ -24,12 +24,20 @@ export function DiscoverTVScreen() {
     isError,
   } = useLiveQuery(
     (query) =>
-      query.from({
-        tv: discoverTVCollection({
-          filters: tvFilters,
-          enabled: true,
+      query
+        .from({
+          tv: discoverTVCollection({
+            filters: tvFilters,
+            enabled: true,
+          }),
         })
-      }),
+        .join({ watchlist: myWatchlistItemsCollection() }, ({ tv, watchlist }) =>
+          eq(tv.id, watchlist.id)
+        )
+        .select(({ tv, watchlist }) => ({
+          ...tv,
+          watchListName: watchlist?.watchlistTitle,
+        })),
     [currentPage, tvFilters]
   );
 
@@ -52,10 +60,10 @@ export function DiscoverTVScreen() {
         <View style={styles.statesContainer}>
           {__DEV__ ? (
             <View>
-              <Text variant='titleMedium' style={{ color: colors.error }}>
+              <Text variant="titleMedium" style={{ color: colors.error }}>
                 Failed to load
               </Text>
-              <Text variant='bodySmall' style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
+              <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
                 Something went wrong
               </Text>
             </View>
@@ -65,12 +73,12 @@ export function DiscoverTVScreen() {
                 <EmptyRoadSVG />
               </View>
               <Text
-                variant='headlineSmall'
+                variant="headlineSmall"
                 style={[styles.emptyTitle, { color: colors.onSurface }]}>
                 Something went wrong
               </Text>
               <Text
-                variant='bodyMedium'
+                variant="bodyMedium"
                 style={[styles.emptySubtitle, { color: colors.onSurfaceVariant }]}>
                 Try adjusting your filters or search terms to discover more content
               </Text>
@@ -87,7 +95,7 @@ export function DiscoverTVScreen() {
         <View style={styles.statesContainer}>
           {__DEV__ ? (
             <View>
-              <Text variant='titleMedium' style={{ color: colors.error }}>
+              <Text variant="titleMedium" style={{ color: colors.error }}>
                 No TV shows found
               </Text>
             </View>
@@ -97,12 +105,12 @@ export function DiscoverTVScreen() {
                 <EmptyRoadSVG />
               </View>
               <Text
-                variant='headlineSmall'
+                variant="headlineSmall"
                 style={[styles.emptyTitle, { color: colors.onSurface }]}>
                 No TV shows found
               </Text>
               <Text
-                variant='bodyMedium'
+                variant="bodyMedium"
                 style={[styles.emptySubtitle, { color: colors.onSurfaceVariant }]}>
                 Try adjusting your filters or search terms to discover more content
               </Text>
@@ -125,17 +133,13 @@ interface DiscoverTVScreenScaffoldProps {
 }
 
 export function DiscoverTVScreenScaffold({ children }: DiscoverTVScreenScaffoldProps) {
-return (
-    <View style={styles.scaffoldContainer}>
-      {children}
-    </View>
-  );
+  return <View style={styles.scaffoldContainer}>{children}</View>;
 }
 
 export function useDiscoverTVScreenSearch() {
   const { query } = useLocalSearchParams<{ query: string }>();
   return {
-    searchQuery: query || '',
+    searchQuery: query || "",
     setSearchQuery: (query: string) => {
       router.setParams({ query });
     },
@@ -145,19 +149,19 @@ export function useDiscoverTVScreenSearch() {
 const styles = StyleSheet.create({
   scaffoldContainer: {
     flex: 1,
-    width: '100%',
+    width: "100%",
   },
   statesContainer: {
     flex: 1,
-    height: '100%',
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
+    height: "100%",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
   },
   emptyContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     padding: 32,
     gap: 16,
   },
@@ -166,12 +170,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   emptyTitle: {
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 8,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   emptySubtitle: {
-    textAlign: 'center',
+    textAlign: "center",
     opacity: 0.8,
     maxWidth: 280,
     lineHeight: 20,

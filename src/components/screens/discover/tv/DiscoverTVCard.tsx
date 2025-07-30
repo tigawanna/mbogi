@@ -25,10 +25,7 @@ export function DiscoverTVCard({ item, viewMode = 'grid' }: DiscoverTVCardProps)
   const cardWidth = isGridView ? gridCardWidth : listCardWidth;
 
   return (
-    <Card style={[
-      isGridView ? styles.gridContainer : styles.listContainer, 
-      { width: cardWidth }
-    ]}>
+    <Card style={[isGridView ? styles.gridContainer : styles.listContainer, { width: cardWidth }]}>
       {isGridView ? (
         // Grid Layout (existing design)
         <>
@@ -41,52 +38,48 @@ export function DiscoverTVCard({ item, viewMode = 'grid' }: DiscoverTVCardProps)
                 transition={200}
               />
             ) : (
-              <View style={[styles.poster, styles.placeholderImage, { backgroundColor: colors.surfaceVariant }]}>
+              <View
+                style={[
+                  styles.poster,
+                  styles.placeholderImage,
+                  { backgroundColor: colors.surfaceVariant },
+                ]}>
                 <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
                   No Image
                 </Text>
               </View>
             )}
-            
-            {/* Watchlist Action Overlay */}
-            <View style={styles.actionOverlay}>
-              <DiscoverCardAction 
-                type="tv" 
-                item={{ 
-                  ...item, 
-                  watchlistTitle: undefined, // TODO: Add watchlist join for TV shows
-                  media_type: "tv" as const
-                }} 
-              />
-            </View>
           </View>
-          
+
           <Card.Content style={styles.gridContent}>
-            <Text 
-              variant="titleSmall" 
+            <Text
+              variant="titleSmall"
               numberOfLines={2}
-              style={[styles.title, { color: colors.onSurface }]}
-            >
+              style={[styles.title, { color: colors.onSurface }]}>
               {item.name}
             </Text>
-            
-            <Text 
-              variant="bodySmall" 
-              style={[styles.year, { color: colors.onSurfaceVariant }]}
-            >
-              {item.first_air_date ? new Date(item.first_air_date).getFullYear() : 'TBD'}
+
+            <Text variant="bodySmall" style={[styles.year, { color: colors.onSurfaceVariant }]}>
+              {item.first_air_date ? new Date(item.first_air_date).getFullYear() : "TBD"}
             </Text>
-            
+
             {item.vote_average > 0 && (
               <View style={styles.ratingContainer}>
-                <Text 
-                  variant="bodySmall" 
-                  style={[styles.rating, { color: colors.primary }]}
-                >
+                <Text variant="bodySmall" style={[styles.rating, { color: colors.primary }]}>
                   ⭐ {item.vote_average.toFixed(1)}
                 </Text>
               </View>
             )}
+            {/* Watchlist Action Overlay */}
+            <View style={styles.actionOverlay}>
+              <DiscoverCardAction
+                type="tv"
+                item={{
+                  ...item,
+                  media_type: "tv" as const,
+                }}
+              />
+            </View>
           </Card.Content>
         </>
       ) : (
@@ -101,59 +94,57 @@ export function DiscoverTVCard({ item, viewMode = 'grid' }: DiscoverTVCardProps)
                 transition={200}
               />
             ) : (
-              <View style={[styles.listPoster, styles.placeholderImage, { backgroundColor: colors.surfaceVariant }]}>
+              <View
+                style={[
+                  styles.listPoster,
+                  styles.placeholderImage,
+                  { backgroundColor: colors.surfaceVariant },
+                ]}>
                 <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
                   No Image
                 </Text>
               </View>
             )}
           </View>
-          
+
           <View style={styles.listTextContent}>
             <View style={styles.listHeader}>
-              <Text 
-                variant="titleMedium" 
+              <Text
+                variant="titleMedium"
                 numberOfLines={2}
-                style={[styles.listTitle, { color: colors.onSurface }]}
-              >
+                style={[styles.listTitle, { color: colors.onSurface }]}>
                 {item.name}
               </Text>
               <View style={styles.listActionContainer}>
-                <DiscoverCardAction 
-                  type="tv" 
-                  item={{ 
-                    ...item, 
-                    watchlistTitle: undefined, // TODO: Add watchlist join for TV shows
-                    media_type: "tv" as const
-                  }} 
+                <DiscoverCardAction
+                  type="tv"
+                  item={{
+                    ...item,
+                    media_type: "tv" as const,
+                  }}
                 />
               </View>
             </View>
-            
+
             <View style={styles.listMetadata}>
-              <Text 
-                variant="bodyMedium" 
-                style={[styles.listYear, { color: colors.onSurfaceVariant }]}
-              >
-                {item.first_air_date ? new Date(item.first_air_date).getFullYear() : 'TBD'}
+              <Text
+                variant="bodyMedium"
+                style={[styles.listYear, { color: colors.onSurfaceVariant }]}>
+                {item.first_air_date ? new Date(item.first_air_date).getFullYear() : "TBD"}
               </Text>
-              
+
               {item.vote_average > 0 && (
-                <Text 
-                  variant="bodyMedium" 
-                  style={[styles.listRating, { color: colors.primary }]}
-                >
+                <Text variant="bodyMedium" style={[styles.listRating, { color: colors.primary }]}>
                   ⭐ {item.vote_average.toFixed(1)}
                 </Text>
               )}
             </View>
-            
+
             {item.overview && (
-              <Text 
-                variant="bodySmall" 
+              <Text
+                variant="bodySmall"
                 numberOfLines={3}
-                style={[styles.listOverview, { color: colors.onSurfaceVariant }]}
-              >
+                style={[styles.listOverview, { color: colors.onSurfaceVariant }]}>
                 {item.overview}
               </Text>
             )}
