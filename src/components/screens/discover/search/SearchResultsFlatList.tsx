@@ -1,10 +1,10 @@
 import { TMDBSearchResponse } from '@/data/discover/discover-zod-schema';
+import { useSearchResultsViewMode } from '@/store/view-preferences-store';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { DiscoverMoviesCard } from '../movies/DiscoverMoviesCard';
 import { DiscoverPersonCard } from '../person/DiscoverPersonCard';
 import { DiscoverTVCard } from '../tv/DiscoverTVCard';
-import { useSearchResultsViewMode } from '@/store/view-preferences-store';
 
 interface SearchResultsFlatListProps {
   searchresults: TMDBSearchResponse["results"];
@@ -14,7 +14,8 @@ type SearchResultItem = TMDBSearchResponse["results"][number];
 
 export function SearchResultsFlatList({ searchresults }: SearchResultsFlatListProps) {
     const { viewMode } = useSearchResultsViewMode();
-  const renderItem = ({ item }: { item: SearchResultItem }) => {
+  
+  const renderItem = ({ item, index }: { item: SearchResultItem; index: number }) => {
     if (item.media_type === 'movie') {
       return (
         <DiscoverMoviesCard item={item} viewMode={viewMode} />
@@ -37,6 +38,8 @@ export function SearchResultsFlatList({ searchresults }: SearchResultsFlatListPr
 
   const keyExtractor = (item: { id: number }) => item.id.toString();
 
+  const isGridView = viewMode === "grid";
+
   return (
     <FlatList
       data={searchresults}
@@ -45,8 +48,9 @@ export function SearchResultsFlatList({ searchresults }: SearchResultsFlatListPr
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
-      numColumns={2}
-      columnWrapperStyle={searchresults.length > 1 ? styles.row : undefined}
+      numColumns={isGridView ? 2 : 1}
+      columnWrapperStyle={isGridView && searchresults.length > 1 ? styles.row : undefined}
+      key={viewMode} // Force re-render when view mode changes
     />
   );
 }

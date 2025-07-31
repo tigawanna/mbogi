@@ -9,7 +9,8 @@ interface DiscoverMoviesFlatListProps {
 
 export function DiscoverMoviesFlatList({ list }: DiscoverMoviesFlatListProps) {
   const { viewMode } = useDiscoverMoviesViewMode();
-  const renderItem = ({ item }: { item: TMDBMovie }) => (
+  
+  const renderItem = ({ item, index }: { item: TMDBMovie; index: number }) => (
     <DiscoverMoviesCard item={item} viewMode={viewMode} />
   );
 

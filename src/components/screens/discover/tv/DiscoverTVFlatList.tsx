@@ -9,7 +9,8 @@ interface DiscoverTVFlatListProps {
 
 export function DiscoverTVFlatList({ list }: DiscoverTVFlatListProps) {
   const { viewMode } = useDiscoverTVViewMode();
-  const renderItem = ({ item }: { item: TMDBTVShow }) => (
+  
+  const renderItem = ({ item, index }: { item: TMDBTVShow; index: number }) => (
     <DiscoverTVCard item={item} viewMode={viewMode} />
   );
 
