@@ -1,12 +1,12 @@
-import { EmptyRoadSVG } from '@/components/shared/svg/empty';
-import { LoadingIndicatorDots } from '@/components/state-screens/LoadingIndicatorDots';
-import { watchlistByIdCollection } from '@/data/watchlist/collections';
-import { useLiveQuery } from '@tanstack/react-db';
-import React from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
-import { Card, Chip, IconButton, Text, useTheme } from 'react-native-paper';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { WatchlistItemCard } from '../shared/WatchlistItemCard';
+import { EmptyRoadSVG } from "@/components/shared/svg/empty";
+import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
+import { watchlistByIdCollection } from "@/data/watchlist/collections";
+import { useLiveQuery } from "@tanstack/react-db";
+import React from "react";
+import { FlatList, StyleSheet, View } from "react-native";
+import { Card, Chip, IconButton, Text, useTheme } from "react-native-paper";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { WatchlistItemCard } from "../shared/WatchlistItemCard";
 
 interface WatchlistDetailScreenProps {
   watchlistId: string;
@@ -33,24 +33,24 @@ export function WatchlistDetailScreen({ watchlistId }: WatchlistDetailScreenProp
 
   const getVisibilityIcon = (visibility: string) => {
     switch (visibility) {
-      case 'public':
-        return 'earth';
-      case 'private':
-        return 'lock';
-      case 'followers_only':
-        return 'account-group';
+      case "public":
+        return "earth";
+      case "private":
+        return "lock";
+      case "followers_only":
+        return "account-group";
       default:
-        return 'earth';
+        return "earth";
     }
   };
 
   const getVisibilityColor = (visibility: string) => {
     switch (visibility) {
-      case 'public':
+      case "public":
         return colors.primary;
-      case 'private':
+      case "private":
         return colors.error;
-      case 'followers_only':
+      case "followers_only":
         return colors.tertiary;
       default:
         return colors.onSurfaceVariant;
@@ -71,7 +71,9 @@ export function WatchlistDetailScreen({ watchlistId }: WatchlistDetailScreenProp
               <Text variant="titleMedium" style={[styles.statusTitle, { color: colors.onSurface }]}>
                 Loading Watchlist
               </Text>
-              <Text variant="bodyMedium" style={[styles.statusMessage, { color: colors.onSurfaceVariant }]}>
+              <Text
+                variant="bodyMedium"
+                style={[styles.statusMessage, { color: colors.onSurfaceVariant }]}>
                 Please wait while we fetch the watchlist details...
               </Text>
             </Card.Content>
@@ -93,8 +95,11 @@ export function WatchlistDetailScreen({ watchlistId }: WatchlistDetailScreenProp
               <Text variant="titleLarge" style={[styles.statusTitle, { color: colors.error }]}>
                 Watchlist not found
               </Text>
-              <Text variant="bodyMedium" style={[styles.statusMessage, { color: colors.onSurfaceVariant }]}>
-                The watchlist you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.
+              <Text
+                variant="bodyMedium"
+                style={[styles.statusMessage, { color: colors.onSurfaceVariant }]}>
+                The watchlist you&apos;re looking for doesn&apos;t exist or you don&apos;t have
+                access to it.
               </Text>
             </Card.Content>
           </Card>
@@ -121,51 +126,42 @@ export function WatchlistDetailScreen({ watchlistId }: WatchlistDetailScreenProp
 
           {/* Overview */}
           {watchlist.overview && (
-            <Text variant="bodyMedium" style={[styles.overview, { color: colors.onSurfaceVariant }]}>
+            <Text
+              variant="bodyMedium"
+              style={[styles.overview, { color: colors.onSurfaceVariant }]}>
               {watchlist.overview}
             </Text>
           )}
 
           {/* Metadata */}
           <View style={styles.metadataContainer}>
-            <Chip 
-              compact 
+            <Chip
+              compact
               style={[styles.itemsChip, { backgroundColor: colors.primaryContainer }]}
-              textStyle={{ color: colors.onPrimaryContainer }}
-            >
-              {items.length} {items.length === 1 ? 'item' : 'items'}
+              textStyle={{ color: colors.onPrimaryContainer }}>
+              {items.length} {items.length === 1 ? "item" : "items"}
             </Chip>
             {watchlist.is_collaborative && (
-              <Chip 
-                compact 
+              <Chip
+                compact
                 style={[styles.collaborativeChip, { backgroundColor: colors.tertiaryContainer }]}
-                textStyle={{ color: colors.onTertiaryContainer }}
-              >
+                textStyle={{ color: colors.onTertiaryContainer }}>
                 Collaborative
               </Chip>
             )}
+            <Text variant="bodySmall" style={[styles.date, { color: colors.onSurfaceVariant }]}>
+              Last updated: {formatDate(watchlist.updated)}
+            </Text>
           </View>
-
-          <Text variant="bodySmall" style={[styles.date, { color: colors.onSurfaceVariant }]}>
-            Last updated: {formatDate(watchlist.updated)}
-          </Text>
         </Card.Content>
       </Card>
-
-      {items.length > 0 && (
-        <View style={styles.sectionHeader}>
-          <Text variant="titleMedium" style={[styles.sectionTitle, { color: colors.onSurface }]}>
-            Items in this watchlist
-          </Text>
-        </View>
-      )}
     </View>
   );
 
   const ListEmpty = () => (
     <View style={styles.emptyContainer}>
-      <View style={styles.emptyIconContainer}>
-        <EmptyRoadSVG />
+      <View style={[styles.emptyIconContainer]}>
+        <EmptyRoadSVG height={120} />
       </View>
       <Text variant="headlineSmall" style={[styles.emptyTitle, { color: colors.onSurface }]}>
         No items in this watchlist
@@ -177,10 +173,16 @@ export function WatchlistDetailScreen({ watchlistId }: WatchlistDetailScreenProp
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background, paddingTop: top }]}>
+    <View style={[styles.container, { backgroundColor: colors.background, paddingBottom: 16 }]}>
       <FlatList
         data={items}
-        renderItem={({ item }) => <WatchlistItemCard item={item} />}
+        renderItem={({ item }) => (
+          <WatchlistItemCard
+            item={item}
+            // isMyWatchList={isMyWatchList}
+            watchListName={watchlist.title}
+          />
+        )}
         keyExtractor={(item) => item.id}
         ListHeaderComponent={ListHeader}
         ListEmptyComponent={ListEmpty}
@@ -197,8 +199,8 @@ const styles = StyleSheet.create({
   },
   statesContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   statusCard: {
@@ -207,19 +209,19 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   statusContent: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 20,
   },
   statusIcon: {
     marginBottom: 16,
   },
   statusTitle: {
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 8,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   statusMessage: {
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 18,
   },
   listContainer: {
@@ -234,14 +236,14 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   titleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: 8,
   },
   title: {
     flex: 1,
-    fontWeight: '600',
+    fontWeight: "600",
     marginRight: 8,
   },
   overview: {
@@ -249,7 +251,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   metadataContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     marginBottom: 8,
   },
@@ -268,12 +271,12 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   sectionTitle: {
-    fontWeight: '600',
+    fontWeight: "600",
   },
   emptyContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     padding: 32,
     gap: 16,
     marginTop: 40,
@@ -283,11 +286,11 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   emptyTitle: {
-    textAlign: 'center',
-    fontWeight: '600',
+    textAlign: "center",
+    fontWeight: "600",
   },
   emptySubtitle: {
-    textAlign: 'center',
+    textAlign: "center",
     opacity: 0.8,
     maxWidth: 280,
     lineHeight: 20,

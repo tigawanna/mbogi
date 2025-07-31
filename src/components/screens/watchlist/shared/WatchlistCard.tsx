@@ -49,9 +49,9 @@ export function WatchlistCard({ watchlist, showUser = false }: WatchlistCardProp
   const itemCount = watchlist.expand?.items?.length || watchlist.items?.length || 0;
 
   return (
-    <Link href={`/watchlist/${watchlist.id}` as any} asChild>
+    <Link href={`/watchlist/${watchlist.id}`} asChild>
       <TouchableOpacity>
-        <Card style={[styles.container, { backgroundColor: colors.surface }]}>
+        <Card style={[styles.container, { backgroundColor: colors.surface }]} elevation={4}>
           <Card.Content style={styles.content}>
             {/* Header */}
             <View style={styles.header}>
