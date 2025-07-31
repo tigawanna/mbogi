@@ -29,3 +29,6 @@ export function useExtrenalDevTools(queryClient: QueryClient) {
     //   secureStorageKeys: ["userToken", "refreshToken"],
     });
 }
+
+
+export const CACHETIME = __DEV__ ? 1000 : 1000 * 60 * 60 * 72; // 1 sec in dev, 72 hours in production

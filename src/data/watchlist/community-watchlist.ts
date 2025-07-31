@@ -5,6 +5,9 @@ import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/react-db";
 import { WatchlistResponseSchema } from "@/lib/pb/types/pb-zod";
 import { queryClient } from "@/lib/tanstack/query/client";
+import { CACHETIME } from "@/lib/tanstack/query/external-dev-tools";
+
+
 
 interface GetCommunitywatchlistProps {
   keyword?: string;
@@ -47,8 +50,8 @@ export async function getCommunityWatchListFromQueryClient({
   const response = await qc.fetchQuery({
     queryKey: ["watchlist", "community", keyword, page],
     queryFn: () => getCommunitywatchlist({ keyword, page }),
-    staleTime: 1000 * 60 * 60 * 72, // 72 hours (3 days)
-    gcTime: 1000 * 60 * 60 * 72, // 72 hours (3 days)
+    staleTime: CACHETIME,
+    gcTime: CACHETIME
   });
   return response;
 }
@@ -60,9 +63,17 @@ export function getCommunityWatchlistPageOptionsQueryOptions({
 }: CommunityWatchlistCollectionProps) {
   return queryOptions({
     queryKey: ["watchlist", "community", keyword, page, "page-options"],
-    queryFn: () => getCommunityWatchListFromQueryClient({ keyword, page, qc }),
-    staleTime: 1000 * 60 * 60 * 72, // 72 hours (3 days)
-    gcTime: 1000 * 60 * 60 * 72, // 72 hours (3 days)
+    queryFn: async () => {
+      const response = await getCommunityWatchListFromQueryClient({ keyword, page, qc });
+      return {
+        totalItems: response.totalItems,
+        totalPages: response.totalPages,
+        currentPage: response.page,
+        perPage: response.perPage,
+      };
+    },
+    staleTime: CACHETIME,
+    gcTime: CACHETIME
   });
 }
 
@@ -76,7 +87,8 @@ export const communityWatchlistCollection = ({
       queryKey: ["watchlist", "community", keyword, page, "collection"],
       queryFn: async () => {
         const response = await getCommunityWatchListFromQueryClient({ keyword, page, qc });
-        return response.items;
+        console.log("Community Watchlist Collection Response:", response);
+        return response.items ?? [];
       },
       queryClient: queryClient,
       getKey: (item) => item.id,

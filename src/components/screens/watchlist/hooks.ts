@@ -11,6 +11,15 @@ export function useWatchlistSearch() {
     },
   };
 }
+export function useCommunityWatchlistPage() {
+  const { p } = useLocalSearchParams<{ p: string }>();
+  return {
+    page: parseInt(p, 10) || 1,
+    setPage: (page: number) => {
+      router.setParams({ p: page.toString() });
+    },
+  };
+}
 
 interface watchlistSettings {
   orientation: "list" | "grid";

@@ -1,6 +1,7 @@
 import { pb } from "@/lib/pb/client";
 import { WatchlistResponseSchema } from "@/lib/pb/types/pb-zod";
 import { queryClient } from "@/lib/tanstack/query/client";
+import { CACHETIME } from "@/lib/tanstack/query/external-dev-tools";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/react-db";
 import { QueryClient } from "@tanstack/react-query";
@@ -28,8 +29,8 @@ export async function getUserWatchListFromQueryClient(qc: QueryClient, userId: s
   const response = await qc.fetchQuery({
     queryKey: ["watchlist", userId],
     queryFn: () => getUserwatchlist(userId),
-    staleTime: 1000 * 60 * 60 * 72, // 72 hours (3 days)
-    gcTime: 1000 * 60 * 60 * 72, // 72 hours (3 days)
+    staleTime: CACHETIME,
+    gcTime: CACHETIME
   });
   return response;
 }

@@ -1,4 +1,3 @@
-import { communityWatchlistCollection } from "@/data/watchlist/my-watchlist";
 import { ilike } from "@tanstack/db";
 import { useLiveQuery } from "@tanstack/react-db";
 import React from "react";
@@ -7,12 +6,19 @@ import { Searchbar, Text, useTheme } from "react-native-paper";
 
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
-import { useWatchlistSearch } from "../hooks";
+import { useWatchlistSearch, useCommunityWatchlistPage } from "../hooks";
 import { WatchlistCard } from "../shared/WatchlistCard";
-
+import {
+  communityWatchlistCollection,
+  getCommunityWatchlistPageOptionsQueryOptions,
+} from "@/data/watchlist/community-watchlist";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { CommunityListFooter } from "./CommunityListFooter";
 
 export function CommunityWatchlistScreen() {
+  const qc = useQueryClient();
   const { searchQuery } = useWatchlistSearch();
+  const { page } = useCommunityWatchlistPage();
   const { colors } = useTheme();
   const {
     data: watchlist,
@@ -20,14 +26,22 @@ export function CommunityWatchlistScreen() {
     isError,
   } = useLiveQuery(
     (query) =>
-      query
-        .from({
-          watchlist: communityWatchlistCollection({
-            keyword: searchQuery,
-          }),
-        })
-        .where(({ watchlist }) => ilike(watchlist.title, `%${searchQuery}%`)),
-    [searchQuery]
+      query.from({
+        watchlist: communityWatchlistCollection({
+          keyword: searchQuery,
+          qc,
+          page,
+        }),
+      }),
+    // .where(({ watchlist }) => ilike(watchlist.title, `%${searchQuery}%`))
+    [searchQuery, page]
+  );
+  const { data: pageOptions } = useQuery(
+    getCommunityWatchlistPageOptionsQueryOptions({
+      keyword: searchQuery,
+      qc,
+      page,
+    })
   );
 
   // console.log("watchlist data", data);
@@ -110,15 +124,16 @@ export function CommunityWatchlistScreen() {
     <WatchlistScreenScafold>
       <FlatList
         data={watchlist}
-        renderItem={({ item }) => (
-          <WatchlistCard 
-            watchlist={item} 
-            showUser={true}
-          />
-        )}
+        renderItem={({ item }) => <WatchlistCard watchlist={item} showUser={true} />}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
+        ListFooterComponent={
+          <CommunityListFooter
+            totalPages={pageOptions?.totalPages}
+            perPage={pageOptions?.perPage}
+          />
+        }
       />
     </WatchlistScreenScafold>
   );
@@ -194,5 +209,3 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
 });
-
-
