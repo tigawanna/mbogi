@@ -8,10 +8,9 @@ import { DiscoverCardAction } from "../../discover/actions/DiscoverCardAction";
 interface WatchlistItemCardProps {
   item: WatchlistItemsResponse;
   watchListName: string;
-  isMyWatchList: boolean;
 }
 
-export function WatchlistItemCard({ item, watchListName, isMyWatchList }: WatchlistItemCardProps) {
+export function WatchlistItemCard({ item, watchListName }: WatchlistItemCardProps) {
   const { colors } = useTheme();
 
   const posterUrl = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null;
@@ -127,7 +126,8 @@ export function WatchlistItemCard({ item, watchListName, isMyWatchList }: Watchl
                 </View>
                 <TouchableOpacity onPress={(e) => e.stopPropagation()}>
                   <DiscoverCardAction
-                    type="movies"
+                    type={item.media_type==="tv"?"tv":"movies"}
+                    // @ts-expect-error TODO maybe fix the types in the future
                     item={{
                       ...item,
                       watchlistTitle: watchListName,
