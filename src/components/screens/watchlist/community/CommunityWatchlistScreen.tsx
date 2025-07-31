@@ -1,4 +1,4 @@
-import { ilike } from "@tanstack/db";
+import { eq } from "@tanstack/db";
 import { useLiveQuery } from "@tanstack/react-db";
 import React from "react";
 import { FlatList, StyleSheet, useWindowDimensions, View } from "react-native";
@@ -14,26 +14,35 @@ import {
 } from "@/data/watchlist/community-watchlist";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { CommunityListFooter } from "./CommunityListFooter";
+import { myWatchlistItemsCollection } from "@/data/watchlist/my-watchlist";
 
 export function CommunityWatchlistScreen() {
   const qc = useQueryClient();
   const { searchQuery } = useWatchlistSearch();
   const { page } = useCommunityWatchlistPage();
   const { colors } = useTheme();
+  // myWatchlistItemsCollection(qc)
   const {
     data: watchlist,
     isLoading,
     isError,
   } = useLiveQuery(
     (query) =>
-      query.from({
-        watchlist: communityWatchlistCollection({
-          keyword: searchQuery,
-          qc,
-          page,
-        }),
-      }),
-    // .where(({ watchlist }) => ilike(watchlist.title, `%${searchQuery}%`))
+      query
+        .from({
+          watchlist: communityWatchlistCollection({
+            keyword: searchQuery,
+            qc,
+            page,
+          }),
+        })
+        .join({ myWatchlist: myWatchlistItemsCollection(qc) }, ({ watchlist, myWatchlist }) =>
+          eq(watchlist.id, String(myWatchlist.id))
+        )
+        .select(({ watchlist, myWatchlist }) => ({
+          ...watchlist,
+          watchListName: myWatchlist?.watchlistTitle,
+        })),
     [searchQuery, page]
   );
   const { data: pageOptions } = useQuery(
