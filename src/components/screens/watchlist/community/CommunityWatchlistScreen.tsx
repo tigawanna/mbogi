@@ -1,4 +1,4 @@
-import { communityWatchlistCollection } from "@/data/watchlist/collections";
+import { communityWatchlistCollection } from "@/data/watchlist/my-watchlist";
 import { ilike } from "@tanstack/db";
 import { useLiveQuery } from "@tanstack/react-db";
 import React from "react";

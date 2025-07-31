@@ -1,6 +1,6 @@
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
-import { watchlistByIdCollection } from "@/data/watchlist/collections";
+import { watchlistByIdCollection } from "@/data/watchlist/my-watchlist";
 import { useLiveQuery } from "@tanstack/react-db";
 import React from "react";
 import { FlatList, StyleSheet, View } from "react-native";

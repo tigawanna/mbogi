@@ -7,11 +7,13 @@ import { Text, useTheme } from "react-native-paper";
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { discoverTVCollection } from "@/data/discover/discover-query-collection";
-import { DiscoverTVFlatList } from "./DiscoverTVFlatList";
+import { myWatchlistItemsCollection } from "@/data/watchlist/my-watchlist";
+import { useQueryClient } from "@tanstack/react-query";
 import { useDiscoverFiltersStore } from "../filters/discover-fliters-store";
-import { myWatchlistItemsCollection } from "@/data/watchlist/collections";
+import { DiscoverTVFlatList } from "./DiscoverTVFlatList";
 
 export function DiscoverTVScreen() {
+  const qc = useQueryClient()
   const { colors } = useTheme();
   const { tvFilters } = useDiscoverFiltersStore();
   // Pagination state (removed pagination as per requirements)
@@ -31,7 +33,7 @@ export function DiscoverTVScreen() {
             enabled: true,
           }),
         })
-        .join({ watchlist: myWatchlistItemsCollection() }, ({ tv, watchlist }) =>
+        .join({ watchlist: myWatchlistItemsCollection(qc) }, ({ tv, watchlist }) =>
           eq(tv.id, watchlist.id)
         )
         .select(({ tv, watchlist }) => ({

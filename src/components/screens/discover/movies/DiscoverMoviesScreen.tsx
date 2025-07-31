@@ -7,8 +7,9 @@ import { Text, useTheme } from "react-native-paper";
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { discoverMoviesCollection } from "@/data/discover/discover-query-collection";
-import { myWatchlistItemsCollection } from "@/data/watchlist/collections";
+import { myWatchlistItemsCollection } from "@/data/watchlist/my-watchlist";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { useDiscoverFiltersStore } from "../filters/discover-fliters-store";
 import { DiscoverMoviesFlatList } from "./DiscoverMoviesFlatList";
 // import { myWatchlistCollection } from "@/data/watchlist/collections";
@@ -16,8 +17,8 @@ import { DiscoverMoviesFlatList } from "./DiscoverMoviesFlatList";
 export function DiscoverMoviesScreen() {
   const { colors } = useTheme();
   const { movieFilters } = useDiscoverFiltersStore();
+  const qc = useQueryClient();
 
-  
   // Pagination state (removed pagination as per requirements)
   const currentPage = 1;
 
@@ -35,7 +36,7 @@ export function DiscoverMoviesScreen() {
             enabled: true,
           }),
         })
-        .join({ watchlist: myWatchlistItemsCollection() }, ({ movies, watchlist }) =>
+        .join({ watchlist: myWatchlistItemsCollection(qc) }, ({ movies, watchlist }) =>
           eq(movies.id, watchlist.id)
         )
         .select(({ movies, watchlist }) => ({

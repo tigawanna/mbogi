@@ -1,4 +1,4 @@
-import { myWatchlistCollection } from "@/data/watchlist/collections";
+import { myWatchlistCollection } from "@/data/watchlist/my-watchlist";
 import { ilike } from "@tanstack/db";
 import { useLiveQuery } from "@tanstack/react-db";
 import React from "react";
@@ -7,10 +7,12 @@ import { Searchbar, Text, useTheme } from "react-native-paper";
 
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
+import { useQueryClient } from "@tanstack/react-query";
 import { useWatchlistSearch } from "../hooks";
 import { WatchlistCard } from "../shared/WatchlistCard";
 
 export function MyWatchlistScreen() {
+  const qc = useQueryClient()
   const { searchQuery } = useWatchlistSearch();
   const {
     data: watchlist,
@@ -20,7 +22,7 @@ export function MyWatchlistScreen() {
     (query) =>
       query
         .from({
-          watchlist: myWatchlistCollection(),
+          watchlist: myWatchlistCollection(qc),
         })
         .where(({ watchlist }) => ilike(watchlist.title, `%${searchQuery}%`)),
     [searchQuery]

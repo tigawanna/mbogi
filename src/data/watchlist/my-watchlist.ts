@@ -3,10 +3,8 @@ import { WatchlistResponseSchema } from "@/lib/pb/types/pb-zod";
 import { queryClient } from "@/lib/tanstack/query/client";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/react-db";
-import { and, eq, like, or } from "@tigawanna/typed-pocketbase";
-import { useCommunityWatchListPageoptionsStore } from "./watchlist-stores";
-
-
+import { QueryClient } from "@tanstack/react-query";
+import { and, eq } from "@tigawanna/typed-pocketbase";
 
 async function getUserwatchlist(userId: string) {
   const response = await pb.from("watchlist").getFullList({
@@ -23,20 +21,31 @@ async function getUserwatchlist(userId: string) {
   return response;
 }
 
-
+export async function getUserWatchListFromQueryClient(qc: QueryClient, userId: string) {
+  if (!userId) {
+    throw new Error("User not authenticated");
+  }
+  const response = await qc.fetchQuery({
+    queryKey: ["watchlist", userId],
+    queryFn: () => getUserwatchlist(userId),
+    staleTime: 1000 * 60 * 60 * 72, // 72 hours (3 days)
+    gcTime: 1000 * 60 * 60 * 72, // 72 hours (3 days)
+  });
+  return response;
+}
 
 // Normal collection from the items array in the watchlist
-export const myWatchlistCollection = () => {
+export const myWatchlistCollection = (qc: QueryClient) => {
   const userId = pb.authStore.record?.id;
   return createCollection(
     queryCollectionOptions({
-      queryKey: ["watchlist", userId],
+      queryKey: ["watchlist", userId, "collection"],
       queryFn: async () => {
         if (!userId) {
           throw new Error("User not authenticated");
         }
-        const response = await getUserwatchlist(userId);
-        return await response
+        const response = await getUserWatchListFromQueryClient(qc, userId);
+        return await response;
       },
       queryClient: queryClient,
       enabled: !!userId,
@@ -46,18 +55,16 @@ export const myWatchlistCollection = () => {
   );
 };
 
-
-
-export const myWatchlistItemsCollection = () => {
+export const myWatchlistItemsCollection = (qc: QueryClient) => {
   const userId = pb.authStore.record?.id;
   return createCollection(
     queryCollectionOptions({
-      queryKey: ["watchlist", "items", userId],
+      queryKey: ["watchlist", userId, "items", "collection"],
       queryFn: async () => {
         if (!userId) {
           throw new Error("User not authenticated");
         }
-        const response = await getUserwatchlist(userId);
+        const response = await getUserWatchListFromQueryClient(qc, userId);
         const watchListItems = response.flatMap((item) => {
           return (
             item.items.map((i) => {
@@ -80,79 +87,6 @@ export const myWatchlistItemsCollection = () => {
 };
 
 
-interface CommunityWatchlistCollectionProps {
-  keyword?: string;
-  page?: number;
-}
-// export const communityWatchlistqueryoptions = ({
-//   keyword,
-//   page = 1,
-// }: CommunityWatchlistCollectionProps) => {
-// return queryOptions({
-//   queryKey: ["watchlist", "community", keyword, page],
-//   queryFn: async () => {
-//     const response = await pb.from("watchlist").getList(page, 50, {
-//       filter: and(
-//         or(
-//           like("title", `%${keyword ?? ""}%`),
-//           like("overview", `%${keyword ?? ""}%`),
-//           like("user_id.username", `%${keyword ?? ""}%`)
-//         ),
-//         eq("visibility", "public")
-//       ),
-//       sort: "-created",
-//       select: {
-//         expand: {
-//           user_id: true,
-//           items: true,
-//         },
-//       },
-//     });
-//     return response
-//   },
-//   select(data) {
-//     return data.items;
-//   },
-// });
-// }
-export const communityWatchlistCollection = ({
-  keyword,
-  page = 1,
-}: CommunityWatchlistCollectionProps) => {
-  return createCollection(
-    queryCollectionOptions({
-      queryKey: ["watchlist", "community", keyword, page],
-      queryFn: async () => {
-        const response = await pb.from("watchlist").getList(page, 50, {
-          filter: and(
-            or(
-              like("title", `%${keyword ?? ""}%`),
-              like("overview", `%${keyword ?? ""}%`),
-              like("user_id.name", `%${keyword ?? ""}%`)
-            ),
-            eq("visibility", "public")
-          ),
-          sort: "-created",
-          select: {
-            expand: {
-              user_id: true,
-              items: true,
-            },
-          },
-        });
-        useCommunityWatchListPageoptionsStore.getState().setOptions({
-          page: response.page,
-          totalPages: response.totalPages,
-          totalItems: response.totalItems,
-        });
-        return response.items;
-      },
-      queryClient: queryClient,
-      getKey: (item) => item.id,
-      schema: WatchlistResponseSchema,
-    })
-  );
-};
 
 // Function to get a single watchlist with expanded items
 async function getWatchlistById(watchlistId: string) {
