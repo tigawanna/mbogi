@@ -86,15 +86,6 @@ export function WatchlistCard({ watchlist, community = false, onEdit }: Watchlis
                     onPress={onEdit}
                   />
                 )}
-                {onEdit && (
-                  <IconButton
-                    icon="pencil"
-                    iconColor={colors.primary}
-                    size={20}
-                    style={styles.visibilityIcon}
-                    onPress={onEdit}
-                  />
-                )}
               </View>
             </View>
 
