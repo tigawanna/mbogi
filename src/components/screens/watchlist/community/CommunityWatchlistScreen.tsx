@@ -1,6 +1,6 @@
 import { eq } from "@tanstack/db";
 import { useLiveQuery } from "@tanstack/react-db";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { FlatList, StyleSheet, useWindowDimensions, View } from "react-native";
 import { FAB, Searchbar, Text, useTheme } from "react-native-paper";
@@ -17,8 +17,8 @@ import { WatchlistCard } from "../shared/WatchlistCard";
 // consolidated above
 import { myWatchlistItemsCollection } from "@/data/watchlist/my-watchlist";
 import {
-    useCreateWatchlistMutation,
-    useUpdateWatchlistMutation
+  createWatchListMutationOptions,
+  updateWatchListMutationOptions,
 } from "@/data/watchlist/watchlist-muttions";
 import type { WatchlistResponse } from "@/lib/pb/types/pb-types";
 import { WatchlistFormModal } from "../shared/WatchlistFormModal";
@@ -33,8 +33,8 @@ export function CommunityWatchlistScreen() {
   const { bottom } = useSafeAreaInsets();
   const [modalVisible, setModalVisible] = useState(false);
   const [editingWatchlist, setEditingWatchlist] = useState<WatchlistResponse | null>(null);
-  const createMutation = useCreateWatchlistMutation({ source: 'community-watchlist-card' });
-  const updateMutation = useUpdateWatchlistMutation({ source: 'community-watchlist-card' });
+  const createMutation = useMutation(createWatchListMutationOptions());
+  const updateMutation = useMutation(updateWatchListMutationOptions());
 
   const {
     data: watchlist,
@@ -175,9 +175,9 @@ export function CommunityWatchlistScreen() {
         initialValues={editingWatchlist || undefined}
         onSubmit={(data) => {
           if (editingWatchlist) {
-            updateMutation.mutate({ id: editingWatchlist.id, data });
+            updateMutation.mutate({ payload: data });
           } else {
-            createMutation.mutate(data);
+            createMutation.mutate({ payload: data });
           }
           setModalVisible(false);
           setEditingWatchlist(null);

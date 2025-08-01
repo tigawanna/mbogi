@@ -63,7 +63,6 @@ export function DiscoverCardAction({ type, item }: DiscoverCardActionProps) {
         onDismiss={() => setShowWatchlistModal(false)}
         itemId={getItemId()}
         itemTitle={getItemTitle(item)}
-        source="discover-card"
         currentWatchlistId={item.watchlistId}
       />
     </View>

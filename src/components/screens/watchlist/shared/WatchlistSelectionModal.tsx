@@ -1,34 +1,33 @@
-import { getUserWatchListFromQueryClient, myWatchlistCollection } from '@/data/watchlist/my-watchlist';
+import { myWatchlistCollection } from "@/data/watchlist/my-watchlist";
+// import {
+//   MutationSource,
+//   useAddItemToWatchlistMutation,
+//   useCreateWatchlistMutation,
+//   useRemoveItemFromWatchlistMutation,
+// } from "@/data/watchlist/watchlist-muttions";
+import { pb } from "@/lib/pb/client";
+import { useLiveQuery } from "@tanstack/react-db";
+import { useQueryClient } from "@tanstack/react-query";
+import React from "react";
+import { FlatList, StyleSheet, View } from "react-native";
 import {
-    MutationSource,
-    useAddItemToWatchlistMutation,
-    useCreateWatchlistMutation,
-    useRemoveItemFromWatchlistMutation
-} from '@/data/watchlist/watchlist-muttions';
-import { pb } from '@/lib/pb/client';
-import { useLiveQuery } from '@tanstack/react-db';
-import { useQueryClient } from '@tanstack/react-query';
-import React from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
-import {
-    Button,
-    Card,
-    Chip,
-    Divider,
-    IconButton,
-    Modal,
-    Portal,
-    Text,
-    TextInput,
-    useTheme
-} from 'react-native-paper';
+  Button,
+  Card,
+  Chip,
+  Divider,
+  IconButton,
+  Modal,
+  Portal,
+  Text,
+  TextInput,
+  useTheme,
+} from "react-native-paper";
 
 interface WatchlistSelectionModalProps {
   visible: boolean;
   onDismiss: () => void;
   itemId: string;
   itemTitle: string;
-  source: MutationSource;
   currentWatchlistId?: string; // If the item is already in a watchlist
 }
 
@@ -37,27 +36,22 @@ export function WatchlistSelectionModal({
   onDismiss,
   itemId,
   itemTitle,
-  source,
-  currentWatchlistId
+  currentWatchlistId,
 }: WatchlistSelectionModalProps) {
   const { colors } = useTheme();
   const queryClient = useQueryClient();
   const userId = pb.authStore.record?.id;
-  
 
   const [showCreateForm, setShowCreateForm] = React.useState(false);
-  const [newWatchlistTitle, setNewWatchlistTitle] = React.useState('');
+  const [newWatchlistTitle, setNewWatchlistTitle] = React.useState("");
 
-  const addItemMutation = useAddItemToWatchlistMutation({ source });
-  const removeItemMutation = useRemoveItemFromWatchlistMutation({ source });
-  const createWatchlistMutation = useCreateWatchlistMutation({ source });
+//   const addItemMutation = useAddItemToWatchlistMutation({ source });
+//   const removeItemMutation = useRemoveItemFromWatchlistMutation({ source });
+//   const createWatchlistMutation = useCreateWatchlistMutation({ source });
 
   // Load user's watchlists when modal opens
   const qc = useQueryClient();
-  const {
-    data: watchlists,
-    isLoading,
-  } = useLiveQuery((query) =>
+  const { data: watchlists, isLoading } = useLiveQuery((query) =>
     query.from({
       watchlist: myWatchlistCollection(qc),
     })
@@ -65,19 +59,19 @@ export function WatchlistSelectionModal({
 
   const handleAddToWatchlist = async (watchlistId: string) => {
     try {
-      await addItemMutation.mutateAsync({ watchlistId, itemId });
+    //   await addItemMutation.mutateAsync({ watchlistId, itemId });
       onDismiss();
     } catch (error) {
-      console.error('Failed to add item to watchlist:', error);
+      console.error("Failed to add item to watchlist:", error);
     }
   };
 
   const handleRemoveFromWatchlist = async (watchlistId: string) => {
     try {
-      await removeItemMutation.mutateAsync({ watchlistId, itemId });
+    //   await removeItemMutation.mutateAsync({ watchlistId, itemId });
       onDismiss();
     } catch (error) {
-      console.error('Failed to remove item from watchlist:', error);
+      console.error("Failed to remove item from watchlist:", error);
     }
   };
 
@@ -85,29 +79,29 @@ export function WatchlistSelectionModal({
     if (!newWatchlistTitle.trim() || !userId) return;
 
     try {
-      const newWatchlist = await createWatchlistMutation.mutateAsync({
-        user_id: userId,
-        title: newWatchlistTitle.trim(),
-        visibility: 'public',
-        overview: `Watchlist for ${itemTitle}`
-      });
+    //   const newWatchlist = await createWatchlistMutation.mutateAsync({
+    //     user_id: userId,
+    //     title: newWatchlistTitle.trim(),
+    //     visibility: "public",
+    //     overview: `Watchlist for ${itemTitle}`,
+    //   });
 
       // Add the item to the newly created watchlist
-      await addItemMutation.mutateAsync({ 
-        watchlistId: newWatchlist.id, 
-        itemId 
-      });
+    //   await addItemMutation.mutateAsync({
+    //     watchlistId: newWatchlist.id,
+    //     itemId,
+    //   });
 
       setShowCreateForm(false);
-      setNewWatchlistTitle('');
+      setNewWatchlistTitle("");
       onDismiss();
     } catch (error) {
-      console.error('Failed to create watchlist:', error);
+      console.error("Failed to create watchlist:", error);
     }
   };
 
   const isItemInWatchlist = (watchlistId: string) => {
-    const watchlist = watchlists.find(w => w.id === watchlistId);
+    const watchlist = watchlists.find((w) => w.id === watchlistId);
     return watchlist?.items?.includes(itemId) || false;
   };
 
@@ -126,20 +120,19 @@ export function WatchlistSelectionModal({
               {watchlist.items?.length || 0} items
             </Text>
           </View>
-          
+
           <View style={styles.actions}>
             {isCurrentWatchlist && (
               <Chip
                 icon="playlist-check"
                 mode="flat"
                 style={[styles.currentChip, { backgroundColor: colors.primaryContainer }]}
-                textStyle={{ color: colors.onPrimaryContainer }}
-              >
+                textStyle={{ color: colors.onPrimaryContainer }}>
                 Current
               </Chip>
             )}
-            
-            {isInThisWatchlist ? (
+
+            {/* {isInThisWatchlist ? (
               <IconButton
                 icon="minus-circle"
                 mode="contained-tonal"
@@ -155,7 +148,7 @@ export function WatchlistSelectionModal({
                 onPress={() => handleAddToWatchlist(watchlist.id)}
                 disabled={addItemMutation.isPending}
               />
-            )}
+            )} */}
           </View>
         </Card.Content>
       </Card>
@@ -171,8 +164,7 @@ export function WatchlistSelectionModal({
       <Modal
         visible={visible}
         onDismiss={onDismiss}
-        contentContainerStyle={[styles.modal, { backgroundColor: colors.surface }]}
-      >
+        contentContainerStyle={[styles.modal, { backgroundColor: colors.surface }]}>
         <Text variant="headlineSmall" style={styles.title}>
           Manage &ldquo;{itemTitle}&rdquo;
         </Text>
@@ -191,19 +183,17 @@ export function WatchlistSelectionModal({
                 mode="outlined"
                 onPress={() => {
                   setShowCreateForm(false);
-                  setNewWatchlistTitle('');
-                }}
-              >
+                  setNewWatchlistTitle("");
+                }}>
                 Cancel
               </Button>
-              <Button
+              {/* <Button
                 mode="contained"
                 onPress={handleCreateWatchlist}
                 loading={createWatchlistMutation.isPending}
-                disabled={!newWatchlistTitle.trim()}
-              >
+                disabled={!newWatchlistTitle.trim()}>
                 Create & Add
-              </Button>
+              </Button> */}
             </View>
           </View>
         ) : (
@@ -212,8 +202,7 @@ export function WatchlistSelectionModal({
               mode="outlined"
               icon="plus"
               onPress={() => setShowCreateForm(true)}
-              style={styles.createButton}
-            >
+              style={styles.createButton}>
               Create New Watchlist
             </Button>
 
@@ -236,7 +225,7 @@ export function WatchlistSelectionModal({
               <FlatList
                 data={watchlists}
                 renderItem={renderWatchlistItem}
-                keyExtractor={item => item.id}
+                keyExtractor={(item) => item.id}
                 style={styles.list}
                 showsVerticalScrollIndicator={false}
               />
@@ -244,11 +233,7 @@ export function WatchlistSelectionModal({
           </>
         )}
 
-        <Button
-          mode="text"
-          onPress={onDismiss}
-          style={styles.closeButton}
-        >
+        <Button mode="text" onPress={onDismiss} style={styles.closeButton}>
           Close
         </Button>
       </Modal>
@@ -261,11 +246,11 @@ const styles = StyleSheet.create({
     margin: 20,
     padding: 20,
     borderRadius: 16,
-    maxHeight: '80%',
+    maxHeight: "80%",
   },
   title: {
     marginBottom: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   createButton: {
     marginBottom: 16,
@@ -280,8 +265,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   createActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     gap: 12,
   },
   list: {
@@ -291,27 +276,27 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   cardContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 8,
   },
   watchlistInfo: {
     flex: 1,
   },
   actions: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   currentChip: {
     marginRight: 8,
   },
   loading: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 20,
   },
   emptyState: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 20,
   },
   closeButton: {

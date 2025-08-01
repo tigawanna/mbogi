@@ -7,16 +7,14 @@ import { FAB, Searchbar, Text, useTheme } from "react-native-paper";
 
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
-import {
-    useCreateWatchlistMutation,
-    useUpdateWatchlistMutation
-} from "@/data/watchlist/watchlist-muttions";
+
 import type { WatchlistResponse } from "@/lib/pb/types/pb-types";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useWatchlistSearch } from "../hooks";
 import { WatchlistCard } from "../shared/WatchlistCard";
 import { WatchlistFormModal } from "../shared/WatchlistFormModal";
+import { createWatchListMutationOptions, updateWatchListMutationOptions } from "@/data/watchlist/watchlist-muttions";
 
 export function MyWatchlistScreen() {
   const qc = useQueryClient()
@@ -24,8 +22,8 @@ export function MyWatchlistScreen() {
   const { bottom } = useSafeAreaInsets();
   const [modalVisible, setModalVisible] = useState(false);
   const [editingWatchlist, setEditingWatchlist] = useState<WatchlistResponse | null>(null);
-  const createMutation = useCreateWatchlistMutation({ source: 'my-watchlist-card' });
-  const updateMutation = useUpdateWatchlistMutation({ source: 'my-watchlist-card' });
+  const createMutation = useMutation(createWatchListMutationOptions())
+  const updateMutation = useMutation(updateWatchListMutationOptions())
   const {
     data: watchlist,
     isLoading,
@@ -133,9 +131,9 @@ export function MyWatchlistScreen() {
         initialValues={editingWatchlist || undefined}
         onSubmit={(data) => {
           if (editingWatchlist) {
-            updateMutation.mutate({ id: editingWatchlist.id, data });
+            updateMutation.mutate({payload:data});
           } else {
-            createMutation.mutate(data);
+            createMutation.mutate({payload:data});
           }
           setModalVisible(false);
           setEditingWatchlist(null);
