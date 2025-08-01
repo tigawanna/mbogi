@@ -7,17 +7,27 @@ import {
   WatchlistUpdate,
   WatchlistUpdateSchema,
 } from "@/lib/pb/types/pb-zod";
+import { createPromise } from "@/utils/promise";
 import { mutationOptions } from "@tanstack/react-query";
 import { z } from "zod";
+
+const fakePocketbasePromise = createPromise<string>((resolve) => {
+  setTimeout(() => {
+    resolve("This is a fake promise");
+  }, 10_000);
+});
+
 
 interface CreateWatchlistMutationPorps {
   payload: WatchlistCreate;
 }
+
 export function createWatchListMutationOptions() {
   return mutationOptions({
     mutationFn: async (vars: CreateWatchlistMutationPorps) => {
       const inputs = WatchlistCreateSchema.parse(vars.payload);
-      return await pb.from("watchlist").create(inputs);
+      // return await pb.from("watchlist").create(inputs);
+      return await fakePocketbasePromise; // Simulating a PocketBase call
     },
   });
 }

@@ -1,3 +1,5 @@
+import { useSnackbarStore } from "@/components/react-native-paper/snackbar/global-snackbar-store";
+import { pb } from "@/lib/pb/client";
 import { WatchlistCreateSchema } from "@/lib/pb/types/pb-zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect } from "react";
@@ -9,14 +11,19 @@ import {
   HelperText,
   Modal,
   Portal,
-  TextInput,
   Text,
+  TextInput,
   useTheme,
 } from "react-native-paper";
 import { Dropdown } from "react-native-paper-dropdown";
 import { z } from "zod";
 
-type FormData = z.infer<typeof WatchlistCreateSchema>;
+// Local form schema overriding title to be required
+const FormSchema = WatchlistCreateSchema.extend({
+  title: z.string().min(1, "Title is required"),
+});
+
+type FormData = z.infer<typeof FormSchema>;
 
 interface WatchlistFormModalProps {
   visible: boolean;
@@ -24,6 +31,7 @@ interface WatchlistFormModalProps {
   onSubmit: (data: FormData) => void;
   initialValues?: Partial<FormData>;
   submitLabel?: string;
+  isMutationPending?: boolean;
 }
 
 export function WatchlistFormModal({
@@ -31,10 +39,12 @@ export function WatchlistFormModal({
   onDismiss,
   onSubmit,
   initialValues,
+  isMutationPending,
   submitLabel = "Save",
 }: WatchlistFormModalProps) {
   const { colors } = useTheme();
-
+  const { showSnackbar } = useSnackbarStore();
+  const currentUserId = pb.authStore?.record?.id;
   const visibilityOptions = [
     { label: "🌍 Public", value: "public" },
     { label: "🔒 Private", value: "private" },
@@ -51,7 +61,7 @@ export function WatchlistFormModal({
       overview: initialValues?.overview || "",
       visibility: initialValues?.visibility || "public",
     },
-    resolver: zodResolver(WatchlistCreateSchema),
+    resolver: zodResolver(FormSchema),
   });
 
   useEffect(() => {
@@ -60,8 +70,14 @@ export function WatchlistFormModal({
       setValue("overview", initialValues?.overview || "");
       setValue("visibility", initialValues?.visibility || "public");
     }
-  }, [initialValues, setValue]);
-
+    if (currentUserId) {
+      setValue("user_id", currentUserId);
+    } else {
+      showSnackbar("You must be logged in to create a watchlist.", {
+        duration: 10_000,
+      });
+    }
+  }, [initialValues, setValue, showSnackbar, currentUserId]);
   return (
     <Portal>
       <Modal
@@ -160,9 +176,10 @@ export function WatchlistFormModal({
           </Button>
           <Button
             mode="contained"
+            loading={isMutationPending}
             onPress={handleSubmit(onSubmit)}
             style={[styles.button, styles.submitButton]}>
-            {submitLabel}
+            {submitLabel} {isMutationPending && "..." /* Show loading state if needed */}
           </Button>
         </View>
       </Modal>

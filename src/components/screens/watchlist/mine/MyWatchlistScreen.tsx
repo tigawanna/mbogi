@@ -129,6 +129,7 @@ export function MyWatchlistScreen() {
         visible={modalVisible}
         onDismiss={() => setModalVisible(false)}
         initialValues={editingWatchlist || undefined}
+        isMutationPending={createMutation.isPending || updateMutation.isPending}
         onSubmit={(data) => {
           if (editingWatchlist) {
             updateMutation.mutate({payload:data});
