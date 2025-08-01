@@ -133,7 +133,7 @@ export function CommunityWatchlistScreen() {
     <WatchlistScreenScafold>
       <FlatList
         data={watchlist}
-        renderItem={({ item,index }) => <WatchlistCard watchlist={item} showUser={true} />}
+        renderItem={({ item,index }) => <WatchlistCard watchlist={item} community />}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}

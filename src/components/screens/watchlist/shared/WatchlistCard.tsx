@@ -10,10 +10,10 @@ interface WatchlistCardProps {
       items?: any[];
     };
   };
-  showUser?: boolean;
+  community?: boolean;
 }
 
-export function WatchlistCard({ watchlist, showUser = false }: WatchlistCardProps) {
+export function WatchlistCard({ watchlist,community = false }: WatchlistCardProps) {
   const { colors } = useTheme();
 
   const getVisibilityIcon = (visibility: string) => {
@@ -49,7 +49,9 @@ export function WatchlistCard({ watchlist, showUser = false }: WatchlistCardProp
   const itemCount = watchlist.expand?.items?.length || watchlist.items?.length || 0;
 
   return (
-    <Link href={`/watchlist/${watchlist.id}`} asChild>
+    <Link
+      href={community ? `/watchlist/community/${watchlist.id}` : `/watchlist/mine/${watchlist.id}`}
+      asChild>
       <TouchableOpacity>
         <Card style={[styles.container, { backgroundColor: colors.surface }]} elevation={4}>
           <Card.Content style={styles.content}>
@@ -59,8 +61,10 @@ export function WatchlistCard({ watchlist, showUser = false }: WatchlistCardProp
                 <Text variant="titleMedium" style={[styles.title, { color: colors.onSurface }]}>
                   {watchlist.title}
                 </Text>
-                {showUser && watchlist.expand?.user_id?.[0] && (
-                  <Text variant="bodySmall" style={[styles.author, { color: colors.onSurfaceVariant }]}>
+                {community && watchlist.expand?.user_id?.[0] && (
+                  <Text
+                    variant="bodySmall"
+                    style={[styles.author, { color: colors.onSurfaceVariant }]}>
                     by {watchlist.expand.user_id[0].name || watchlist.expand.user_id[0].email}
                   </Text>
                 )}
@@ -77,11 +81,10 @@ export function WatchlistCard({ watchlist, showUser = false }: WatchlistCardProp
 
             {/* Overview */}
             {watchlist.overview && (
-              <Text 
-                variant="bodyMedium" 
+              <Text
+                variant="bodyMedium"
                 numberOfLines={2}
-                style={[styles.overview, { color: colors.onSurfaceVariant }]}
-              >
+                style={[styles.overview, { color: colors.onSurfaceVariant }]}>
                 {watchlist.overview}
               </Text>
             )}
@@ -89,19 +92,20 @@ export function WatchlistCard({ watchlist, showUser = false }: WatchlistCardProp
             {/* Footer */}
             <View style={styles.footer}>
               <View style={styles.footerLeft}>
-                <Chip 
-                  compact 
+                <Chip
+                  compact
                   style={[styles.itemChip, { backgroundColor: colors.primaryContainer }]}
-                  textStyle={{ color: colors.onPrimaryContainer }}
-                >
-                  {itemCount} {itemCount === 1 ? 'item' : 'items'}
+                  textStyle={{ color: colors.onPrimaryContainer }}>
+                  {itemCount} {itemCount === 1 ? "item" : "items"}
                 </Chip>
                 {watchlist.is_collaborative && (
-                  <Chip 
-                    compact 
-                    style={[styles.collaborativeChip, { backgroundColor: colors.tertiaryContainer }]}
-                    textStyle={{ color: colors.onTertiaryContainer }}
-                  >
+                  <Chip
+                    compact
+                    style={[
+                      styles.collaborativeChip,
+                      { backgroundColor: colors.tertiaryContainer },
+                    ]}
+                    textStyle={{ color: colors.onTertiaryContainer }}>
                     Collaborative
                   </Chip>
                 )}
