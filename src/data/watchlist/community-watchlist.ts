@@ -75,7 +75,7 @@ export function getCommunityWatchlistPageOptionsQueryOptions({
   });
 }
 
-export const communityWatchlistCollection = ({
+export const communityWatchslistItemsCollection = ({
   keyword,
   page = 1,
   qc,
@@ -101,7 +101,7 @@ interface CommunityWatchlistItemsCollectionProps {
   qc: QueryClient;
   itemId: string;
 }
-export const communityWatchlistItemsCollection = ({
+export const communitySingleWatchlistItemsCollection = ({
   keyword,
   page = 1,
   qc,

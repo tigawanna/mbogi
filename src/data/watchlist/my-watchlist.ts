@@ -27,10 +27,10 @@ export async function getUserWatchListFromQueryClient(qc: QueryClient, userId: s
     throw new Error("User not authenticated");
   }
   const response = await qc.fetchQuery({
-    queryKey: ["watchlist", userId],
+    queryKey: ["watchlist", "mine", userId],
     queryFn: () => getUserwatchlist(userId),
     staleTime: TSQ_CACHE_TIME,
-    gcTime: TSQ_CACHE_TIME
+    gcTime: TSQ_CACHE_TIME,
   });
   return response;
 }
@@ -40,7 +40,7 @@ export const myWatchlistCollection = (qc: QueryClient) => {
   const userId = pb.authStore.record?.id;
   return createCollection(
     queryCollectionOptions({
-      queryKey: ["watchlist", userId, "collection"],
+      queryKey: ["watchlist", "mine", userId, "collection"],
       queryFn: async () => {
         if (!userId) {
           throw new Error("User not authenticated");
@@ -56,11 +56,11 @@ export const myWatchlistCollection = (qc: QueryClient) => {
   );
 };
 
-export const myWatchlistItemsCollection = (qc: QueryClient) => {
+export const myWatchlistsItemsCollection = (qc: QueryClient) => {
   const userId = pb.authStore.record?.id;
   return createCollection(
     queryCollectionOptions({
-      queryKey: ["watchlist", userId, "items", "collection"],
+      queryKey: ["watchlist", "mine", userId, "collection", "items"],
       queryFn: async () => {
         if (!userId) {
           throw new Error("User not authenticated");
@@ -87,32 +87,23 @@ export const myWatchlistItemsCollection = (qc: QueryClient) => {
   );
 };
 
-
-
-// Function to get a single watchlist with expanded items
-async function getWatchlistById(watchlistId: string) {
-  const response = await pb.from("watchlist").getOne(watchlistId, {
-    select: {
-      expand: {
-        user_id: true,
-        items: true,
-      },
-    },
-  });
-  return response;
-}
-
 // Collection for a single watchlist with items
-export const watchlistByIdCollection = (watchlistId: string) => {
+export const mySingleWatchlistItemsCollection = (qc: QueryClient, watchlistId: string) => {
+  const userId = pb.authStore.record?.id;
   return createCollection(
     queryCollectionOptions({
-      queryKey: ["watchlist", "details", watchlistId],
+      queryKey: ["watchlist", "mine", userId, "details", watchlistId],
       queryFn: async () => {
+        if (!userId) {
+          throw new Error("User not authenticated");
+        }
         if (!watchlistId) {
           throw new Error("Watchlist ID is required");
         }
-        const response = await getWatchlistById(watchlistId);
-        return [response]; // Return as array for collection compatibility
+        // Reuse React Query cache for watchlist details
+        const response = await getUserWatchListFromQueryClient(qc, userId);
+        const singleWatchlist = response.find((item) => item.id === watchlistId);
+        return singleWatchlist?.expand?.items || [];
       },
       queryClient: queryClient,
       enabled: !!watchlistId,

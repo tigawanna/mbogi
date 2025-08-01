@@ -1,7 +1,8 @@
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
-import { watchlistByIdCollection } from "@/data/watchlist/my-watchlist";
-import { useLiveQuery } from "@tanstack/react-db";
+import { mySingleWatchlistItemsCollection, myWatchlistCollection } from "@/data/watchlist/my-watchlist";
+import { eq, useLiveQuery } from "@tanstack/react-db";
+import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import { Card, Chip, IconButton, Text, useTheme } from "react-native-paper";
@@ -12,24 +13,42 @@ interface MyWatchlistDetailScreenProps {
   watchlistId: string;
 }
 
-export function MyWatchlistDetailScreen({ watchlistId }: MyWatchlistDetailScreenProps) {
+export function MyWatchlistDetailScreen({ watchlistId }: MyWatchlistDetailScreenProps) { 
+  const qc = useQueryClient();
   const { colors } = useTheme();
   const { top } = useSafeAreaInsets();
 
   const {
-    data: watchlistData,
-    isLoading,
-    isError,
+    data: thisWatchlist,
+    isLoading: isLoadingWatchlist,
+    isError: isErrorWatchlist,
+  } = useLiveQuery(
+    (query) =>
+      query
+        .from({
+          watchlist: myWatchlistCollection(qc),
+        })
+        .where(({ watchlist }) => eq(watchlist.id, watchlistId)),
+        [watchlistId]
+  );
+
+  const {
+    data: watchlistItems,
+    isLoading: isLoadingWatchlistData,
+    isError: isErrorWatchlistData,
   } = useLiveQuery(
     (query) =>
       query.from({
-        watchlist: watchlistByIdCollection(watchlistId),
+        watchlist: mySingleWatchlistItemsCollection(qc, watchlistId),
       }),
     [watchlistId]
   );
 
-  const watchlist = watchlistData?.[0];
-  const items = watchlist?.expand?.items || [];
+
+  const watchlist = thisWatchlist?.[0];
+  const items = watchlistItems;
+  const isLoading = isLoadingWatchlist || isLoadingWatchlistData;
+  const isError = isErrorWatchlist || isErrorWatchlistData;
 
   const getVisibilityIcon = (visibility: string) => {
     switch (visibility) {

@@ -9,13 +9,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import {
-    communityWatchlistCollection,
-    getCommunityWatchlistPageOptionsQueryOptions,
+  communityWatchslistItemsCollection,
+  getCommunityWatchlistPageOptionsQueryOptions,
 } from "@/data/watchlist/community-watchlist";
 import { useCommunityWatchlistPage, useWatchlistSearch } from "../hooks";
 import { WatchlistCard } from "../shared/WatchlistCard";
 // consolidated above
-import { myWatchlistItemsCollection } from "@/data/watchlist/my-watchlist";
+import { myWatchlistsItemsCollection } from "@/data/watchlist/my-watchlist";
 import {
   createWatchListMutationOptions,
   updateWatchListMutationOptions,
@@ -44,13 +44,13 @@ export function CommunityWatchlistScreen() {
     (query) =>
       query
         .from({
-          watchlist: communityWatchlistCollection({
+          watchlist: communityWatchslistItemsCollection({
             keyword: searchQuery,
             qc,
             page,
           }),
         })
-        .join({ myWatchlist: myWatchlistItemsCollection(qc) }, ({ watchlist, myWatchlist }) =>
+        .join({ myWatchlist: myWatchlistsItemsCollection(qc) }, ({ watchlist, myWatchlist }) =>
           //@ts-expect-error TODO confirm doign this with string on number isnt causing issues
           eq(watchlist.id, myWatchlist.id)
         )
