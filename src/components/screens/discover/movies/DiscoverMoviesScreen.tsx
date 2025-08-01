@@ -7,7 +7,7 @@ import { Text, useTheme } from "react-native-paper";
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { discoverMoviesCollection } from "@/data/discover/discover-query-collection";
-import { myWatchlistsItemsCollection } from "@/data/watchlist/my-watchlist";
+import { myWatchlistItemsCollection } from "@/data/watchlist/my-watchlist";
 
 import { useQueryClient } from "@tanstack/react-query";
 import { useDiscoverFiltersStore } from "../filters/discover-fliters-store";
@@ -36,7 +36,7 @@ export function DiscoverMoviesScreen() {
             enabled: true,
           }),
         })
-        .join({ watchlist: myWatchlistsItemsCollection(qc) }, ({ movies, watchlist }) =>
+        .join({ watchlist: myWatchlistItemsCollection(qc) }, ({ movies, watchlist }) =>
           eq(movies.id, watchlist.id)
         )
         .select(({ movies, watchlist }) => ({

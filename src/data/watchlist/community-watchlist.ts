@@ -1,11 +1,11 @@
 import { pb } from "@/lib/pb/client";
-import { QueryClient, queryOptions } from "@tanstack/react-query";
-import { and, eq, like, or } from "@tigawanna/typed-pocketbase";
-import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import { createCollection } from "@tanstack/react-db";
 import { WatchlistResponseSchema } from "@/lib/pb/types/pb-zod";
 import { queryClient } from "@/lib/tanstack/query/client";
 import { TSQ_CACHE_TIME } from "@/lib/tanstack/query/external-dev-tools";
+import { queryCollectionOptions } from "@tanstack/query-db-collection";
+import { createCollection } from "@tanstack/react-db";
+import { QueryClient, queryOptions } from "@tanstack/react-query";
+import { and, eq, like, or } from "@tigawanna/typed-pocketbase";
 
 interface GetCommunitywatchlistProps {
   keyword?: string;
@@ -75,13 +75,14 @@ export function getCommunityWatchlistPageOptionsQueryOptions({
   });
 }
 
-export const communityWatchslistItemsCollection = ({
+export const communityWatchlistsCollection = ({
   keyword,
   page = 1,
   qc,
 }: CommunityWatchlistCollectionProps) => {
   return createCollection(
     queryCollectionOptions({
+      // Base community watchlists collection key
       queryKey: ["watchlist", "community", keyword, page, "collection"],
       queryFn: async () => {
         const response = await getCommunityWatchListFromQueryClient({ keyword, page, qc });
@@ -101,7 +102,7 @@ interface CommunityWatchlistItemsCollectionProps {
   qc: QueryClient;
   itemId: string;
 }
-export const communitySingleWatchlistItemsCollection = ({
+export const communityWatchlistItemsCollection = ({
   keyword,
   page = 1,
   qc,
@@ -109,7 +110,8 @@ export const communitySingleWatchlistItemsCollection = ({
 }: CommunityWatchlistItemsCollectionProps) => {
   return createCollection(
     queryCollectionOptions({
-      queryKey: ["watchlist", "community", keyword, page, "collection", "items", itemId],
+      // Key for items of a specific community watchlist
+      queryKey: ["watchlist", "community", keyword, page, "details", itemId],
       queryFn: async () => {
         const response = await getCommunityWatchListFromQueryClient({ keyword, page, qc });
         const singleWatchlist = response.items.filter((item) => {

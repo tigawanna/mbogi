@@ -1,4 +1,4 @@
-import { myWatchlistCollection } from "@/data/watchlist/my-watchlist";
+import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
 // import {
 //   MutationSource,
 //   useAddItemToWatchlistMutation,
@@ -53,7 +53,7 @@ export function WatchlistSelectionModal({
   const qc = useQueryClient();
   const { data: watchlists, isLoading } = useLiveQuery((query) =>
     query.from({
-      watchlist: myWatchlistCollection(qc),
+      watchlist: myWatchlistsCollection(qc),
     })
   );
 

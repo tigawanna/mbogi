@@ -7,7 +7,7 @@ import { Text, useTheme } from "react-native-paper";
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { discoverTVCollection } from "@/data/discover/discover-query-collection";
-import { myWatchlistsItemsCollection } from "@/data/watchlist/my-watchlist";
+import { myWatchlistItemsCollection } from "@/data/watchlist/my-watchlist";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDiscoverFiltersStore } from "../filters/discover-fliters-store";
 import { DiscoverTVFlatList } from "./DiscoverTVFlatList";
@@ -33,7 +33,7 @@ export function DiscoverTVScreen() {
             enabled: true,
           }),
         })
-        .join({ watchlist: myWatchlistsItemsCollection(qc) }, ({ tv, watchlist }) =>
+        .join({ watchlist: myWatchlistItemsCollection(qc) }, ({ tv, watchlist }) =>
           eq(tv.id, watchlist.id)
         )
         .select(({ tv, watchlist }) => ({

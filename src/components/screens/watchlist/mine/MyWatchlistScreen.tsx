@@ -1,4 +1,4 @@
-import { myWatchlistCollection } from "@/data/watchlist/my-watchlist";
+import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
 import { ilike } from "@tanstack/db";
 import { useLiveQuery } from "@tanstack/react-db";
 import React, { useState } from "react";
@@ -8,13 +8,13 @@ import { FAB, Searchbar, Text, useTheme } from "react-native-paper";
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 
+import { createWatchListMutationOptions, updateWatchListMutationOptions } from "@/data/watchlist/watchlist-muttions";
 import type { WatchlistResponse } from "@/lib/pb/types/pb-types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useWatchlistSearch } from "../hooks";
 import { WatchlistCard } from "../shared/WatchlistCard";
 import { WatchlistFormModal } from "../shared/WatchlistFormModal";
-import { createWatchListMutationOptions, updateWatchListMutationOptions } from "@/data/watchlist/watchlist-muttions";
 
 export function MyWatchlistScreen() {
   const qc = useQueryClient()
@@ -28,11 +28,11 @@ export function MyWatchlistScreen() {
     data: watchlist,
     isLoading,
     isError,
-  } = useLiveQuery(
+} = useLiveQuery(
     (query) =>
       query
         .from({
-          watchlist: myWatchlistCollection(qc),
+          watchlist: myWatchlistsCollection(qc),
         })
         .where(({ watchlist }) => ilike(watchlist.title, `%${searchQuery}%`)),
     [searchQuery]

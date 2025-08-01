@@ -2,8 +2,8 @@ import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 
 import {
-  communityWatchslistItemsCollection,
-  communitySingleWatchlistItemsCollection,
+  communityWatchlistItemsCollection,
+  communityWatchlistsCollection,
 } from "@/data/watchlist/community-watchlist";
 import { eq, useLiveQuery } from "@tanstack/react-db";
 import { useQueryClient } from "@tanstack/react-query";
@@ -32,7 +32,7 @@ export function CommunityWatchlistDetailScreen({
     (query) =>
       query
         .from({
-          watchlist: communityWatchslistItemsCollection({
+          watchlist: communityWatchlistsCollection({
             qc,
           }),
         })
@@ -47,7 +47,7 @@ export function CommunityWatchlistDetailScreen({
   } = useLiveQuery(
     (query) =>
       query.from({
-        watchlist: communitySingleWatchlistItemsCollection({
+        watchlist: communityWatchlistItemsCollection({
           qc,
           itemId: watchlistId,
         }),

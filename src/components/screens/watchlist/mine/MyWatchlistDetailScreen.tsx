@@ -1,6 +1,6 @@
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
-import { mySingleWatchlistItemsCollection, myWatchlistCollection } from "@/data/watchlist/my-watchlist";
+import { mySingleWatchlistItemsCollection, myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
 import { eq, useLiveQuery } from "@tanstack/react-db";
 import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
@@ -26,7 +26,7 @@ export function MyWatchlistDetailScreen({ watchlistId }: MyWatchlistDetailScreen
     (query) =>
       query
         .from({
-          watchlist: myWatchlistCollection(qc),
+          watchlist: myWatchlistsCollection(qc),
         })
         .where(({ watchlist }) => eq(watchlist.id, watchlistId)),
         [watchlistId]
