@@ -1,27 +1,38 @@
 import { eq } from "@tanstack/db";
 import { useLiveQuery } from "@tanstack/react-db";
-import React from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import React, { useState } from "react";
 import { FlatList, StyleSheet, useWindowDimensions, View } from "react-native";
-import { Searchbar, Text, useTheme } from "react-native-paper";
+import { FAB, Searchbar, Text, useTheme } from "react-native-paper";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
-import { useWatchlistSearch, useCommunityWatchlistPage } from "../hooks";
-import { WatchlistCard } from "../shared/WatchlistCard";
 import {
   communityWatchlistCollection,
   getCommunityWatchlistPageOptionsQueryOptions,
 } from "@/data/watchlist/community-watchlist";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
-import { CommunityListFooter } from "./CommunityListFooter";
+import { useCommunityWatchlistPage, useWatchlistSearch } from "../hooks";
+import { WatchlistCard } from "../shared/WatchlistCard";
+// consolidated above
 import { myWatchlistItemsCollection } from "@/data/watchlist/my-watchlist";
+import { createWatchListMutationOptions, updateWatchListMutationOptions } from "@/data/watchlist/watchlist-muttions";
+import type { WatchlistResponse } from "@/lib/pb/types/pb-types";
+import { WatchlistFormModal } from "../shared/WatchlistFormModal";
+import { CommunityListFooter } from "./CommunityListFooter";
 
 export function CommunityWatchlistScreen() {
   const qc = useQueryClient();
   const { searchQuery } = useWatchlistSearch();
   const { page } = useCommunityWatchlistPage();
   const { colors } = useTheme();
-  // myWatchlistItemsCollection(qc)
+  // FAB and modal state
+  const { bottom } = useSafeAreaInsets();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editingWatchlist, setEditingWatchlist] = useState<WatchlistResponse | null>(null);
+  const createMutation = useMutation(createWatchListMutationOptions());
+  const updateMutation = useMutation(updateWatchListMutationOptions());
+
   const {
     data: watchlist,
     isLoading,
@@ -134,7 +145,16 @@ export function CommunityWatchlistScreen() {
     <WatchlistScreenScafold>
       <FlatList
         data={watchlist}
-        renderItem={({ item,index }) => <WatchlistCard watchlist={item} community />}
+        renderItem={({ item, index }) => (
+          <WatchlistCard
+            watchlist={item}
+            community
+            onEdit={() => {
+              setEditingWatchlist(item);
+              setModalVisible(true);
+            }}
+          />
+        )}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
@@ -144,6 +164,27 @@ export function CommunityWatchlistScreen() {
             perPage={pageOptions?.perPage}
           />
         }
+      />
+      {/* Watchlist creation/edit modal and FAB */}
+      <WatchlistFormModal
+        visible={modalVisible}
+        onDismiss={() => setModalVisible(false)}
+        initialValues={editingWatchlist || undefined}
+        onSubmit={(data) => {
+          if (editingWatchlist)
+            updateMutation.mutate({ payload: { id: editingWatchlist.id, ...data } });
+          else createMutation.mutate({ payload: data });
+          setModalVisible(false);
+        }}
+        submitLabel={editingWatchlist ? "Update" : "Create"}
+      />
+      <FAB
+        icon="plus"
+        onPress={() => {
+          setEditingWatchlist(null);
+          setModalVisible(true);
+        }}
+        style={{ position: "absolute", right: 16, bottom: bottom + 16 }}
       />
     </WatchlistScreenScafold>
   );

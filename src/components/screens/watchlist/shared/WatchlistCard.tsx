@@ -11,9 +11,10 @@ interface WatchlistCardProps {
     };
   };
   community?: boolean;
+  onEdit?: () => void;
 }
 
-export function WatchlistCard({ watchlist,community = false }: WatchlistCardProps) {
+export function WatchlistCard({ watchlist, community = false, onEdit }: WatchlistCardProps) {
   const { colors } = useTheme();
 
   const getVisibilityIcon = (visibility: string) => {
@@ -76,6 +77,24 @@ export function WatchlistCard({ watchlist,community = false }: WatchlistCardProp
                   size={20}
                   style={styles.visibilityIcon}
                 />
+                {onEdit && (
+                  <IconButton
+                    icon="pencil"
+                    iconColor={colors.primary}
+                    size={20}
+                    style={styles.visibilityIcon}
+                    onPress={onEdit}
+                  />
+                )}
+                {onEdit && (
+                  <IconButton
+                    icon="pencil"
+                    iconColor={colors.primary}
+                    size={20}
+                    style={styles.visibilityIcon}
+                    onPress={onEdit}
+                  />
+                )}
               </View>
             </View>
 
