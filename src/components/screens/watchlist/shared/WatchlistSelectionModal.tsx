@@ -1,4 +1,4 @@
-import { getUserWatchListFromQueryClient } from '@/data/watchlist/my-watchlist';
+import { getUserWatchListFromQueryClient, myWatchlistCollection } from '@/data/watchlist/my-watchlist';
 import {
     MutationSource,
     useAddItemToWatchlistMutation,
@@ -6,6 +6,7 @@ import {
     useRemoveItemFromWatchlistMutation
 } from '@/data/watchlist/watchlist-muttions';
 import { pb } from '@/lib/pb/client';
+import { useLiveQuery } from '@tanstack/react-db';
 import { useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
@@ -43,8 +44,7 @@ export function WatchlistSelectionModal({
   const queryClient = useQueryClient();
   const userId = pb.authStore.record?.id;
   
-  const [watchlists, setWatchlists] = React.useState<any[]>([]);
-  const [loading, setLoading] = React.useState(false);
+
   const [showCreateForm, setShowCreateForm] = React.useState(false);
   const [newWatchlistTitle, setNewWatchlistTitle] = React.useState('');
 
@@ -53,25 +53,15 @@ export function WatchlistSelectionModal({
   const createWatchlistMutation = useCreateWatchlistMutation({ source });
 
   // Load user's watchlists when modal opens
-  const loadWatchlists = React.useCallback(async () => {
-    if (!userId) return;
-    
-    setLoading(true);
-    try {
-      const userWatchlists = await getUserWatchListFromQueryClient(queryClient, userId);
-      setWatchlists(userWatchlists);
-    } catch (error) {
-      console.error('Failed to load watchlists:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [queryClient, userId]);
-
-  React.useEffect(() => {
-    if (visible && userId) {
-      loadWatchlists();
-    }
-  }, [visible, userId, loadWatchlists]);
+  const qc = useQueryClient();
+  const {
+    data: watchlists,
+    isLoading,
+  } = useLiveQuery((query) =>
+    query.from({
+      watchlist: myWatchlistCollection(qc),
+    })
+  );
 
   const handleAddToWatchlist = async (watchlistId: string) => {
     try {
@@ -229,7 +219,7 @@ export function WatchlistSelectionModal({
 
             <Divider style={styles.divider} />
 
-            {loading ? (
+            {isLoading ? (
               <View style={styles.loading}>
                 <Text>Loading watchlists...</Text>
               </View>
