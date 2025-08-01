@@ -335,7 +335,8 @@ export function useDeleteWatchlistMutation(options: { source?: MutationSource; o
 }
 
 // Add item to watchlist mutation with optimistic updates
-export function useAddItemToWatchlistMutation(options: { source?: MutationSource; optimistic?: boolean } = {}) {
+export function useAddItemToWatchlistMutation(options: {
+   source?: MutationSource; optimistic?: boolean } = {}) {
   return useMutation({
     mutationFn: async ({ 
       watchlistId, 
