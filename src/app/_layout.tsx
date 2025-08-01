@@ -55,9 +55,7 @@ export default function RootLayout() {
           <PersistQueryClientProvider
             client={queryClient}
             persistOptions={{ persister: asyncStoragePersister }}>
-            {/* <QueryClientProvider client={queryClient}> */}
             <Slot />
-            {/* </QueryClientProvider> */}
           </PersistQueryClientProvider>
           <GlobalSnackbar />
         </GestureHandlerRootView>

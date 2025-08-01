@@ -48,7 +48,7 @@ export const myWatchlistCollection = (qc: QueryClient) => {
         const response = await getUserWatchListFromQueryClient(qc, userId);
         return await response;
       },
-      queryClient: queryClient,
+      queryClient: queryClient, //the globally defined queryclient
       enabled: !!userId,
       getKey: (item) => item.id,
       schema: WatchlistResponseSchema,
