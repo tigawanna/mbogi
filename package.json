@@ -10,7 +10,6 @@
     "build:android": "expo run:android",
     "build-apk": "eas build --platform android --profile preview --local",
     "pb-types": "tsx src/lib/pb/scripts/typegen.ts",
-    "pb-seed": "tsx src/lib/pb/scripts/seed.ts",
     "pb-collections": "tsx src/lib/pb/scripts/get-collection-structure.ts",
     "poststart": "npm run pb-collections && npm run pb-types",
     "ios": "expo start --ios",

@@ -1,4 +1,4 @@
-import { WatchlistDetailScreen } from '@/components/screens/watchlist/shared/WatchlistDetailScreen';
+import { MyWatchlistDetailScreen } from '@/components/screens/watchlist/mine/MyWatchlistDetailScreen';
 import { Stack, useLocalSearchParams } from 'expo-router';
 
 export default function WatchlistPage() {
@@ -16,7 +16,7 @@ export default function WatchlistPage() {
           headerShown: true,
         }}
       />
-      <WatchlistDetailScreen watchlistId={id} />
+      <MyWatchlistDetailScreen watchlistId={id} />
     </>
   );
 }

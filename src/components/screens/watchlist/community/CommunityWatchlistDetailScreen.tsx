@@ -1,35 +1,63 @@
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
-import { watchlistByIdCollection } from "@/data/watchlist/my-watchlist";
-import { useLiveQuery } from "@tanstack/react-db";
+
+import {
+  communityWatchlistCollection,
+  communityWatchlistItemsCollection,
+} from "@/data/watchlist/community-watchlist";
+import { eq, useLiveQuery } from "@tanstack/react-db";
+import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import { Card, Chip, IconButton, Text, useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WatchlistItemCard } from "../shared/WatchlistItemCard";
 
-interface WatchlistDetailScreenProps {
+interface CommunityWatchlistDetailScreenProps {
   watchlistId: string;
 }
 
-export function WatchlistDetailScreen({ watchlistId }: WatchlistDetailScreenProps) {
+export function CommunityWatchlistDetailScreen({
+  watchlistId,
+}: CommunityWatchlistDetailScreenProps) {
   const { colors } = useTheme();
   const { top } = useSafeAreaInsets();
+  const qc = useQueryClient();
 
   const {
     data: watchlistData,
-    isLoading,
-    isError,
+    isLoading: isLoadingWatchlist,
+    isError: isErrorWatchlist,
+  } = useLiveQuery(
+    (query) =>
+      query
+        .from({
+          watchlist: communityWatchlistCollection({
+            qc,
+          }),
+        })
+        .where(({ watchlist }) => eq(watchlist.id, watchlistId)),
+    [watchlistId]
+  );
+
+  const {
+    data: watchlistItemsData,
+    isLoading: isLoadingItems,
+    isError: isErrorItems,
   } = useLiveQuery(
     (query) =>
       query.from({
-        watchlist: watchlistByIdCollection(watchlistId),
+        watchlist: communityWatchlistItemsCollection({
+          qc,
+          itemId: watchlistId,
+        }),
       }),
     [watchlistId]
   );
 
+  // Prepare watchlist and its items
   const watchlist = watchlistData?.[0];
-  const items = watchlist?.expand?.items || [];
+  const items = watchlistItemsData || [];
 
   const getVisibilityIcon = (visibility: string) => {
     switch (visibility) {
@@ -61,7 +89,8 @@ export function WatchlistDetailScreen({ watchlistId }: WatchlistDetailScreenProp
     return new Date(dateString).toLocaleDateString();
   };
 
-  if (isLoading) {
+  // Show loading if either data source is loading
+  if (isLoadingWatchlist || isLoadingItems) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background, paddingTop: top }]}>
         <View style={styles.statesContainer}>
@@ -83,7 +112,8 @@ export function WatchlistDetailScreen({ watchlistId }: WatchlistDetailScreenProp
     );
   }
 
-  if (isError || !watchlist) {
+  // Show error if any query failed or watchlist missing
+  if (isErrorWatchlist || isErrorItems || !watchlist) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background, paddingTop: top }]}>
         <View style={styles.statesContainer}>
@@ -265,13 +295,6 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 12,
     opacity: 0.7,
-  },
-  sectionHeader: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  sectionTitle: {
-    fontWeight: "600",
   },
   emptyContainer: {
     flex: 1,

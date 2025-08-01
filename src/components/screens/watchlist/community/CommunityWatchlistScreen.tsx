@@ -37,7 +37,7 @@ export function CommunityWatchlistScreen() {
           }),
         })
         .join({ myWatchlist: myWatchlistItemsCollection(qc) }, ({ watchlist, myWatchlist }) =>
-          eq(watchlist.id, String(myWatchlist.id))
+          eq(watchlist.id, myWatchlist.id)
         )
         .select(({ watchlist, myWatchlist }) => ({
           ...watchlist,
@@ -133,7 +133,7 @@ export function CommunityWatchlistScreen() {
     <WatchlistScreenScafold>
       <FlatList
         data={watchlist}
-        renderItem={({ item }) => <WatchlistCard watchlist={item} showUser={true} />}
+        renderItem={({ item,index }) => <WatchlistCard watchlist={item} showUser={true} />}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
