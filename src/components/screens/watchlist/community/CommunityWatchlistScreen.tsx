@@ -37,6 +37,7 @@ export function CommunityWatchlistScreen() {
           }),
         })
         .join({ myWatchlist: myWatchlistItemsCollection(qc) }, ({ watchlist, myWatchlist }) =>
+          //@ts-expect-error TODO confirm doign this with string on number isnt causing issues
           eq(watchlist.id, myWatchlist.id)
         )
         .select(({ watchlist, myWatchlist }) => ({
