@@ -4,7 +4,7 @@ import {
   getMediaTitle,
 } from "@/data/discover/discover-zod-schema";
 import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
-import { createWatchList } from "@/data/watchlist/watchlist-muttions";
+import { addItemToWatchlist,removeItemFromWatchlist } from "@/data/watchlist/watchlist-muttions";
 // import {
 //   MutationSource,
 //   useAddItemToWatchlistMutation,
@@ -101,7 +101,7 @@ export function WatchlistSelectionModal({
       //  console.log("Adding item to watchlist:", listItem, mediaItem);
       //   await addItemMutation.mutateAsync({ watchlistId, itemId });
       // onDismiss();
-      createWatchList({
+      addItemToWatchlist({
         watchlistId: listItem.id,
         watchlistItem: {
           ...mediaItem,
