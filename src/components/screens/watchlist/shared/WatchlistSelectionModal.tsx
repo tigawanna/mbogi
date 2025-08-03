@@ -1,4 +1,10 @@
+import {
+  DiscoverListResultItem,
+  getMediaId,
+  getMediaTitle,
+} from "@/data/discover/discover-zod-schema";
 import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
+import { createWatchList } from "@/data/watchlist/watchlist-muttions";
 // import {
 //   MutationSource,
 //   useAddItemToWatchlistMutation,
@@ -6,6 +12,7 @@ import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
 //   useRemoveItemFromWatchlistMutation,
 // } from "@/data/watchlist/watchlist-muttions";
 import { pb } from "@/lib/pb/client";
+import { UsersResponse, WatchlistItemsResponse } from "@/lib/pb/types/pb-types";
 import { useLiveQuery } from "@tanstack/react-db";
 import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
@@ -24,30 +31,50 @@ import {
 } from "react-native-paper";
 
 interface WatchlistSelectionModalProps {
+  item: DiscoverListResultItem;
   visible: boolean;
   onDismiss: () => void;
-  itemId: string;
-  itemTitle: string;
-  currentWatchlistId?: string; // If the item is already in a watchlist
 }
+
+// const dummyPayload = {
+//   adult: false,
+//   backdrop_path: "/8or4S9BPhkeYK0vlKsPFee4JVWI.jpg",
+//   genre_ids: [28, 18],
+//   id: 1315986,
+//   media_type: "movie",
+//   original_language: "en",
+//   original_title: "Man with No Past",
+//   overview:
+//     "Waking up in an unfamiliar city, a man with no memory must confront the mysteries of his own identity. However, his desperate search to uncover the past pits him against a powerful enemy, leading to a showdown that ultimately reveals the truth.",
+//   popularity: 193.5634,
+//   poster_path: "/eWHvROuznSzcxBAAkzX1X0Rmzoe.jpg",
+//   release_date: "2025-01-13",
+//   title: "Man with No Past",
+//   video: false,
+//   vote_average: 6.545,
+//   vote_count: 44,
+//   watchListName: "Want to Watch",
+//   watchlistTitle: "Want to Watch",
+// } as const;
 
 export function WatchlistSelectionModal({
   visible,
   onDismiss,
-  itemId,
-  itemTitle,
-  currentWatchlistId,
+  item,
 }: WatchlistSelectionModalProps) {
-  const { colors } = useTheme();
-  const queryClient = useQueryClient();
   const userId = pb.authStore.record?.id;
+  const { colors } = useTheme();
+  const itemId = getMediaId(item);
+  const itemTitle = getMediaTitle(item);
+  const currentWatchlistId = item?.watchlistId;
+  // const queryClient = useQueryClient();
 
   const [showCreateForm, setShowCreateForm] = React.useState(false);
   const [newWatchlistTitle, setNewWatchlistTitle] = React.useState("");
 
-//   const addItemMutation = useAddItemToWatchlistMutation({ source });
-//   const removeItemMutation = useRemoveItemFromWatchlistMutation({ source });
-//   const createWatchlistMutation = useCreateWatchlistMutation({ source });
+  //   const addItemMutation = useAddItemToWatchlistMutation({ source });
+  //   const removeItemMutation = useRemoveItemFromWatchlistMutation({ source });
+  //   const createWatchlistMutation = useCreateWatchlistMutation({ source });
 
   // Load user's watchlists when modal opens
   const qc = useQueryClient();
@@ -56,11 +83,36 @@ export function WatchlistSelectionModal({
       watchlist: myWatchlistsCollection(qc),
     })
   );
+  type WatchlistItem = (typeof watchlists)[number];
 
-  const handleAddToWatchlist = async (watchlistId: string) => {
+  const handleAddToWatchlist = async (
+    listItem: WatchlistItem,
+    mediaItem: DiscoverListResultItem
+  ) => {
     try {
-    //   await addItemMutation.mutateAsync({ watchlistId, itemId });
-      onDismiss();
+      if (mediaItem.media_type === "person") {
+        console.warn("Cannot add person to watchlist");
+        return;
+      }
+      if (!userId) {
+        console.warn("User not authenticated");
+        return;
+      }
+      //  console.log("Adding item to watchlist:", listItem, mediaItem);
+      //   await addItemMutation.mutateAsync({ watchlistId, itemId });
+      // onDismiss();
+      createWatchList({
+        watchlistId: listItem.id,
+        watchlistItem: {
+          ...mediaItem,
+          id: String(mediaItem.id),
+          title: getMediaTitle(mediaItem),
+          tmdb_id: mediaItem.id,
+          added_by: userId,
+          poster_path: mediaItem.poster_path || undefined,
+          backdrop_path: mediaItem.backdrop_path || undefined,
+        },
+      });
     } catch (error) {
       console.error("Failed to add item to watchlist:", error);
     }
@@ -68,7 +120,7 @@ export function WatchlistSelectionModal({
 
   const handleRemoveFromWatchlist = async (watchlistId: string) => {
     try {
-    //   await removeItemMutation.mutateAsync({ watchlistId, itemId });
+      //   await removeItemMutation.mutateAsync({ watchlistId, itemId });
       onDismiss();
     } catch (error) {
       console.error("Failed to remove item from watchlist:", error);
@@ -79,18 +131,18 @@ export function WatchlistSelectionModal({
     if (!newWatchlistTitle.trim() || !userId) return;
 
     try {
-    //   const newWatchlist = await createWatchlistMutation.mutateAsync({
-    //     user_id: userId,
-    //     title: newWatchlistTitle.trim(),
-    //     visibility: "public",
-    //     overview: `Watchlist for ${itemTitle}`,
-    //   });
+      //   const newWatchlist = await createWatchlistMutation.mutateAsync({
+      //     user_id: userId,
+      //     title: newWatchlistTitle.trim(),
+      //     visibility: "public",
+      //     overview: `Watchlist for ${itemTitle}`,
+      //   });
 
       // Add the item to the newly created watchlist
-    //   await addItemMutation.mutateAsync({
-    //     watchlistId: newWatchlist.id,
-    //     itemId,
-    //   });
+      //   await addItemMutation.mutateAsync({
+      //     watchlistId: newWatchlist.id,
+      //     itemId,
+      //   });
 
       setShowCreateForm(false);
       setNewWatchlistTitle("");
@@ -105,7 +157,7 @@ export function WatchlistSelectionModal({
     return watchlist?.items?.includes(itemId) || false;
   };
 
-  const renderWatchlistItem = ({ item: watchlist }: { item: any }) => {
+  const renderWatchlistItem = ({ item: watchlist }: { item: WatchlistItem }) => {
     const isInThisWatchlist = isItemInWatchlist(watchlist.id);
     const isCurrentWatchlist = currentWatchlistId === watchlist.id;
 
@@ -132,23 +184,24 @@ export function WatchlistSelectionModal({
               </Chip>
             )}
 
-            {/* {isInThisWatchlist ? (
+            {isInThisWatchlist ? (
               <IconButton
                 icon="minus-circle"
                 mode="contained-tonal"
                 iconColor={colors.error}
                 onPress={() => handleRemoveFromWatchlist(watchlist.id)}
-                disabled={removeItemMutation.isPending}
+                // disabled={removeItemMutation.isPending}
               />
             ) : (
               <IconButton
                 icon="plus-circle"
                 mode="contained-tonal"
                 iconColor={colors.primary}
-                onPress={() => handleAddToWatchlist(watchlist.id)}
-                disabled={addItemMutation.isPending}
+                onPress={() => handleAddToWatchlist(watchlist, item)}
+                // onPress={() => handleAddToWatchlist(watchlist, dummyPayload as any)}
+                // disabled={addItemMutation.isPending}
               />
-            )} */}
+            )}
           </View>
         </Card.Content>
       </Card>
@@ -187,13 +240,13 @@ export function WatchlistSelectionModal({
                 }}>
                 Cancel
               </Button>
-              {/* <Button
+              <Button
                 mode="contained"
                 onPress={handleCreateWatchlist}
-                loading={createWatchlistMutation.isPending}
+                // loading={createWatchlistMutation.isPending}
                 disabled={!newWatchlistTitle.trim()}>
                 Create & Add
-              </Button> */}
+              </Button>
             </View>
           </View>
         ) : (

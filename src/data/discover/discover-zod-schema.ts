@@ -384,89 +384,101 @@ export const TMDBPersonDetailsSchema = z.object({
   place_of_birth: z.string().nullable(),
   also_known_as: z.array(z.string()),
   // Credits (when using append_to_response)
-  movie_credits: z.object({
-    cast: z.array(z.object({
-      id: z.number(),
-      title: z.string(),
-      original_title: z.string(),
-      overview: z.string(),
-      release_date: z.string().nullable(),
-      poster_path: z.string().nullable(),
-      backdrop_path: z.string().nullable(),
-      genre_ids: z.array(z.number()),
-      vote_average: z.number(),
-      vote_count: z.number(),
-      popularity: z.number(),
-      character: z.string(),
-      credit_id: z.string(),
-      order: z.number(),
-      adult: z.boolean(),
-      original_language: z.string(),
-      video: z.boolean(),
-    })),
-    crew: z.array(z.object({
-      id: z.number(),
-      title: z.string(),
-      original_title: z.string(),
-      overview: z.string(),
-      release_date: z.string().nullable(),
-      poster_path: z.string().nullable(),
-      backdrop_path: z.string().nullable(),
-      genre_ids: z.array(z.number()),
-      vote_average: z.number(),
-      vote_count: z.number(),
-      popularity: z.number(),
-      department: z.string(),
-      job: z.string(),
-      credit_id: z.string(),
-      adult: z.boolean(),
-      original_language: z.string(),
-      video: z.boolean(),
-    })),
-  }).optional(),
-  tv_credits: z.object({
-    cast: z.array(z.object({
-      id: z.number(),
-      name: z.string(),
-      original_name: z.string(),
-      overview: z.string(),
-      first_air_date: z.string().nullable(),
-      first_credit_air_date: z.string().nullable(),
-      poster_path: z.string().nullable(),
-      backdrop_path: z.string().nullable(),
-      genre_ids: z.array(z.number()),
-      vote_average: z.number(),
-      vote_count: z.number(),
-      popularity: z.number(),
-      character: z.string(),
-      credit_id: z.string(),
-      episode_count: z.number(),
-      adult: z.boolean(),
-      original_language: z.string(),
-      origin_country: z.array(z.string()),
-    })),
-    crew: z.array(z.object({
-      id: z.number(),
-      name: z.string(),
-      original_name: z.string(),
-      overview: z.string(),
-      first_air_date: z.string().nullable(),
-      first_credit_air_date: z.string().nullable(),
-      poster_path: z.string().nullable(),
-      backdrop_path: z.string().nullable(),
-      genre_ids: z.array(z.number()),
-      vote_average: z.number(),
-      vote_count: z.number(),
-      popularity: z.number(),
-      department: z.string(),
-      job: z.string(),
-      credit_id: z.string(),
-      episode_count: z.number(),
-      adult: z.boolean(),
-      original_language: z.string(),
-      origin_country: z.array(z.string()),
-    })),
-  }).optional(),
+  movie_credits: z
+    .object({
+      cast: z.array(
+        z.object({
+          id: z.number(),
+          title: z.string(),
+          original_title: z.string(),
+          overview: z.string(),
+          release_date: z.string().nullable(),
+          poster_path: z.string().nullable(),
+          backdrop_path: z.string().nullable(),
+          genre_ids: z.array(z.number()),
+          vote_average: z.number(),
+          vote_count: z.number(),
+          popularity: z.number(),
+          character: z.string(),
+          credit_id: z.string(),
+          order: z.number(),
+          adult: z.boolean(),
+          original_language: z.string(),
+          video: z.boolean(),
+        })
+      ),
+      crew: z.array(
+        z.object({
+          id: z.number(),
+          title: z.string(),
+          original_title: z.string(),
+          overview: z.string(),
+          release_date: z.string().nullable(),
+          poster_path: z.string().nullable(),
+          backdrop_path: z.string().nullable(),
+          genre_ids: z.array(z.number()),
+          vote_average: z.number(),
+          vote_count: z.number(),
+          popularity: z.number(),
+          department: z.string(),
+          job: z.string(),
+          credit_id: z.string(),
+          adult: z.boolean(),
+          original_language: z.string(),
+          video: z.boolean(),
+        })
+      ),
+    })
+    .optional(),
+  tv_credits: z
+    .object({
+      cast: z.array(
+        z.object({
+          id: z.number(),
+          name: z.string(),
+          original_name: z.string(),
+          overview: z.string(),
+          first_air_date: z.string().nullable(),
+          first_credit_air_date: z.string().nullable(),
+          poster_path: z.string().nullable(),
+          backdrop_path: z.string().nullable(),
+          genre_ids: z.array(z.number()),
+          vote_average: z.number(),
+          vote_count: z.number(),
+          popularity: z.number(),
+          character: z.string(),
+          credit_id: z.string(),
+          episode_count: z.number(),
+          adult: z.boolean(),
+          original_language: z.string(),
+          origin_country: z.array(z.string()),
+        })
+      ),
+      crew: z.array(
+        z.object({
+          id: z.number(),
+          name: z.string(),
+          original_name: z.string(),
+          overview: z.string(),
+          first_air_date: z.string().nullable(),
+          first_credit_air_date: z.string().nullable(),
+          poster_path: z.string().nullable(),
+          backdrop_path: z.string().nullable(),
+          genre_ids: z.array(z.number()),
+          vote_average: z.number(),
+          vote_count: z.number(),
+          popularity: z.number(),
+          department: z.string(),
+          job: z.string(),
+          credit_id: z.string(),
+          episode_count: z.number(),
+          adult: z.boolean(),
+          original_language: z.string(),
+          origin_country: z.array(z.string()),
+        })
+      ),
+    })
+    .optional(),
 });
 
 /**
@@ -513,8 +525,6 @@ export const TMDBDiscoverResponseSchema = z.union([
   TMDBDiscoverTVResponseSchema.extend({ content_type: z.literal("tv") }),
 ]);
 
-
-
 // ============================================================================
 // Type Exports
 // ============================================================================
@@ -542,16 +552,12 @@ export type Recommendations = z.infer<typeof RecommendationsSchema>;
 // Movie types
 export type TMDBMovie = z.infer<typeof TMDBMovieSchema>;
 export type TMDBMovieDetails = z.infer<typeof TMDBMovieDetailsSchema>;
-export type TMDBDiscoverMoviesResponse = z.infer<
-  typeof TMDBDiscoverMoviesResponseSchema
->;
+export type TMDBDiscoverMoviesResponse = z.infer<typeof TMDBDiscoverMoviesResponseSchema>;
 
 // TV show types
 export type TMDBTVShow = z.infer<typeof TMDBTVShowSchema>;
 export type TMDBTVDetails = z.infer<typeof TMDBTVDetailsSchema>;
-export type TMDBDiscoverTVResponse = z.infer<
-  typeof TMDBDiscoverTVResponseSchema
->;
+export type TMDBDiscoverTVResponse = z.infer<typeof TMDBDiscoverTVResponseSchema>;
 export type Episode = z.infer<typeof EpisodeSchema>;
 export type Season = z.infer<typeof SeasonSchema>;
 export type SeasonEpisode = z.infer<typeof SeasonEpisodeSchema>;
@@ -568,25 +574,39 @@ export type TMDBContent = z.infer<typeof TMDBContentSchema>;
 export type TMDBContentDetails = z.infer<typeof TMDBContentDetailsSchema>;
 export type TMDBDiscoverResponse = z.infer<typeof TMDBDiscoverResponseSchema>;
 
+// Result item type for discover cards
+export type DiscoverListResultItem = TMDBSearchResponse["results"][number] & {
+  watchlistTitle?: string;
+  watchlistId?: string;
+};
+
 // ============================================================================
 // Type Guards
 // ============================================================================
 
+// Helper function to get item title based on media type
+export const getMediaTitle = (item: DiscoverListResultItem): string => {
+  if ("title" in item) return item.title;
+  if ("name" in item) return item.name;
+  return "Unknown";
+};
+
+// Get item ID as string for watchlist operations
+export const getMediaId = (item: DiscoverListResultItem): string => {
+  return item.id.toString();
+};
+
 /**
  * Type guard to check if content is a movie
  */
-export function isMovie(
-  content: TMDBContent
-): content is TMDBMovie & { content_type: "movie" } {
+export function isMovie(content: TMDBContent): content is TMDBMovie & { content_type: "movie" } {
   return content.content_type === "movie";
 }
 
 /**
  * Type guard to check if content is a TV show
  */
-export function isTVShow(
-  content: TMDBContent
-): content is TMDBTVShow & { content_type: "tv" } {
+export function isTVShow(content: TMDBContent): content is TMDBTVShow & { content_type: "tv" } {
   return content.content_type === "tv";
 }
 

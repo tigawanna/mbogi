@@ -7,6 +7,11 @@ import { createCollection } from "@tanstack/react-db";
 import { QueryClient } from "@tanstack/react-query";
 import { and, eq } from "@tigawanna/typed-pocketbase";
 
+
+
+// type Uwu = ResolveSelectWithExpand<WatchlistCollection,any>
+
+
 async function getUserwatchlist(userId: string) {
   const response = await pb.from("watchlist").getFullList({
     filter: and(eq("user_id", userId)),
@@ -55,6 +60,8 @@ export const myWatchlistsCollection = (qc: QueryClient) => {
     })
   );
 };
+
+
 
 export const myWatchlistItemsCollection = (qc: QueryClient) => {
   const userId = pb.authStore.record?.id;

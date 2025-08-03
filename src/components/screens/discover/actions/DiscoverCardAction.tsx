@@ -1,17 +1,12 @@
-import { WatchlistSelectionModal } from '@/components/screens/watchlist/shared/WatchlistSelectionModal';
-import { TMDBSearchResponse } from '@/data/discover/discover-zod-schema';
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Chip, IconButton, useTheme } from 'react-native-paper';
-
-type ResultItem = TMDBSearchResponse["results"][number] & {
-  watchlistTitle?: string;
-  watchlistId?: string;
-};
+import { WatchlistSelectionModal } from "@/components/screens/watchlist/shared/WatchlistSelectionModal";
+import { DiscoverListResultItem } from "@/data/discover/discover-zod-schema";
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { Chip, IconButton, useTheme } from "react-native-paper";
 
 interface DiscoverCardActionProps {
   type: "movies" | "tv" | "person";
-  item: ResultItem;
+  item: DiscoverListResultItem;
 }
 
 export function DiscoverCardAction({ type, item }: DiscoverCardActionProps) {
@@ -23,18 +18,6 @@ export function DiscoverCardAction({ type, item }: DiscoverCardActionProps) {
   }
 
   const isInWatchlist = !!item.watchlistTitle;
-  
-  // Helper function to get item title based on media type
-  const getItemTitle = (item: ResultItem): string => {
-    if ('title' in item) return item.title;
-    if ('name' in item) return item.name;
-    return 'Unknown';
-  };
-
-  // Get item ID as string for watchlist operations
-  const getItemId = (): string => {
-    return item.id.toString();
-  };
 
   return (
     <View style={styles.container}>
@@ -44,8 +27,7 @@ export function DiscoverCardAction({ type, item }: DiscoverCardActionProps) {
           mode="flat"
           onPress={() => setShowWatchlistModal(true)}
           style={[styles.watchlistChip, { backgroundColor: theme.colors.primaryContainer }]}
-          textStyle={{ color: theme.colors.onPrimaryContainer }}
-        >
+          textStyle={{ color: theme.colors.onPrimaryContainer }}>
           {item.watchlistTitle}
         </Chip>
       ) : (
@@ -59,11 +41,9 @@ export function DiscoverCardAction({ type, item }: DiscoverCardActionProps) {
       )}
 
       <WatchlistSelectionModal
+        item={item}
         visible={showWatchlistModal}
         onDismiss={() => setShowWatchlistModal(false)}
-        itemId={getItemId()}
-        itemTitle={getItemTitle(item)}
-        currentWatchlistId={item.watchlistId}
       />
     </View>
   );
@@ -72,10 +52,10 @@ export function DiscoverCardAction({ type, item }: DiscoverCardActionProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: '100%',
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    height: "100%",
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
   },
   watchlistChip: {
     borderRadius: 16,
