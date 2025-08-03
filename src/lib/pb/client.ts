@@ -1,8 +1,8 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TypedPocketBase } from "@tigawanna/typed-pocketbase";
 import { AsyncAuthStore } from "pocketbase";
-import { Schema } from "./types/pb-types";
 import { envVariables } from "../env";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Schema } from "./types/pb-types";
 
 const store = new AsyncAuthStore({
   save: async (serialized) => AsyncStorage.setItem("pb_auth", serialized),
@@ -12,3 +12,11 @@ const store = new AsyncAuthStore({
 
 
 export const pb = new TypedPocketBase<Schema>(envVariables.EXPO_PUBLIC_PB_URL,store);
+
+
+export const pocketbaseFriendlyUUID = () => {
+  // Generate a random UUID and clean it up for PocketBase
+  const initialId = crypto.randomUUID();
+  // Remove hyphens, convert to lowercase, and take first 15 characters
+  return initialId.replace(/-/g, '').toLowerCase().slice(0, 15);
+}

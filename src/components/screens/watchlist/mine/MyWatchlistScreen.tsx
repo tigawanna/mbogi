@@ -133,12 +133,10 @@ export function MyWatchlistScreen() {
         initialValues={editingWatchlist || undefined}
         onSubmit={(data) => {
           if (editingWatchlist) {
-            console.log("onsubmit update ", data);
+            console.log("onsubmit update ", editingWatchlist.id);
             // updateMutation.mutate({payload:data});
             myWatchlistsCollection(qc).update(editingWatchlist.id, (draft) => {
-              draft.title = data.title;
-              draft.overview = data.overview ?? "";
-              draft.visibility = data.visibility ?? "public";
+              draft.title = "on site";
             });
           } else {
             console.log("onsubmit create ", data);

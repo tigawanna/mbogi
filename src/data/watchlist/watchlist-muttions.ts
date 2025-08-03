@@ -11,8 +11,13 @@ import { mutationOptions } from "@tanstack/react-query";
 import { z } from "zod";
 
 export async function createWatchlist(payload: WatchlistCreate) {
-  const inputs = WatchlistCreateSchema.parse(payload);
-  return await pb.from("watchlist").create(inputs);
+  try {
+    const inputs = WatchlistCreateSchema.parse(payload);
+    return await pb.from("watchlist").create(inputs);
+  } catch (error) {
+    console.log("Error creating watchlist:", error);
+    throw error;
+  }
 }
 
 export function createWatchListMutationOptions() {
@@ -22,17 +27,21 @@ export function createWatchListMutationOptions() {
 }
 
 export async function updateWatchlist(payload: WatchlistUpdate) {
-  const inputs = WatchlistUpdateSchema.extend({
-    id: z.string().nonempty("Watchlist ID is required"),
-  }).parse(payload);
-  return await pb.from("watchlist").update(inputs.id, inputs);
+  try {
+    const inputs = WatchlistUpdateSchema.extend({
+      id: z.string().nonempty("Watchlist ID is required"),
+    }).parse(payload);
+    return await pb.from("watchlist").update(inputs.id, inputs);
+  } catch (error) {
+    console.log("Error updating watchlist:", error);
+    throw error;
+  }
 }
 export function updateWatchListMutationOptions() {
   return mutationOptions({
     mutationFn: async (payload: WatchlistUpdate) => updateWatchlist(payload),
   });
 }
-
 
 /**
  * Delete an entire watchlist

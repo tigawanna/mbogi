@@ -1,5 +1,5 @@
 import { useSnackbarStore } from "@/components/react-native-paper/snackbar/global-snackbar-store";
-import { pb } from "@/lib/pb/client";
+import { pb, pocketbaseFriendlyUUID } from "@/lib/pb/client";
 import { WatchlistCreateSchema, WatchlistResponse } from "@/lib/pb/types/pb-zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect } from "react";
@@ -65,7 +65,7 @@ export function WatchlistFormModal({
       title: "",
       overview: "",
       visibility: "public",
-      id: initialValues?.id,
+      id: initialValues?.id ?? pocketbaseFriendlyUUID(),
       user_id: currentUserId,
     },
     resolver: zodResolver(FormSchema),
@@ -83,7 +83,7 @@ export function WatchlistFormModal({
 
       // Reset form when modal opens
       reset({
-        id: initialValues?.id || undefined,
+        id: initialValues?.id ?? pocketbaseFriendlyUUID(),
         user_id: currentUserId,
         title: initialValues?.title || "",
         overview: initialValues?.overview || "",
