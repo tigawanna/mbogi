@@ -8,16 +8,15 @@ import { FAB, Searchbar, Text, useTheme } from "react-native-paper";
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 
-import { createWatchListMutationOptions, updateWatchListMutationOptions } from "@/data/watchlist/watchlist-muttions";
 import type { WatchlistResponse } from "@/lib/pb/types/pb-types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useWatchlistSearch } from "../hooks";
 import { WatchlistCard } from "../shared/WatchlistCard";
 import { WatchlistFormModal } from "../shared/WatchlistFormModal";
 
 export function MyWatchlistScreen() {
-  const qc = useQueryClient()
+  const qc = useQueryClient();
   const { searchQuery } = useWatchlistSearch();
   const { bottom } = useSafeAreaInsets();
   const [modalVisible, setModalVisible] = useState(false);
@@ -28,7 +27,7 @@ export function MyWatchlistScreen() {
     data: watchlist,
     isLoading,
     isError,
-} = useLiveQuery(
+  } = useLiveQuery(
     (query) =>
       query
         .from({
@@ -92,18 +91,15 @@ export function MyWatchlistScreen() {
             <View style={styles.emptyIconContainer}>
               <EmptyRoadSVG />
             </View>
-            <Text
-              variant="headlineSmall"
-              style={[styles.emptyTitle, { color: colors.onSurface }]}>
+            <Text variant="headlineSmall" style={[styles.emptyTitle, { color: colors.onSurface }]}>
               No watchlists found
             </Text>
             <Text
               variant="bodyMedium"
               style={[styles.emptySubtitle, { color: colors.onSurfaceVariant }]}>
-              {searchQuery 
+              {searchQuery
                 ? "Try adjusting your search terms to find more watchlists"
-                : "Create your first watchlist to get started"
-              }
+                : "Create your first watchlist to get started"}
             </Text>
           </View>
         </View>
@@ -129,13 +125,15 @@ export function MyWatchlistScreen() {
         showsVerticalScrollIndicator={false}
       />
       <WatchlistFormModal
-        key={modalVisible? "open" : "shut"}
         visible={modalVisible}
-        onDismiss={() => setModalVisible(false)}
+        onDismiss={() => {
+          setModalVisible(false);
+          setEditingWatchlist(null);
+        }}
         initialValues={editingWatchlist || undefined}
         onSubmit={(data) => {
           if (editingWatchlist) {
-            // console.log("Updating watchlist with data:", data);
+            console.log("onsubmit update ", data);
             // updateMutation.mutate({payload:data});
             myWatchlistsCollection(qc).update(editingWatchlist.id, (draft) => {
               draft.title = data.title;
@@ -143,7 +141,7 @@ export function MyWatchlistScreen() {
               draft.visibility = data.visibility ?? "public";
             });
           } else {
-            console.log("Creating new watchlist with data:", data);
+            // console.log("Creating new watchlist with data:", data);
             // createMutation.mutate({payload:data});
             myWatchlistsCollection(qc).insert(data as any);
           }

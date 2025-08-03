@@ -6,7 +6,7 @@ import { Text, useTheme } from "react-native-paper";
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { discoverSearchCollection } from "@/data/discover/discover-query-collection";
-import { myWatchlistsItemsCollection } from "@/data/watchlist/my-watchlist";
+import { myWatchlistItemsCollection } from "@/data/watchlist/my-watchlist";
 import { eq, useLiveQuery } from "@tanstack/react-db";
 import { useQueryClient } from "@tanstack/react-query";
 import { SearchResultsFlatList } from "./SearchResultsFlatList";
@@ -25,7 +25,7 @@ export function SearchResultsScreen({ searchQuery }: SearchResultsScreenProps) {
             enabled: true,
           }),
         })
-        .join({ watchlist: myWatchlistsItemsCollection(qc) }, ({ results, watchlist }) =>
+        .join({ watchlist: myWatchlistItemsCollection(qc)}, ({ results, watchlist }) =>
           eq(results.id, watchlist.id)
         )
         .select(({ results, watchlist }) => ({

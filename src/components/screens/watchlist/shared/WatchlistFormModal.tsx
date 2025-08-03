@@ -1,6 +1,6 @@
 import { useSnackbarStore } from "@/components/react-native-paper/snackbar/global-snackbar-store";
 import { pb } from "@/lib/pb/client";
-import { WatchlistCreateSchema } from "@/lib/pb/types/pb-zod";
+import { WatchlistCreateSchema, WatchlistResponse } from "@/lib/pb/types/pb-zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -21,6 +21,10 @@ import { z } from "zod";
 // Local form schema overriding title to be required
 const FormSchema = WatchlistCreateSchema.extend({
   title: z.string().min(1, "Title is required"),
+  overview: z.string().optional(),
+  visibility: z.enum(["public", "private", "followers_only"]),
+  id: z.string().optional(), // Optional for new watchlists, required for updates
+  user_id: z.string().nonempty("User ID is required"),
 });
 
 type FormData = z.infer<typeof FormSchema>;
@@ -29,7 +33,7 @@ interface WatchlistFormModalProps {
   visible: boolean;
   onDismiss: () => void;
   onSubmit: (data: FormData) => void;
-  initialValues?: Partial<FormData>;
+  initialValues?: Partial<WatchlistResponse>;
   submitLabel?: string;
   isMutationPending?: boolean;
 }
@@ -42,6 +46,7 @@ export function WatchlistFormModal({
   isMutationPending,
   submitLabel = "Save",
 }: WatchlistFormModalProps) {
+  // console.log(" == initial values  ==", initialValues);
   const { colors } = useTheme();
   const { showSnackbar } = useSnackbarStore();
   const currentUserId = pb.authStore?.record?.id;
@@ -52,35 +57,42 @@ export function WatchlistFormModal({
   ];
   const {
     control,
-    setValue,
     handleSubmit,
-    formState: { errors, isValid,isValidating,isLoading,isSubmitting },
+    reset,
+    formState: { errors, isValid },
   } = useForm<FormData>({
     defaultValues: {
-      title: initialValues?.title || "",
-      overview: initialValues?.overview || "",
-      visibility: initialValues?.visibility || "public",
-      user_id: currentUserId || "",
+      title: "",
+      overview: "",
+      visibility: "public",
+      id: initialValues?.id,
+      user_id: currentUserId,
     },
     resolver: zodResolver(FormSchema),
   });
 
-  // useEffect(() => {
-  //   if (initialValues) {
-  //     setValue("title", initialValues?.title || "");
-  //     setValue("overview", initialValues?.overview || "");
-  //     setValue("visibility", initialValues?.visibility || "public");
-  //   }
-  //   if (currentUserId) {
-  //     setValue("user_id", currentUserId);
-  //   } else {
-  //     showSnackbar("You must be logged in to create a watchlist.", {
-  //       duration: 10_000,
-  //     });
-  //   }
-  // }, [initialValues, setValue, showSnackbar, currentUserId]);
-  // console.log("states ==>> ", {isValid, isValidating, isLoading, isSubmitting});
-  const disableButton = !isValid || isValidating || isLoading || isSubmitting;
+  useEffect(() => {
+    if (visible) {
+      // Check if user is logged in
+      if (!currentUserId) {
+        showSnackbar("You must be logged in to create a watchlist.", {
+          duration: 10_000,
+        });
+        return;
+      }
+
+      // Reset form when modal opens
+      reset({
+        id: initialValues?.id || undefined,
+        user_id: currentUserId,
+        title: initialValues?.title || "",
+        overview: initialValues?.overview || "",
+        visibility: initialValues?.visibility || "public",
+      });
+    }
+  }, [visible, initialValues, reset, currentUserId, showSnackbar]);
+  // console.log("states ==>> ", {isValid, isValidating, isSubmitting});
+  const disableButton = !isValid;
   return (
     <Portal>
       <Modal

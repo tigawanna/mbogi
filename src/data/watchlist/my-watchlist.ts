@@ -56,13 +56,13 @@ export const myWatchlistsCollection = (qc: QueryClient) => {
       getKey: (item) => item.id,
       schema: WatchlistResponseSchema,
       onInsert: async ({ transaction }) => {
-        console.log("Inserting watchlist collection with transaction:", transaction);
         const { original, modified } = transaction.mutations[0];
+        console.log("Inserting watchlist collection with transaction:", transaction);
         await createWatchlist(modified);
       },
       onUpdate: async ({ transaction }) => {
-        console.log("Updating watchlist collection with transaction:", transaction);
         const { original, modified } = transaction.mutations[0];
+        console.log("Updating watchlist collection with transaction:", transaction);
         await updateWatchlist(modified);
       },
       onDelete: async ({ transaction }) => {

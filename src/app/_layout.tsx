@@ -17,6 +17,9 @@ import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PaperProvider } from "react-native-paper";
 
+import { useNetworkActivityDevTools } from "@rozenite/network-activity-plugin";
+import { useTanStackQueryDevTools } from "@rozenite/tanstack-query-plugin";
+
 SplashScreen.preventAutoHideAsync();
 
 function onAppStateChange(status: AppStateStatus) {
@@ -27,8 +30,10 @@ function onAppStateChange(status: AppStateStatus) {
 }
 
 export default function RootLayout() {
+  useNetworkActivityDevTools();
   useOnlineManager();
   useAppState(onAppStateChange);
+  useTanStackQueryDevTools(queryClient);
   const { dynamicColors } = useSettingsStore();
   const { colorScheme, paperTheme } = useThemeSetup(dynamicColors);
 
@@ -63,3 +68,4 @@ export default function RootLayout() {
     </ThemeProvider>
   );
 }
+
