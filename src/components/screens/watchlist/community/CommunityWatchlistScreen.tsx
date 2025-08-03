@@ -175,9 +175,9 @@ export function CommunityWatchlistScreen() {
         initialValues={editingWatchlist || undefined}
         onSubmit={(data) => {
           if (editingWatchlist) {
-            updateMutation.mutate({ payload: data });
+            updateMutation.mutate(data);
           } else {
-            createMutation.mutate({ payload: data });
+            createMutation.mutate(data);
           }
           setModalVisible(false);
           setEditingWatchlist(null);

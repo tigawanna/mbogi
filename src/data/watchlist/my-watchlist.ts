@@ -54,19 +54,19 @@ export const myWatchlistsCollection = (qc: QueryClient) => {
       queryClient: queryClient, //the globally defined queryclient
       enabled: !!userId,
       getKey: (item) => item.id,
-      schema: WatchlistResponseSchema,
+      // schema: WatchlistResponseSchema,
       onInsert: async ({ transaction }) => {
         const { original, modified } = transaction.mutations[0];
-        console.log("Inserting watchlist collection with transaction:", transaction);
+        console.log(" == myWatchlistsCollection.onInsert ==", transaction);
         await createWatchlist(modified);
       },
       onUpdate: async ({ transaction }) => {
         const { original, modified } = transaction.mutations[0];
-        console.log("Updating watchlist collection with transaction:", transaction);
+        console.log(" == myWatchlistsCollection.onUpdate ==", transaction);
         await updateWatchlist(modified);
       },
       onDelete: async ({ transaction }) => {
-        console.log("Deleting watchlist collection with transaction:", transaction);
+        console.log(" == myWatchlistsCollection.onDelete ==", transaction);
         const { original } = transaction.mutations[0];
         await deleteWatchlist(original.id);
       },

@@ -141,6 +141,7 @@ export function MyWatchlistScreen() {
               draft.visibility = data.visibility ?? "public";
             });
           } else {
+            console.log("onsubmit create ", data);
             // console.log("Creating new watchlist with data:", data);
             // createMutation.mutate({payload:data});
             myWatchlistsCollection(qc).insert(data as any);
