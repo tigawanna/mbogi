@@ -22,8 +22,8 @@ export function MyWatchlistScreen() {
   const { bottom } = useSafeAreaInsets();
   const [modalVisible, setModalVisible] = useState(false);
   const [editingWatchlist, setEditingWatchlist] = useState<WatchlistResponse | null>(null);
-  const createMutation = useMutation(createWatchListMutationOptions())
-  const updateMutation = useMutation(updateWatchListMutationOptions())
+  // const createMutation = useMutation(createWatchListMutationOptions())
+  // const updateMutation = useMutation(updateWatchListMutationOptions())
   const {
     data: watchlist,
     isLoading,
@@ -118,7 +118,10 @@ export function MyWatchlistScreen() {
         renderItem={({ item }) => (
           <WatchlistCard
             watchlist={item}
-            onEdit={()=>{ setEditingWatchlist(item); setModalVisible(true); }}
+            onEdit={() => {
+              setEditingWatchlist(item);
+              setModalVisible(true);
+            }}
           />
         )}
         keyExtractor={(item) => item.id}
@@ -126,15 +129,23 @@ export function MyWatchlistScreen() {
         showsVerticalScrollIndicator={false}
       />
       <WatchlistFormModal
+        key={modalVisible? "open" : "shut"}
         visible={modalVisible}
         onDismiss={() => setModalVisible(false)}
         initialValues={editingWatchlist || undefined}
-        isMutationPending={createMutation.isPending || updateMutation.isPending}
         onSubmit={(data) => {
           if (editingWatchlist) {
-            updateMutation.mutate({payload:data});
+            // console.log("Updating watchlist with data:", data);
+            // updateMutation.mutate({payload:data});
+            myWatchlistsCollection(qc).update(editingWatchlist.id, (draft) => {
+              draft.title = data.title;
+              draft.overview = data.overview ?? "";
+              draft.visibility = data.visibility ?? "public";
+            });
           } else {
-            createMutation.mutate({payload:data});
+            console.log("Creating new watchlist with data:", data);
+            // createMutation.mutate({payload:data});
+            myWatchlistsCollection(qc).insert(data as any);
           }
           setModalVisible(false);
           setEditingWatchlist(null);
@@ -143,11 +154,11 @@ export function MyWatchlistScreen() {
       />
       <FAB
         icon="plus"
-        onPress={() => { 
-          setEditingWatchlist(null); 
-          setModalVisible(true); 
+        onPress={() => {
+          setEditingWatchlist(null);
+          setModalVisible(true);
         }}
-        style={{ position: 'absolute', right: 16, bottom: bottom + 16 }}
+        style={{ position: "absolute", right: 16, bottom: bottom + 16 }}
       />
     </WatchlistScreenScafold>
   );

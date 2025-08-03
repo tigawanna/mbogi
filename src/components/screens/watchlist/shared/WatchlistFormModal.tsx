@@ -54,30 +54,33 @@ export function WatchlistFormModal({
     control,
     setValue,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid,isValidating,isLoading,isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
       title: initialValues?.title || "",
       overview: initialValues?.overview || "",
       visibility: initialValues?.visibility || "public",
+      user_id: currentUserId || "",
     },
     resolver: zodResolver(FormSchema),
   });
 
-  useEffect(() => {
-    if (initialValues) {
-      setValue("title", initialValues?.title || "");
-      setValue("overview", initialValues?.overview || "");
-      setValue("visibility", initialValues?.visibility || "public");
-    }
-    if (currentUserId) {
-      setValue("user_id", currentUserId);
-    } else {
-      showSnackbar("You must be logged in to create a watchlist.", {
-        duration: 10_000,
-      });
-    }
-  }, [initialValues, setValue, showSnackbar, currentUserId]);
+  // useEffect(() => {
+  //   if (initialValues) {
+  //     setValue("title", initialValues?.title || "");
+  //     setValue("overview", initialValues?.overview || "");
+  //     setValue("visibility", initialValues?.visibility || "public");
+  //   }
+  //   if (currentUserId) {
+  //     setValue("user_id", currentUserId);
+  //   } else {
+  //     showSnackbar("You must be logged in to create a watchlist.", {
+  //       duration: 10_000,
+  //     });
+  //   }
+  // }, [initialValues, setValue, showSnackbar, currentUserId]);
+  // console.log("states ==>> ", {isValid, isValidating, isLoading, isSubmitting});
+  const disableButton = !isValid || isValidating || isLoading || isSubmitting;
   return (
     <Portal>
       <Modal
@@ -176,10 +179,10 @@ export function WatchlistFormModal({
           </Button>
           <Button
             mode="contained"
-            loading={isMutationPending}
+            disabled={disableButton}
             onPress={handleSubmit(onSubmit)}
             style={[styles.button, styles.submitButton]}>
-            {submitLabel} {isMutationPending && "..." /* Show loading state if needed */}
+            {submitLabel}
           </Button>
         </View>
       </Modal>

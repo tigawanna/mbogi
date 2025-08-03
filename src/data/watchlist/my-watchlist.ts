@@ -6,11 +6,9 @@ import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/react-db";
 import { QueryClient } from "@tanstack/react-query";
 import { and, eq } from "@tigawanna/typed-pocketbase";
+import { createWatchlist, deleteWatchlist, updateWatchlist } from "./watchlist-muttions";
 
-
-
-// type Uwu = ResolveSelectWithExpand<WatchlistCollection,any>
-
+//  watchlist data fetching helpers
 
 async function getUserwatchlist(userId: string) {
   const response = await pb.from("watchlist").getFullList({
@@ -57,11 +55,24 @@ export const myWatchlistsCollection = (qc: QueryClient) => {
       enabled: !!userId,
       getKey: (item) => item.id,
       schema: WatchlistResponseSchema,
+      onInsert: async ({ transaction }) => {
+        console.log("Inserting watchlist collection with transaction:", transaction);
+        const { original, modified } = transaction.mutations[0];
+        await createWatchlist(modified);
+      },
+      onUpdate: async ({ transaction }) => {
+        console.log("Updating watchlist collection with transaction:", transaction);
+        const { original, modified } = transaction.mutations[0];
+        await updateWatchlist(modified);
+      },
+      onDelete: async ({ transaction }) => {
+        console.log("Deleting watchlist collection with transaction:", transaction);
+        const { original } = transaction.mutations[0];
+        await deleteWatchlist(original.id);
+      },
     })
   );
 };
-
-
 
 export const myWatchlistItemsCollection = (qc: QueryClient) => {
   const userId = pb.authStore.record?.id;
