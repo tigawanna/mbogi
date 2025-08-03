@@ -133,15 +133,10 @@ export function MyWatchlistScreen() {
         initialValues={editingWatchlist || undefined}
         onSubmit={(data) => {
           if (editingWatchlist) {
-            console.log("onsubmit update ", editingWatchlist.id);
-            // updateMutation.mutate({payload:data});
             myWatchlistsCollection(qc).update(editingWatchlist.id, (draft) => {
-              draft.title = "on site";
+              draft.title = "new title";
             });
           } else {
-            console.log("onsubmit create ", data);
-            // console.log("Creating new watchlist with data:", data);
-            // createMutation.mutate({payload:data});
             myWatchlistsCollection(qc).insert(data as any);
           }
           setModalVisible(false);
