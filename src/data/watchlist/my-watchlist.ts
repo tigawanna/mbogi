@@ -62,16 +62,23 @@ export const makeMyWatchlistsCollection = () => {
       onInsert: async ({ transaction }) => {
         const { original, modified } = transaction.mutations[0];
         await createWatchlist(modified);
+        queryClient.invalidateQueries({
+          queryKey: ["watchlist", "community"],
+        });
       },
       onUpdate: async ({ transaction }) => {
-        console.log(" == myWatchlistsCollection.onUpdate ==", transaction);
         const { original, modified } = transaction.mutations[0];
         await updateWatchlist(modified);
+        queryClient.invalidateQueries({
+          queryKey: ["watchlist", "community"],
+        });
       },
       onDelete: async ({ transaction }) => {
-        console.log(" == myWatchlistsCollection.onDelete ==", transaction);
         const { original } = transaction.mutations[0];
         await deleteWatchlist(original.id);
+        queryClient.invalidateQueries({
+          queryKey: ["watchlist", "community"],
+        });
       },
     })
   );

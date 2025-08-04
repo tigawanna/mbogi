@@ -1,3 +1,5 @@
+import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
 import { pb } from "@/lib/pb/client";
 import { WatchlistResponseSchema } from "@/lib/pb/types/pb-zod";
 import { queryClient, TSQ_CACHE_TIME } from "@/lib/tanstack/query/client";
@@ -124,3 +126,30 @@ export const communityWatchlistItemsCollection = ({
     })
   );
 };
+
+
+
+interface CommunityWatchlistFilters {
+  keyword: string;
+  page: number;
+  setKeyword: (keyword: string) => void;
+  setPage: (page: number) => void;
+  resetFilters: () => void;
+}
+
+export const useCommunityFiltersStore = create<CommunityWatchlistFilters>()(
+  devtools(
+    persist(
+      (set) => ({
+        keyword: "",
+        page: 1,
+        setKeyword: (keyword: string) => set({ keyword, page: 1 }),
+        setPage: (page: number) => set({ page }),
+        resetFilters: () => set({ keyword: "", page: 1 }),
+      }),
+      {
+        name: "community-watchlist-filters",
+      }
+    )
+  )
+);

@@ -79,20 +79,4 @@ export function logoutMutationOptions() {
   });
 }
 
-// const viewerSchema =  z.object({
-//   id: z.string(),
-//   email: z.string().email(),
-//   username: z.string(),
-//   created: z.string(),
-//   updated: z.string(),
-// });
 
-// const viewerCollection = createCollection(
-//   queryCollectionOptions({
-//     queryKey: ["viewer"],
-//     queryFn: async () => (await pb.authStore.record) as UsersResponse;,
-//     queryClient,
-//     getKey: (item) => item.id,
-//     schema: viewerSchema, // any standard schema
-//   })
-// );
