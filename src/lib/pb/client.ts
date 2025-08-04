@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TypedPocketBase } from "@tigawanna/typed-pocketbase";
-import { AsyncAuthStore } from "pocketbase";
+import { AsyncAuthStore,BaseAuthStore } from "pocketbase";
 import { envVariables } from "../env";
 import { Schema } from "./types/pb-types";
 
@@ -20,3 +20,5 @@ export const pocketbaseFriendlyUUID = () => {
   // Remove hyphens, convert to lowercase, and take first 15 characters
   return initialId.replace(/-/g, '').toLowerCase().slice(0, 15);
 }
+
+

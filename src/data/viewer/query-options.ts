@@ -2,15 +2,27 @@ import { pb } from "@/lib/pb/client";
 import { UsersCreate, UsersResponse } from "@/lib/pb/types/pb-types";
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 
-
 export function viewerQueryOptions() {
   return queryOptions({
     queryKey: ["viewer"],
     queryFn: async () => {
-      const viewer = (await pb.authStore.record) as UsersResponse;
-      return viewer;
+      return new Promise<{ record: UsersResponse | null; token: string | null }>((resolve) => {
+        setTimeout(() => {
+          if (!pb.authStore.record || !pb.authStore.isValid) {
+        resolve({
+          record: null,
+          token: null,
+        });
+          } else {
+        resolve({
+          record: pb.authStore.record as UsersResponse,
+          token: pb.authStore.token,
+        });
+          }
+        }, 300);
+      });
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 60 * 24, // 24 hours
   });
 }
 

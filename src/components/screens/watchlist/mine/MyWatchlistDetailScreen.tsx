@@ -17,6 +17,7 @@ export function MyWatchlistDetailScreen({ watchlistId }: MyWatchlistDetailScreen
   const qc = useQueryClient();
   const { colors } = useTheme();
   const { top } = useSafeAreaInsets();
+  const myWatchlistCollection = myWatchlistsCollection(qc);
 
   const {
     data: thisWatchlist,
@@ -26,10 +27,10 @@ export function MyWatchlistDetailScreen({ watchlistId }: MyWatchlistDetailScreen
     (query) =>
       query
         .from({
-          watchlist: myWatchlistsCollection(qc),
+          watchlist: myWatchlistCollection,
         })
         .where(({ watchlist }) => eq(watchlist.id, watchlistId)),
-        [watchlistId]
+    [watchlistId]
   );
 
   const {
@@ -284,13 +285,6 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 12,
     opacity: 0.7,
-  },
-  sectionHeader: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  sectionTitle: {
-    fontWeight: "600",
   },
   emptyContainer: {
     flex: 1,

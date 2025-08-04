@@ -42,6 +42,8 @@ export const asyncStoragePersister = createAsyncStoragePersister({
   storage: AsyncStorage,
 });
 
+export const TSQ_CACHE_TIME = __DEV__ ? 1000 : 1000 * 60 * 60 * 72; // 1 sec in dev, 72 hours in production
+
 export const queryClient = new QueryClient({
   mutationCache: new MutationCache({
     onSuccess: async (_, __, ___, mutation) => {
@@ -57,10 +59,10 @@ export const queryClient = new QueryClient({
   }),
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 60,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
-      gcTime: 1000 * 60 * 60 * 24, // 24 hours
+      staleTime: TSQ_CACHE_TIME,
+      gcTime: TSQ_CACHE_TIME,
     },
   },
 });

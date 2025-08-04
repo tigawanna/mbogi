@@ -1,7 +1,6 @@
 import { pb } from "@/lib/pb/client";
 import { WatchlistResponseSchema } from "@/lib/pb/types/pb-zod";
-import { queryClient } from "@/lib/tanstack/query/client";
-import { TSQ_CACHE_TIME } from "@/lib/tanstack/query/external-dev-tools";
+import { queryClient, TSQ_CACHE_TIME } from "@/lib/tanstack/query/client";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/react-db";
 import { QueryClient, queryOptions } from "@tanstack/react-query";

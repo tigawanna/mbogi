@@ -1,7 +1,7 @@
 import { pb } from "@/lib/pb/client";
 import { WatchlistResponseSchema } from "@/lib/pb/types/pb-zod";
-import { queryClient } from "@/lib/tanstack/query/client";
-import { TSQ_CACHE_TIME } from "@/lib/tanstack/query/external-dev-tools";
+import { queryClient, TSQ_CACHE_TIME } from "@/lib/tanstack/query/client";
+
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/react-db";
 import { QueryClient } from "@tanstack/react-query";
@@ -30,7 +30,7 @@ export async function getUserWatchListFromQueryClient(qc: QueryClient, userId: s
     throw new Error("User not authenticated");
   }
   const response = await qc.fetchQuery({
-    queryKey: ["watchlist", "mine", userId],
+    queryKey: ["watchlist", "minerals", userId],
     queryFn: () => getUserwatchlist(userId),
     staleTime: TSQ_CACHE_TIME,
     gcTime: TSQ_CACHE_TIME,
@@ -60,6 +60,7 @@ export const myWatchlistsCollection = (qc: QueryClient) => {
         await createWatchlist(modified);
       },
       onUpdate: async ({ transaction }) => {
+        console.log(" == myWatchlistsCollection.onUpdate ==", transaction);
         const { original, modified } = transaction.mutations[0];
         await updateWatchlist(modified);
       },

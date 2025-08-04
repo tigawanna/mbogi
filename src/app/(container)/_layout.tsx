@@ -10,14 +10,11 @@ import { Stack } from "expo-router";
 export default function ContainerLayout() {
   useExtrenalDevTools(queryClient);
   const { data, isPending } = useQuery(viewerQueryOptions());
-
-  if (isPending) {
+  
+ if (isPending) {
     return <LoadingFallback />;
   }
-
-  // User is authenticated if they have either PocketBase auth or Trakt auth
-  const isAuthenticated = !!data?.id;
-
+  const isAuthenticated = !!data?.record?.id;
   return (
     <Stack>
       <Stack.Protected guard={isAuthenticated}>
