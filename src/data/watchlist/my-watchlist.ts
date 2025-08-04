@@ -39,7 +39,7 @@ export async function getUserWatchListFromQueryClient(qc: QueryClient, userId: s
 }
 
 // Normal collection from the items array in the watchlist
-export const myWatchlistsCollection = (qc: QueryClient) => {
+export const makeMyWatchlistsCollection = () => {
   const userId = pb.authStore.record?.id;
   return createCollection(
     queryCollectionOptions({
@@ -48,7 +48,7 @@ export const myWatchlistsCollection = (qc: QueryClient) => {
         if (!userId) {
           throw new Error("User not authenticated");
         }
-        const response = await getUserWatchListFromQueryClient(qc, userId);
+        const response = await getUserWatchListFromQueryClient(queryClient, userId);
         return await response;
       },
       queryClient: queryClient, //the globally defined queryclient
@@ -72,6 +72,8 @@ export const myWatchlistsCollection = (qc: QueryClient) => {
     })
   );
 };
+
+export const myWatchlistsCollection = makeMyWatchlistsCollection();
 
 export const myWatchlistItemsCollection = (qc: QueryClient) => {
   const userId = pb.authStore.record?.id;

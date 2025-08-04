@@ -24,7 +24,7 @@ export function MyWatchlistScreen() {
   const [editingWatchlist, setEditingWatchlist] = useState<WatchlistResponse | null>(null);
   // const createMutation = useMutation(createWatchListMutationOptions())
   // const updateMutation = useMutation(updateWatchListMutationOptions())
-  const myWatchlistCollection = myWatchlistsCollection(qc);
+ 
 
   const {
     data: watchlist,
@@ -34,7 +34,7 @@ export function MyWatchlistScreen() {
     (query) =>
       query
         .from({
-          watchlist: myWatchlistCollection,
+          watchlist: myWatchlistsCollection,
         })
         .where(({ watchlist }) => ilike(watchlist.title, `%${searchQuery}%`)),
     [searchQuery]
@@ -126,7 +126,7 @@ export function MyWatchlistScreen() {
             initialValues={editingWatchlist || undefined}
             onSubmit={(data) => {
               // create inserts only
-              myWatchlistCollection.insert(data as any);
+              myWatchlistsCollection.insert(data as any);
               setModalVisible(false);
               setEditingWatchlist(null);
             }}
@@ -164,12 +164,12 @@ export function MyWatchlistScreen() {
         initialValues={editingWatchlist || undefined}
         onSubmit={(data) => {
           if (editingWatchlist) {
-            myWatchlistCollection.update(editingWatchlist.id, (draft) => {
+            myWatchlistsCollection.update(editingWatchlist.id, (draft) => {
               // Copy form data fields onto the draft object
               Object.assign(draft, data);
             });
           } else {
-            myWatchlistCollection.insert(data as any);
+            myWatchlistsCollection.insert(data as any);
           }
           setModalVisible(false);
           setEditingWatchlist(null);

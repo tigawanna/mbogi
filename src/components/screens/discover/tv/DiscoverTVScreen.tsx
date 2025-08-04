@@ -3,17 +3,16 @@ import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
-
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { discoverTVCollection } from "@/data/discover/discover-query-collection";
-import { myWatchlistItemsCollection } from "@/data/watchlist/my-watchlist";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDiscoverFiltersStore } from "../filters/discover-fliters-store";
 import { DiscoverTVFlatList } from "./DiscoverTVFlatList";
+import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
 
 export function DiscoverTVScreen() {
-  const qc = useQueryClient()
+  const qc = useQueryClient();
   const { colors } = useTheme();
   const { tvFilters } = useDiscoverFiltersStore();
   // Pagination state (removed pagination as per requirements)
@@ -33,12 +32,11 @@ export function DiscoverTVScreen() {
             enabled: true,
           }),
         })
-        .join({ watchlist: myWatchlistItemsCollection(qc) }, ({ tv, watchlist }) =>
-          eq(tv.id, watchlist.id)
-        )
+        //@ts-expect-error TODO confirm doing this with string on number isnt causing issues --- IGNORE ---
+        .join({ watchlist: myWatchlistsCollection }, ({ tv, watchlist }) => eq(tv.id, watchlist.id))
         .select(({ tv, watchlist }) => ({
           ...tv,
-          watchListName: watchlist?.watchlistTitle,
+          watchListName: watchlist?.title,
         })),
     [currentPage, tvFilters]
   );

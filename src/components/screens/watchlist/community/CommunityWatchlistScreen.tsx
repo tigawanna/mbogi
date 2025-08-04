@@ -15,7 +15,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCommunityWatchlistPage, useWatchlistSearch } from "../hooks";
 import { WatchlistCard } from "../shared/WatchlistCard";
 // consolidated above
-import { myWatchlistItemsCollection } from "@/data/watchlist/my-watchlist";
 import {
   createWatchListMutationOptions,
   updateWatchListMutationOptions,
@@ -23,6 +22,7 @@ import {
 import type { WatchlistResponse } from "@/lib/pb/types/pb-types";
 import { WatchlistFormModal } from "../shared/WatchlistFormModal";
 import { CommunityListFooter } from "./CommunityListFooter";
+import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
 
 export function CommunityWatchlistScreen() {
   const qc = useQueryClient();
@@ -54,13 +54,12 @@ export function CommunityWatchlistScreen() {
             page,
           }),
         })
-        .join({ myWatchlist: myWatchlistItemsCollection(qc) }, ({ watchlist, myWatchlist }) =>
-          //@ts-expect-error TODO confirm doign this with string on number isnt causing issues
+        .join({ myWatchlist: myWatchlistsCollection }, ({ watchlist, myWatchlist }) =>
           eq(watchlist.id, myWatchlist.id)
         )
         .select(({ watchlist, myWatchlist }) => ({
           ...watchlist,
-          watchListName: myWatchlist?.watchlistTitle,
+          watchListName: myWatchlist?.title,
         })),
     [searchQuery, page]
   );

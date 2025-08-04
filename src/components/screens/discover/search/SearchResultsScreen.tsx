@@ -6,16 +6,15 @@ import { Text, useTheme } from "react-native-paper";
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { discoverSearchCollection } from "@/data/discover/discover-query-collection";
-import { myWatchlistItemsCollection } from "@/data/watchlist/my-watchlist";
 import { eq, useLiveQuery } from "@tanstack/react-db";
 import { useQueryClient } from "@tanstack/react-query";
 import { SearchResultsFlatList } from "./SearchResultsFlatList";
+import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
 
 interface SearchResultsScreenProps {
   searchQuery: string;
 }
 export function SearchResultsScreen({ searchQuery }: SearchResultsScreenProps) {
-    const qc = useQueryClient()
   const { data, isLoading, isError } = useLiveQuery(
     (query) =>
       query
@@ -25,12 +24,13 @@ export function SearchResultsScreen({ searchQuery }: SearchResultsScreenProps) {
             enabled: true,
           }),
         })
-        .join({ watchlist: myWatchlistItemsCollection(qc)}, ({ results, watchlist }) =>
+        .join({ watchlist: myWatchlistsCollection }, ({ results, watchlist }) =>
+          //@ts-expect-error TODO confirm doing this with string on number isnt causing issues --- IGNORE ---
           eq(results.id, watchlist.id)
         )
         .select(({ results, watchlist }) => ({
           ...results,
-          watchListName: watchlist?.watchlistTitle,
+          watchListName: watchlist?.title,
         })),
     [searchQuery]
   );

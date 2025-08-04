@@ -4,7 +4,7 @@ import {
   getMediaTitle,
 } from "@/data/discover/discover-zod-schema";
 import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
-import { addItemToWatchlist,removeItemFromWatchlist } from "@/data/watchlist/watchlist-muttions";
+import { addItemToWatchlist } from "@/data/watchlist/watchlist-muttions";
 // import {
 //   MutationSource,
 //   useAddItemToWatchlistMutation,
@@ -12,9 +12,7 @@ import { addItemToWatchlist,removeItemFromWatchlist } from "@/data/watchlist/wat
 //   useRemoveItemFromWatchlistMutation,
 // } from "@/data/watchlist/watchlist-muttions";
 import { pb } from "@/lib/pb/client";
-import { UsersResponse, WatchlistItemsResponse } from "@/lib/pb/types/pb-types";
 import { useLiveQuery } from "@tanstack/react-db";
-import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import {
@@ -77,10 +75,10 @@ export function WatchlistSelectionModal({
   //   const createWatchlistMutation = useCreateWatchlistMutation({ source });
 
   // Load user's watchlists when modal opens
-  const qc = useQueryClient();
+
   const { data: watchlists, isLoading } = useLiveQuery((query) =>
     query.from({
-      watchlist: myWatchlistsCollection(qc),
+      watchlist: myWatchlistsCollection,
     })
   );
   type WatchlistItem = (typeof watchlists)[number];

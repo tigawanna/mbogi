@@ -17,7 +17,7 @@ export function MyWatchlistDetailScreen({ watchlistId }: MyWatchlistDetailScreen
   const qc = useQueryClient();
   const { colors } = useTheme();
   const { top } = useSafeAreaInsets();
-  const myWatchlistCollection = myWatchlistsCollection(qc);
+  const myWatchlistCollection = myWatchlistsCollection;
 
   const {
     data: thisWatchlist,

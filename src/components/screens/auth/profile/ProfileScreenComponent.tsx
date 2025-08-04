@@ -2,34 +2,20 @@ import { viewerQueryOptions } from "@/data/viewer/query-options";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { ScrollView, StyleSheet, View } from "react-native";
-import {
-  ActivityIndicator,
-  Avatar,
-  Card,
-  Chip,
-  Surface,
-  Text,
-  useTheme,
-} from "react-native-paper";
+import { ActivityIndicator, Avatar, Card, Chip, Surface, Text, useTheme } from "react-native-paper";
 import { LogoutUserButton } from "./LogoutUserButton";
 
-
-
-
-
 export function ProfileScreenComponent() {
-  const { data: user, isPending } = useQuery(viewerQueryOptions());
+  const { data, isPending } = useQuery(viewerQueryOptions());
   const theme = useTheme();
+  const user = data?.record;
 
   if (isPending) {
     return (
       <Surface style={styles.container}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
-          <Text
-            variant="bodyLarge"
-            style={[styles.loadingText, { color: theme.colors.onSurface }]}
-          >
+          <Text variant="bodyLarge" style={[styles.loadingText, { color: theme.colors.onSurface }]}>
             Loading your profile...
           </Text>
         </View>
@@ -41,22 +27,10 @@ export function ProfileScreenComponent() {
     return (
       <Surface style={styles.container}>
         <View style={styles.loadingContainer}>
-          <Surface
-            style={[
-              styles.iconContainer,
-              { backgroundColor: theme.colors.errorContainer },
-            ]}
-          >
-            <MaterialIcons
-              name="person-off"
-              size={24}
-              color={theme.colors.onErrorContainer}
-            />
+          <Surface style={[styles.iconContainer, { backgroundColor: theme.colors.errorContainer }]}>
+            <MaterialIcons name="person-off" size={24} color={theme.colors.onErrorContainer} />
           </Surface>
-          <Text
-            variant="bodyLarge"
-            style={[styles.loadingText, { color: theme.colors.onSurface }]}
-          >
+          <Text variant="bodyLarge" style={[styles.loadingText, { color: theme.colors.onSurface }]}>
             No user data available
           </Text>
         </View>
@@ -64,22 +38,14 @@ export function ProfileScreenComponent() {
     );
   }
 
-
-
   return (
     <View style={styles.container}>
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+        showsVerticalScrollIndicator={false}>
         {/* Header Card with Avatar and Basic Info */}
-        <Card
-          style={[
-            styles.headerCard,
-            {  },
-          ]}
-        >
+        <Card style={[styles.headerCard, {}]}>
           <Card.Content style={styles.headerContent}>
             <View style={styles.avatarContainer}>
               <Avatar.Image
@@ -93,21 +59,13 @@ export function ProfileScreenComponent() {
             <View style={styles.userInfo}>
               <Text
                 variant="headlineMedium"
-                style={[
-                  styles.userName,
-                  { color: theme.colors.onPrimaryContainer },
-                ]}
-              >
+                style={[styles.userName, { color: theme.colors.onPrimaryContainer }]}>
                 {user.name || "Anonymous User"}
               </Text>
 
               <Text
                 variant="bodyLarge"
-                style={[
-                  styles.userEmail,
-                  { color: theme.colors.onPrimaryContainer },
-                ]}
-              >
+                style={[styles.userEmail, { color: theme.colors.onPrimaryContainer }]}>
                 {user.emailVisibility ? user.email : "Email hidden"}
               </Text>
 
@@ -117,25 +75,18 @@ export function ProfileScreenComponent() {
                 style={[
                   styles.statusChip,
                   {
-                    backgroundColor: user.verified
-                      ? theme.colors.tertiary
-                      : theme.colors.error,
+                    backgroundColor: user.verified ? theme.colors.tertiary : theme.colors.error,
                   },
                 ]}
                 textStyle={{
-                  color: user.verified
-                    ? theme.colors.onTertiary
-                    : theme.colors.onError,
+                  color: user.verified ? theme.colors.onTertiary : theme.colors.onError,
                   fontWeight: "600",
-                }}
-              >
+                }}>
                 {user.verified ? "Verified Account" : "Unverified"}
               </Chip>
             </View>
           </Card.Content>
         </Card>
-
-
 
         {/* Logout Button */}
         <View style={styles.logoutContainer}>
@@ -149,8 +100,8 @@ export function ProfileScreenComponent() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width:"100%",
-    height:"100%"
+    width: "100%",
+    height: "100%",
   },
   scrollContent: {
     flexGrow: 1,
