@@ -11,7 +11,7 @@ export function CommunityListFooter({ totalPages, perPage }: CommunityListFooter
   const { page, setPage } = useCommunityWatchlistPage();
   return (
     <View style={styles.container}>
-      {page && totalPages && (
+      {(page && totalPages) ? (
         <DataTable.Pagination
           page={page || 1}
           numberOfPages={totalPages}
@@ -23,7 +23,7 @@ export function CommunityListFooter({ totalPages, perPage }: CommunityListFooter
           // onItemsPerPageChange={onItemsPerPageChange}
           selectPageDropdownLabel={"Rows per page"}
         />
-      )}
+      ) : null}
     </View>
   );
 }

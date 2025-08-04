@@ -3,7 +3,7 @@ import { ilike } from "@tanstack/db";
 import { useLiveQuery } from "@tanstack/react-db";
 import React, { useState } from "react";
 import { FlatList, StyleSheet, useWindowDimensions, View } from "react-native";
-import { FAB, Searchbar, Text, useTheme } from "react-native-paper";
+import { Button, FAB, Searchbar, Text, useTheme } from "react-native-paper";
 
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
@@ -97,10 +97,17 @@ export function MyWatchlistScreen() {
             <Text
               variant="bodyMedium"
               style={[styles.emptySubtitle, { color: colors.onSurfaceVariant }]}>
-              {searchQuery
-                ? "Try adjusting your search terms to find more watchlists"
-                : "Create your first watchlist to get started"}
+              Try adjusting your filters or search terms to discover more content
             </Text>
+            <Button
+              mode="contained"
+              onPress={() => {
+                setEditingWatchlist(null);
+                setModalVisible(true);
+              }}
+              style={{ marginTop: 16 }}>
+              Create Watchlist
+            </Button>
           </View>
         </View>
       </WatchlistScreenScafold>
@@ -132,6 +139,7 @@ export function MyWatchlistScreen() {
         }}
         initialValues={editingWatchlist || undefined}
         onSubmit={(data) => {
+          console.log("Submitted data:", editingWatchlist);
           if (editingWatchlist) {
             myWatchlistsCollection(qc).update(editingWatchlist.id, (draft) => {
               draft.title = "new title";

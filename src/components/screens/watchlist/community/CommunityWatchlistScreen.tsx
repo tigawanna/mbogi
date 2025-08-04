@@ -3,7 +3,7 @@ import { useLiveQuery } from "@tanstack/react-db";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { FlatList, StyleSheet, useWindowDimensions, View } from "react-native";
-import { FAB, Searchbar, Text, useTheme } from "react-native-paper";
+import { Button, FAB, Searchbar, Text, useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
@@ -113,33 +113,32 @@ export function CommunityWatchlistScreen() {
       </WatchlistScreenScafold>
     );
   }
-  if (!watchlist) {
+  if (!watchlist || watchlist.length === 0) {
     return (
       <WatchlistScreenScafold>
         <View style={styles.statesContainer}>
-          {__DEV__ ? (
-            <View>
-              <Text variant="titleMedium" style={{ color: colors.error }}>
-                No watchlist found
-              </Text>
+          <View style={styles.emptyContainer}>
+            <View style={styles.emptyIconContainer}>
+              <EmptyRoadSVG />
             </View>
-          ) : (
-            <View style={styles.emptyContainer}>
-              <View style={styles.emptyIconContainer}>
-                <EmptyRoadSVG />
-              </View>
-              <Text
-                variant="headlineSmall"
-                style={[styles.emptyTitle, { color: colors.onSurface }]}>
-                No watchlist found
-              </Text>
-              <Text
-                variant="bodyMedium"
-                style={[styles.emptySubtitle, { color: colors.onSurfaceVariant }]}>
-                Try adjusting your filters or search terms to discover more content
-              </Text>
-            </View>
-          )}
+            <Text variant="headlineSmall" style={[styles.emptyTitle, { color: colors.onSurface }]}>
+              No watchlists found
+            </Text>
+            <Text
+              variant="bodyMedium"
+              style={[styles.emptySubtitle, { color: colors.onSurfaceVariant }]}>
+              Try adjusting your filters or search terms to discover more content
+            </Text>
+            <Button
+              mode="contained"
+              onPress={() => {
+                setEditingWatchlist(null);
+                setModalVisible(true);
+              }}
+              style={{ marginTop: 16 }}>
+              Create Watchlist
+            </Button>
+          </View>
         </View>
       </WatchlistScreenScafold>
     );

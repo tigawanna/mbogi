@@ -195,7 +195,7 @@ export function MyWatchlistDetailScreen({ watchlistId }: MyWatchlistDetailScreen
     <View style={[styles.container, { backgroundColor: colors.background, paddingBottom: 16 }]}>
       <FlatList
         data={items}
-        renderItem={({ item }) => (
+        renderItem={({ item,index }) => (
           <WatchlistItemCard
             item={item}
             // isMyWatchList={isMyWatchList}
