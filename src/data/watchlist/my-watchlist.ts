@@ -7,6 +7,8 @@ import { createCollection } from "@tanstack/react-db";
 import { QueryClient } from "@tanstack/react-query";
 import { and, eq } from "@tigawanna/typed-pocketbase";
 import { createWatchlist, deleteWatchlist, updateWatchlist } from "./watchlist-muttions";
+import { router } from "expo-router";
+import { viewerQueryOptions } from "../viewer/query-options";
 
 //  watchlist data fetching helpers
 
@@ -40,19 +42,21 @@ export async function getUserWatchListFromQueryClient(qc: QueryClient, userId: s
 
 // Normal collection from the items array in the watchlist
 export const makeMyWatchlistsCollection = () => {
-  const userId = pb.authStore.record?.id;
+
   return createCollection(
     queryCollectionOptions({
-      queryKey: ["watchlist", "mine", userId, "collection"],
+      queryKey: ["watchlist", "mine"],
       queryFn: async () => {
+        const user = await queryClient.fetchQuery(viewerQueryOptions());
+        const userId = user?.record?.id;
         if (!userId) {
           throw new Error("User not authenticated");
         }
-        const response = await getUserWatchListFromQueryClient(queryClient, userId);
-        return await response;
+        const response = await getUserwatchlist(userId);
+        return response;
       },
       queryClient: queryClient, //the globally defined queryclient
-      enabled: !!userId,
+      // enabled: !!userId,
       getKey: (item) => item.id,
       // schema: WatchlistResponseSchema,
       onInsert: async ({ transaction }) => {
