@@ -165,11 +165,12 @@ export function MyWatchlistScreen() {
         onSubmit={(data) => {
           if (editingWatchlist) {
             myWatchlistsCollection.update(editingWatchlist.id, (draft) => {
-              // Copy form data fields onto the draft object
               Object.assign(draft, data);
             });
           } else {
             myWatchlistsCollection.insert(data as any);
+            // myWatchlistsCollection.delete
+
           }
           setModalVisible(false);
           setEditingWatchlist(null);

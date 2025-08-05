@@ -15,14 +15,14 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCommunityWatchlistPage, useWatchlistSearch } from "../hooks";
 import { WatchlistCard } from "../shared/WatchlistCard";
 // consolidated above
+import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
 import {
   createWatchListMutationOptions,
   updateWatchListMutationOptions,
-} from "@/data/watchlist/watchlist-muttions";
+} from "@/data/watchlist/watchlist-mutions";
 import type { WatchlistResponse } from "@/lib/pb/types/pb-types";
 import { WatchlistFormModal } from "../shared/WatchlistFormModal";
 import { CommunityListFooter } from "./CommunityListFooter";
-import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
 
 export function CommunityWatchlistScreen() {
   const qc = useQueryClient();

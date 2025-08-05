@@ -4,7 +4,7 @@ import {
   getMediaTitle,
 } from "@/data/discover/discover-zod-schema";
 import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
-import { addItemToWatchlist } from "@/data/watchlist/watchlist-muttions";
+import { addItemToWatchlist } from "@/data/watchlist/watchlist-mutions";
 // import {
 //   MutationSource,
 //   useAddItemToWatchlistMutation,

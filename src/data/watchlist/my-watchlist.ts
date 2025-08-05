@@ -6,9 +6,8 @@ import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/react-db";
 import { QueryClient } from "@tanstack/react-query";
 import { and, eq } from "@tigawanna/typed-pocketbase";
-import { createWatchlist, deleteWatchlist, updateWatchlist } from "./watchlist-muttions";
-import { router } from "expo-router";
 import { viewerQueryOptions } from "../viewer/query-options";
+import { createWatchlist, deleteWatchlist, updateWatchlist } from "./watchlist-mutions";
 
 //  watchlist data fetching helpers
 
@@ -62,23 +61,14 @@ export const makeMyWatchlistsCollection = () => {
       onInsert: async ({ transaction }) => {
         const { original, modified } = transaction.mutations[0];
         await createWatchlist(modified);
-        queryClient.invalidateQueries({
-          queryKey: ["watchlist", "community"],
-        });
       },
       onUpdate: async ({ transaction }) => {
         const { original, modified } = transaction.mutations[0];
         await updateWatchlist(modified);
-        queryClient.invalidateQueries({
-          queryKey: ["watchlist", "community"],
-        });
       },
       onDelete: async ({ transaction }) => {
         const { original } = transaction.mutations[0];
         await deleteWatchlist(original.id);
-        queryClient.invalidateQueries({
-          queryKey: ["watchlist", "community"],
-        });
       },
     })
   );

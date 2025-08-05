@@ -1,5 +1,3 @@
-import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
 import { pb } from "@/lib/pb/client";
 import { WatchlistResponseSchema } from "@/lib/pb/types/pb-zod";
 import { queryClient, TSQ_CACHE_TIME } from "@/lib/tanstack/query/client";
@@ -7,6 +5,12 @@ import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/react-db";
 import { QueryClient, queryOptions } from "@tanstack/react-query";
 import { and, eq, like, or } from "@tigawanna/typed-pocketbase";
+
+/*
+================================================================================
+UTILITY FUNCTIONS
+================================================================================
+*/
 
 interface GetCommunitywatchlistProps {
   keyword?: string;
@@ -76,18 +80,19 @@ export function getCommunityWatchlistPageOptionsQueryOptions({
   });
 }
 
-export const communityWatchlistsCollection = ({
-  keyword,
-  page = 1,
-  qc,
-}: CommunityWatchlistCollectionProps) => {
+/*
+================================================================================
+COMMUNITY WATCHLISTS COLLECTION (Main collection with caching)
+================================================================================
+*/
+
+// Function that creates a new collection instance
+function createCommunityWatchlistCollection({ keyword, page = 1, qc }: CommunityWatchlistCollectionProps) {
   return createCollection(
     queryCollectionOptions({
-      // Base community watchlists collection key
       queryKey: ["watchlist", "community", keyword, page, "collection"],
       queryFn: async () => {
         const response = await getCommunityWatchListFromQueryClient({ keyword, page, qc });
-
         return response.items ?? [];
       },
       queryClient: queryClient,
@@ -95,7 +100,38 @@ export const communityWatchlistsCollection = ({
       schema: WatchlistResponseSchema,
     })
   );
+}
+
+// Type for the collection return type
+type CommunityWatchlistCollection = ReturnType<typeof createCommunityWatchlistCollection>;
+
+// Cache to memoize collections per QueryClient and filters
+const communityWatchlistCache: WeakMap<QueryClient, Map<string, CommunityWatchlistCollection>> = new WeakMap();
+
+export const communityWatchlistsCollection = ({ keyword, page = 1, qc }: CommunityWatchlistCollectionProps) => {
+  // Use QueryClient as weak key to store per-client cache
+  let clientCache = communityWatchlistCache.get(qc);
+  if (!clientCache) {
+    clientCache = new Map();
+    communityWatchlistCache.set(qc, clientCache);
+  }
+  // Derive cache key from filters
+  const cacheKey = `${keyword ?? ""}:${page}`;
+  // Return existing collection if present
+  if (clientCache.has(cacheKey)) {
+    return clientCache.get(cacheKey)!;
+  }
+  // Otherwise, create and cache a new collection
+  const collection = createCommunityWatchlistCollection({ keyword, page, qc });
+  clientCache.set(cacheKey, collection);
+  return collection;
 };
+
+/*
+================================================================================
+COMMUNITY WATCHLIST ITEMS COLLECTION (Items within a specific watchlist)
+================================================================================
+*/
 
 interface CommunityWatchlistItemsCollectionProps {
   keyword?: string;
@@ -103,12 +139,14 @@ interface CommunityWatchlistItemsCollectionProps {
   qc: QueryClient;
   itemId: string;
 }
-export const communityWatchlistItemsCollection = ({
+
+// Function that creates a new items collection instance
+function createCommunityWatchlistItemsCollection({
   keyword,
   page = 1,
   qc,
   itemId,
-}: CommunityWatchlistItemsCollectionProps) => {
+}: CommunityWatchlistItemsCollectionProps) {
   return createCollection(
     queryCollectionOptions({
       // Key for items of a specific community watchlist
@@ -125,31 +163,67 @@ export const communityWatchlistItemsCollection = ({
       schema: WatchlistResponseSchema,
     })
   );
+}
+
+// Type for the items collection return type
+type CommunityWatchlistItemsCollection = ReturnType<typeof createCommunityWatchlistItemsCollection>;
+
+// Cache to memoize items collections per QueryClient and filters
+const communityWatchlistItemsCache: WeakMap<QueryClient, Map<string, CommunityWatchlistItemsCollection>> = new WeakMap();
+
+export const communityWatchlistItemsCollection = ({
+  keyword,
+  page = 1,
+  qc,
+  itemId,
+}: CommunityWatchlistItemsCollectionProps) => {
+  // Use QueryClient as weak key to store per-client cache
+  let clientCache = communityWatchlistItemsCache.get(qc);
+  if (!clientCache) {
+    clientCache = new Map();
+    communityWatchlistItemsCache.set(qc, clientCache);
+  }
+  // Derive cache key from filters and itemId
+  const cacheKey = `${keyword ?? ""}:${page}:${itemId}`;
+  // Return existing collection if present
+  if (clientCache.has(cacheKey)) {
+    return clientCache.get(cacheKey)!;
+  }
+  // Otherwise, create and cache a new collection
+  const collection = createCommunityWatchlistItemsCollection({ keyword, page, qc, itemId });
+  clientCache.set(cacheKey, collection);
+  return collection;
 };
 
 
 
-interface CommunityWatchlistFilters {
-  keyword: string;
-  page: number;
-  setKeyword: (keyword: string) => void;
-  setPage: (page: number) => void;
-  resetFilters: () => void;
-}
+/*
+================================================================================
+ZUSTAND STORE (Commented out - moved to separate file)
+================================================================================
+*/
 
-export const useCommunityFiltersStore = create<CommunityWatchlistFilters>()(
-  devtools(
-    persist(
-      (set) => ({
-        keyword: "",
-        page: 1,
-        setKeyword: (keyword: string) => set({ keyword, page: 1 }),
-        setPage: (page: number) => set({ page }),
-        resetFilters: () => set({ keyword: "", page: 1 }),
-      }),
-      {
-        name: "community-watchlist-filters",
-      }
-    )
-  )
-);
+// interface CommunityWatchlistFilters {
+//   keyword: string;
+//   page: number;
+//   setKeyword: (keyword: string) => void;
+//   setPage: (page: number) => void;
+//   resetFilters: () => void;
+// }
+
+// export const useCommunityFiltersStore = create<CommunityWatchlistFilters>()(
+//   devtools(
+//     persist(
+//       (set) => ({
+//         keyword: "",
+//         page: 1,
+//         setKeyword: (keyword: string) => set({ keyword, page: 1 }),
+//         setPage: (page: number) => set({ page }),
+//         resetFilters: () => set({ keyword: "", page: 1 }),
+//       }),
+//       {
+//         name: "community-watchlist-filters",
+//       }
+//     )
+//   )
+// );
