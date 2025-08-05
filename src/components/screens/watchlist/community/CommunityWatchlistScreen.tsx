@@ -172,6 +172,8 @@ export function CommunityWatchlistScreen() {
                 type: "community",
                 data,
                 editingWatchlist,
+                keyword: searchQuery,
+                page,
               });
               setModalVisible(false);
               setEditingWatchlist(null);
@@ -218,6 +220,8 @@ export function CommunityWatchlistScreen() {
             type: "community",
             data,
             editingWatchlist,
+            keyword: searchQuery,
+            page,
           });
           setModalVisible(false);
           setEditingWatchlist(null);

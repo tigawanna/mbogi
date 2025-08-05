@@ -1,5 +1,4 @@
 import { pb } from "@/lib/pb/client";
-import { WatchlistResponseSchema } from "@/lib/pb/types/pb-zod";
 import { queryClient, TSQ_CACHE_TIME } from "@/lib/tanstack/query/client";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/react-db";
@@ -113,9 +112,11 @@ function createCommunityWatchlistCollection({
         const { modified, metadata } = transaction.mutations[0];
         const parsedMetadata = collectionMetadataSchema.parse(metadata);
         const localOnlyUpdate = parsedMetadata && parsedMetadata.update_type === "local";
+        // console.log(" == parserdMetadata == ", parsedMetadata);
         if (localOnlyUpdate) {
           return { refetch: true };
         }
+        // console.log("Inserting watchlist:", modified);
         await createWatchlist(modified);
         return { refetch: true };
       },

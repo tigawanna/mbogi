@@ -20,19 +20,23 @@ interface CreateOrUpdateWatchlistProps {
   type: "mine" | "community";
   qc: QueryClient;
   data: WatchlistFormData;
+  keyword?: string;
+  page?: number;
 }
 export function createOrUpdateWatchlist({
   editingWatchlist,
   qc,
   type,
   data,
+  keyword,
+  page,
 }: CreateOrUpdateWatchlistProps) {
   console.log(
-    "createOrUpdateWatchlist called with data: >> ",
+    "\n\ncreateOrUpdateWatchlist called with data: >> ",
     data,
-    "type:",
+    "\n\ntype:",
     type,
-    "editingWatchlist:",
+    "\n\neditingWatchlist:",
     editingWatchlist
   );
   try {
@@ -51,7 +55,7 @@ export function createOrUpdateWatchlist({
           }
         );
         // mirror changes but don't call remote saving
-        communityWatchlistsCollection({ qc }).update(
+        communityWatchlistsCollection({ qc, keyword, page}).update(
           editingWatchlist.id,
           {
             metadata: {
@@ -66,7 +70,7 @@ export function createOrUpdateWatchlist({
         //  create my watchlist and call remote saving
         myWatchlistsCollection(qc).insert(data as any);
         // mirror changes but don't call remote saving
-        communityWatchlistsCollection({ qc }).insert(data as any, {
+        communityWatchlistsCollection({ qc, keyword, page}).insert(data as any, {
           metadata: {
             update_type: "local",
           },
@@ -76,7 +80,7 @@ export function createOrUpdateWatchlist({
     if (type === "community") {
       if (editingWatchlist) {
         //  update community collection
-        communityWatchlistsCollection({ qc }).update(
+        communityWatchlistsCollection({ qc, keyword, page}).update(
           editingWatchlist.id,
           {
             // metadata: {
@@ -100,8 +104,10 @@ export function createOrUpdateWatchlist({
           }
         );
       } else {
+
         //  insert into community collection
-        communityWatchlistsCollection({ qc }).insert(data as any, {
+        communityWatchlistsCollection({ qc, keyword, page })
+        .insert(data as any, {
           // metadata: {
           //   update_type: "local",
           // },
