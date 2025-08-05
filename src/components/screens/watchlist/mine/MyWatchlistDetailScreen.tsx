@@ -1,6 +1,7 @@
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { mySingleWatchlistItemsCollection, myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
+import { analyzeWatchlistGenres } from "@/utils/genre-utils";
 import { eq, useLiveQuery } from "@tanstack/react-db";
 import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
@@ -153,6 +154,15 @@ export function MyWatchlistDetailScreen({ watchlistId }: MyWatchlistDetailScreen
             </Text>
           )}
 
+          {/* Genre Analysis */}
+          {items.length > 0 && (
+            <Text
+              variant="bodyMedium"
+              style={[styles.genreAnalysis, { color: colors.tertiary }]}>
+              {analyzeWatchlistGenres(items)}
+            </Text>
+          )}
+
           {/* Metadata */}
           <View style={styles.metadataContainer}>
             <Chip
@@ -269,6 +279,13 @@ const styles = StyleSheet.create({
   overview: {
     lineHeight: 20,
     marginBottom: 12,
+  },
+  genreAnalysis: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    marginBottom: 12,
+    opacity: 0.9,
+    fontWeight: '500',
   },
   metadataContainer: {
     flexDirection: "row",

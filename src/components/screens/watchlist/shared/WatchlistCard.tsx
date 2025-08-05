@@ -1,4 +1,6 @@
 import { WatchlistResponse } from '@/lib/pb/types/pb-types';
+import { WatchlistItemsResponse } from '@/lib/pb/types/pb-zod';
+import { analyzeWatchlistGenres } from '@/utils/genre-utils';
 import { Link } from 'expo-router';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Card, Chip, IconButton, Text, useTheme } from 'react-native-paper';
@@ -7,14 +9,15 @@ interface WatchlistCardProps {
   watchlist: WatchlistResponse & {
     expand?: {
       user_id?: { id: string; name: string; email: string }[];
-      items?: any[];
+      items?: WatchlistItemsResponse[];
     };
   };
   community?: boolean;
   onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-export function WatchlistCard({ watchlist, community = false, onEdit }: WatchlistCardProps) {
+export function WatchlistCard({ watchlist, community = false, onEdit, onDelete }: WatchlistCardProps) {
   const { colors } = useTheme();
 
   const getVisibilityIcon = (visibility: string) => {
@@ -48,6 +51,7 @@ export function WatchlistCard({ watchlist, community = false, onEdit }: Watchlis
   };
 
   const itemCount = watchlist.expand?.items?.length || watchlist.items?.length || 0;
+  const genreAnalysis = watchlist.expand?.items ? analyzeWatchlistGenres(watchlist.expand.items) : '';
 
   return (
     <Link
@@ -96,6 +100,15 @@ export function WatchlistCard({ watchlist, community = false, onEdit }: Watchlis
                 numberOfLines={2}
                 style={[styles.overview, { color: colors.onSurfaceVariant }]}>
                 {watchlist.overview}
+              </Text>
+            )}
+
+            {/* Genre Analysis */}
+            {genreAnalysis && (
+              <Text
+                variant="bodySmall"
+                style={[styles.genreAnalysis, { color: colors.tertiary }]}>
+                {genreAnalysis}
               </Text>
             )}
 
@@ -167,6 +180,12 @@ const styles = StyleSheet.create({
   overview: {
     lineHeight: 18,
     marginBottom: 12,
+  },
+  genreAnalysis: {
+    fontSize: 12,
+    fontStyle: 'italic',
+    marginBottom: 12,
+    opacity: 0.9,
   },
   footer: {
     flexDirection: 'row',
