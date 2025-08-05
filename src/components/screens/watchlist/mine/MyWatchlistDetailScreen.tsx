@@ -27,7 +27,7 @@ export function MyWatchlistDetailScreen({ watchlistId }: MyWatchlistDetailScreen
     (query) =>
       query
         .from({
-          watchlist: myWatchlistCollection,
+          watchlist: myWatchlistCollection(qc),
         })
         .where(({ watchlist }) => eq(watchlist.id, watchlistId)),
     [watchlistId]

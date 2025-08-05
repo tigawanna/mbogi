@@ -1,6 +1,7 @@
 import { pb } from "@/lib/pb/client";
 import { WatchlistItemsCreate } from "@/lib/pb/types/pb-types";
 import {
+  FollowsCreateSchema,
   WatchlistCreate,
   WatchlistCreateSchema,
   WatchlistItemsCreateSchema,
@@ -135,3 +136,9 @@ export function removeItemFromWatchlistMutationOptions() {
       removeItemFromWatchlist(payload),
   });
 }
+
+
+export const collectionMetadataSchema = z.object({
+  update_type:z.enum(["local","both"]).optional(),
+  force_refetch:z.boolean().optional().default(false)
+}).optional()

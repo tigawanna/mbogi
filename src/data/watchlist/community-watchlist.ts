@@ -11,6 +11,7 @@ import {
   deleteWatchlist,
   addItemToWatchlist,
   removeItemFromWatchlist,
+  collectionMetadataSchema,
 } from "./watchlist-mutions";
 
 /*
@@ -108,18 +109,38 @@ function createCommunityWatchlistCollection({
       },
       queryClient: queryClient,
       getKey: (item) => item.id,
-      // schema: WatchlistResponseSchema,
       onInsert: async ({ transaction }) => {
-        const { original, modified } = transaction.mutations[0];
+        const { modified, metadata } = transaction.mutations[0];
+        const parsedMetadata = collectionMetadataSchema.parse(metadata);
+        const forceRefetch = !!parsedMetadata && parsedMetadata.force_refetch;
+        const localOnlyUpdate = parsedMetadata && parsedMetadata.update_type === "local";
+        if (localOnlyUpdate) {
+          return { refetch: forceRefetch };
+        }
         await createWatchlist(modified);
+        return { refetch: forceRefetch };
       },
       onUpdate: async ({ transaction }) => {
-        const { original, modified } = transaction.mutations[0];
+        const { modified, metadata } = transaction.mutations[0];
+        const parsedMetadata = collectionMetadataSchema.parse(metadata);
+        const forceRefetch = !!parsedMetadata && parsedMetadata.force_refetch;
+        const localOnlyUpdate = parsedMetadata && parsedMetadata.update_type === "local";
+        if (localOnlyUpdate) {
+          return { refetch: forceRefetch };
+        }
         await updateWatchlist(modified);
+        return { refetch: forceRefetch };
       },
       onDelete: async ({ transaction }) => {
-        const { original } = transaction.mutations[0];
+        const { original, metadata } = transaction.mutations[0];
+        const parsedMetadata = collectionMetadataSchema.parse(metadata);
+        const forceRefetch = !!parsedMetadata && parsedMetadata.force_refetch;
+        const localOnlyUpdate = parsedMetadata && parsedMetadata.update_type === "local";
+        if (localOnlyUpdate) {
+          return { refetch: forceRefetch };
+        }
         await deleteWatchlist(original.id);
+        return { refetch: forceRefetch };
       },
     })
   );
@@ -191,18 +212,32 @@ function createCommunityWatchlistItemsCollection({
       queryClient: queryClient,
       getKey: (item) => item.id,
       onInsert: async ({ transaction }) => {
-        const { original, modified } = transaction.mutations[0];
+        const { modified, metadata } = transaction.mutations[0];
+        const parsedMetadata = collectionMetadataSchema.parse(metadata);
+        const forceRefetch = !!parsedMetadata && parsedMetadata.force_refetch;
+        const localOnlyUpdate = parsedMetadata && parsedMetadata.update_type === "local";
+        if (localOnlyUpdate) {
+          return { refetch: forceRefetch };
+        }
         await addItemToWatchlist({
           watchlistId: watchlistId,
           watchlistItem: modified,
         });
+        return { refetch: forceRefetch };
       },
       onDelete: async ({ transaction }) => {
-        const { original } = transaction.mutations[0];
+        const { original, metadata } = transaction.mutations[0];
+        const parsedMetadata = collectionMetadataSchema.parse(metadata);
+        const localOnlyUpdate = parsedMetadata && parsedMetadata.update_type === "local";
+        const forceRefetch = !!parsedMetadata && parsedMetadata.force_refetch;
+        if (localOnlyUpdate) {
+          return { refetch: forceRefetch };
+        }
         await removeItemFromWatchlist({
           itemId: original.id,
           watchlistId: watchlistId,
         });
+        return { refetch: forceRefetch };
       },
     })
   );

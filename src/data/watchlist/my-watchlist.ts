@@ -9,6 +9,7 @@ import { and, eq } from "@tigawanna/typed-pocketbase";
 import { viewerQueryOptions } from "../viewer/query-options";
 import {
   addItemToWatchlist,
+  collectionMetadataSchema,
   createWatchlist,
   deleteWatchlist,
   removeItemFromWatchlist,
@@ -72,16 +73,37 @@ function createMyWatchlistsCollection(qc: QueryClient) {
       queryClient: queryClient,
       getKey: (item) => item.id,
       onInsert: async ({ transaction }) => {
-        const { modified } = transaction.mutations[0];
+        const { modified, metadata } = transaction.mutations[0];
+        const parsedMetadata = collectionMetadataSchema.parse(metadata);
+        const forceRefetch = !!parsedMetadata && parsedMetadata.force_refetch;
+        const localOnlyUpdate = parsedMetadata && parsedMetadata.update_type === "local";
+        if (localOnlyUpdate) {
+          return { refetch: forceRefetch };
+        }
         await createWatchlist(modified);
+          return { refetch: forceRefetch };
       },
       onUpdate: async ({ transaction }) => {
-        const { modified } = transaction.mutations[0];
+        const { modified, metadata } = transaction.mutations[0];
+        const parsedMetadata = collectionMetadataSchema.parse(metadata);
+        const forceRefetch = !!parsedMetadata && parsedMetadata.force_refetch;
+        const localOnlyUpdate = parsedMetadata && parsedMetadata.update_type === "local";
+        if (localOnlyUpdate) {
+          return { refetch: forceRefetch };
+        }
         await updateWatchlist(modified);
+          return { refetch: forceRefetch };
       },
       onDelete: async ({ transaction }) => {
-        const { original } = transaction.mutations[0];
+        const { original, metadata } = transaction.mutations[0];
         await deleteWatchlist(original.id);
+        const parsedMetadata = collectionMetadataSchema.parse(metadata);
+        const forceRefetch = !!parsedMetadata && parsedMetadata.force_refetch;
+        const localOnlyUpdate = parsedMetadata && parsedMetadata.update_type === "local";
+        if (localOnlyUpdate) {
+          return { refetch: forceRefetch };
+        }
+          return { refetch: forceRefetch };
       },
     })
   );
@@ -103,8 +125,6 @@ export const myWatchlistsCollection = (qc: QueryClient) => {
   myWatchlistsCache.set(qc, collection);
   return collection;
 };
-
-
 
 /*
 ================================================================================
@@ -197,18 +217,33 @@ function createSingleWatchlistItemsCollection({
       enabled: !!watchlistId,
       getKey: (item) => item.id,
       onInsert: async ({ transaction }) => {
-        const { modified } = transaction.mutations[0];
+        const { modified, metadata } = transaction.mutations[0];
+        const parsedMetadata = collectionMetadataSchema.parse(metadata);
+        const forceRefetch = !!parsedMetadata && parsedMetadata.force_refetch;
+        const localOnlyUpdate = parsedMetadata && parsedMetadata.update_type === "local";
+        if (localOnlyUpdate) {
+          return { refetch: forceRefetch };
+        }
         await addItemToWatchlist({
           watchlistId: watchlistId,
           watchlistItem: modified,
         });
+        return { refetch: forceRefetch };
       },
       onDelete: async ({ transaction }) => {
-        const { original } = transaction.mutations[0];
+        const { original, metadata } = transaction.mutations[0];
+        const parsedMetadata = collectionMetadataSchema.parse(metadata);
+        const forceRefetch = !!parsedMetadata && parsedMetadata.force_refetch;
+        const localOnlyUpdate = parsedMetadata && parsedMetadata.update_type === "local";
+        if (localOnlyUpdate) {
+          return { refetch: forceRefetch };
+        }
+
         await removeItemFromWatchlist({
           itemId: original.id,
           watchlistId: watchlistId,
         });
+        return { refetch: forceRefetch };
       },
     })
   );
@@ -218,7 +253,10 @@ function createSingleWatchlistItemsCollection({
 type SingleWatchlistItemsCollection = ReturnType<typeof createSingleWatchlistItemsCollection>;
 
 // Cache to memoize single watchlist items collections per QueryClient and watchlistId
-const singleWatchlistItemsCache: WeakMap<QueryClient, Map<string, SingleWatchlistItemsCollection>> = new WeakMap();
+const singleWatchlistItemsCache: WeakMap<
+  QueryClient,
+  Map<string, SingleWatchlistItemsCollection>
+> = new WeakMap();
 
 export const mySingleWatchlistItemsCollection = (qc: QueryClient, watchlistId: string) => {
   // Use QueryClient as weak key to store per-client cache

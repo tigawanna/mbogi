@@ -164,7 +164,12 @@ export function MyWatchlistScreen() {
         initialValues={editingWatchlist || undefined}
         onSubmit={(data) => {
           if (editingWatchlist) {
-            myWatchlistsCollection(qc).update(editingWatchlist.id, (draft) => {
+            myWatchlistsCollection(qc)
+            .update(editingWatchlist.id, 
+              {metadata:{
+                update:"local-only"
+              }},
+              (draft) => {
               Object.assign(draft, data);
             });
           } else {
