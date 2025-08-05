@@ -5,6 +5,13 @@ import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/react-db";
 import { QueryClient, queryOptions } from "@tanstack/react-query";
 import { and, eq, like, or } from "@tigawanna/typed-pocketbase";
+import {
+  createWatchlist,
+  updateWatchlist,
+  deleteWatchlist,
+  addItemToWatchlist,
+  removeItemFromWatchlist,
+} from "./watchlist-mutions";
 
 /*
 ================================================================================
@@ -87,7 +94,11 @@ COMMUNITY WATCHLISTS COLLECTION (Main collection with caching)
 */
 
 // Function that creates a new collection instance
-function createCommunityWatchlistCollection({ keyword, page = 1, qc }: CommunityWatchlistCollectionProps) {
+function createCommunityWatchlistCollection({
+  keyword,
+  page = 1,
+  qc,
+}: CommunityWatchlistCollectionProps) {
   return createCollection(
     queryCollectionOptions({
       queryKey: ["watchlist", "community", keyword, page, "collection"],
@@ -97,7 +108,19 @@ function createCommunityWatchlistCollection({ keyword, page = 1, qc }: Community
       },
       queryClient: queryClient,
       getKey: (item) => item.id,
-      schema: WatchlistResponseSchema,
+      // schema: WatchlistResponseSchema,
+      onInsert: async ({ transaction }) => {
+        const { original, modified } = transaction.mutations[0];
+        await createWatchlist(modified);
+      },
+      onUpdate: async ({ transaction }) => {
+        const { original, modified } = transaction.mutations[0];
+        await updateWatchlist(modified);
+      },
+      onDelete: async ({ transaction }) => {
+        const { original } = transaction.mutations[0];
+        await deleteWatchlist(original.id);
+      },
     })
   );
 }
@@ -106,9 +129,16 @@ function createCommunityWatchlistCollection({ keyword, page = 1, qc }: Community
 type CommunityWatchlistCollection = ReturnType<typeof createCommunityWatchlistCollection>;
 
 // Cache to memoize collections per QueryClient and filters
-const communityWatchlistCache: WeakMap<QueryClient, Map<string, CommunityWatchlistCollection>> = new WeakMap();
+const communityWatchlistCache: WeakMap<
+  QueryClient,
+  Map<string, CommunityWatchlistCollection>
+> = new WeakMap();
 
-export const communityWatchlistsCollection = ({ keyword, page = 1, qc }: CommunityWatchlistCollectionProps) => {
+export const communityWatchlistsCollection = ({
+  keyword,
+  page = 1,
+  qc,
+}: CommunityWatchlistCollectionProps) => {
   // Use QueryClient as weak key to store per-client cache
   let clientCache = communityWatchlistCache.get(qc);
   if (!clientCache) {
@@ -137,7 +167,7 @@ interface CommunityWatchlistItemsCollectionProps {
   keyword?: string;
   page?: number;
   qc: QueryClient;
-  itemId: string;
+  watchlistId: string;
 }
 
 // Function that creates a new items collection instance
@@ -145,22 +175,35 @@ function createCommunityWatchlistItemsCollection({
   keyword,
   page = 1,
   qc,
-  itemId,
+  watchlistId,
 }: CommunityWatchlistItemsCollectionProps) {
   return createCollection(
     queryCollectionOptions({
       // Key for items of a specific community watchlist
-      queryKey: ["watchlist", "community", keyword, page, "details", itemId],
+      queryKey: ["watchlist", "community", keyword, page, "details", watchlistId],
       queryFn: async () => {
         const response = await getCommunityWatchListFromQueryClient({ keyword, page, qc });
         const singleWatchlist = response.items.filter((item) => {
-          return item.id === itemId;
+          return item.id === watchlistId;
         });
         return singleWatchlist[0]?.expand?.items ?? [];
       },
       queryClient: queryClient,
       getKey: (item) => item.id,
-      schema: WatchlistResponseSchema,
+      onInsert: async ({ transaction }) => {
+        const { original, modified } = transaction.mutations[0];
+        await addItemToWatchlist({
+          watchlistId: watchlistId,
+          watchlistItem: modified,
+        });
+      },
+      onDelete: async ({ transaction }) => {
+        const { original } = transaction.mutations[0];
+        await removeItemFromWatchlist({
+          itemId: original.id,
+          watchlistId: watchlistId,
+        });
+      },
     })
   );
 }
@@ -169,13 +212,16 @@ function createCommunityWatchlistItemsCollection({
 type CommunityWatchlistItemsCollection = ReturnType<typeof createCommunityWatchlistItemsCollection>;
 
 // Cache to memoize items collections per QueryClient and filters
-const communityWatchlistItemsCache: WeakMap<QueryClient, Map<string, CommunityWatchlistItemsCollection>> = new WeakMap();
+const communityWatchlistItemsCache: WeakMap<
+  QueryClient,
+  Map<string, CommunityWatchlistItemsCollection>
+> = new WeakMap();
 
 export const communityWatchlistItemsCollection = ({
   keyword,
   page = 1,
   qc,
-  itemId,
+  watchlistId,
 }: CommunityWatchlistItemsCollectionProps) => {
   // Use QueryClient as weak key to store per-client cache
   let clientCache = communityWatchlistItemsCache.get(qc);
@@ -183,19 +229,17 @@ export const communityWatchlistItemsCollection = ({
     clientCache = new Map();
     communityWatchlistItemsCache.set(qc, clientCache);
   }
-  // Derive cache key from filters and itemId
-  const cacheKey = `${keyword ?? ""}:${page}:${itemId}`;
+  // Derive cache key from filters and watchlistId
+  const cacheKey = `${keyword ?? ""}:${page}:${watchlistId}`;
   // Return existing collection if present
   if (clientCache.has(cacheKey)) {
     return clientCache.get(cacheKey)!;
   }
   // Otherwise, create and cache a new collection
-  const collection = createCommunityWatchlistItemsCollection({ keyword, page, qc, itemId });
+  const collection = createCommunityWatchlistItemsCollection({ keyword, page, qc, watchlistId });
   clientCache.set(cacheKey, collection);
   return collection;
 };
-
-
 
 /*
 ================================================================================

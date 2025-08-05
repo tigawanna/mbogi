@@ -9,11 +9,13 @@ import { discoverSearchCollection } from "@/data/discover/discover-query-collect
 import { eq, useLiveQuery } from "@tanstack/react-db";
 import { SearchResultsFlatList } from "./SearchResultsFlatList";
 import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface SearchResultsScreenProps {
   searchQuery: string;
 }
 export function SearchResultsScreen({ searchQuery }: SearchResultsScreenProps) {
+  const qc = useQueryClient();
   const { data, isLoading, isError } = useLiveQuery(
     (query) =>
       query
@@ -23,7 +25,7 @@ export function SearchResultsScreen({ searchQuery }: SearchResultsScreenProps) {
             enabled: true,
           }),
         })
-        .join({ watchlist: myWatchlistsCollection }, ({ results, watchlist }) =>
+        .join({ watchlist: myWatchlistsCollection(qc) }, ({ results, watchlist }) =>
           //@ts-expect-error TODO confirm doing this with string on number isnt causing issues --- IGNORE ---
           eq(results.id, watchlist.id)
         )

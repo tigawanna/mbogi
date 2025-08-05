@@ -54,7 +54,7 @@ export function CommunityWatchlistScreen() {
             page,
           }),
         })
-        .join({ myWatchlist: myWatchlistsCollection }, ({ watchlist, myWatchlist }) =>
+        .join({ myWatchlist: myWatchlistsCollection(qc) }, ({ watchlist, myWatchlist }) =>
           eq(watchlist.id, myWatchlist.id)
         )
         .select(({ watchlist, myWatchlist }) => ({

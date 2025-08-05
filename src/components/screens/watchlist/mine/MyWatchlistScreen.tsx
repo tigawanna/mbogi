@@ -34,7 +34,7 @@ export function MyWatchlistScreen() {
     (query) =>
       query
         .from({
-          watchlist: myWatchlistsCollection,
+          watchlist: myWatchlistsCollection(qc),
         })
         .where(({ watchlist }) => ilike(watchlist.title, `%${searchQuery}%`)),
     [searchQuery]
@@ -126,7 +126,7 @@ export function MyWatchlistScreen() {
             initialValues={editingWatchlist || undefined}
             onSubmit={(data) => {
               // create inserts only
-              myWatchlistsCollection.insert(data as any);
+              myWatchlistsCollection(qc).insert(data as any);
               setModalVisible(false);
               setEditingWatchlist(null);
             }}
@@ -164,11 +164,11 @@ export function MyWatchlistScreen() {
         initialValues={editingWatchlist || undefined}
         onSubmit={(data) => {
           if (editingWatchlist) {
-            myWatchlistsCollection.update(editingWatchlist.id, (draft) => {
+            myWatchlistsCollection(qc).update(editingWatchlist.id, (draft) => {
               Object.assign(draft, data);
             });
           } else {
-            myWatchlistsCollection.insert(data as any);
+            myWatchlistsCollection(qc).insert(data as any);
             // myWatchlistsCollection.delete
 
           }

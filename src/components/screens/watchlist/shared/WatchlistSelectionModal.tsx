@@ -13,6 +13,7 @@ import { addItemToWatchlist } from "@/data/watchlist/watchlist-mutions";
 // } from "@/data/watchlist/watchlist-muttions";
 import { pb } from "@/lib/pb/client";
 import { useLiveQuery } from "@tanstack/react-db";
+import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import {
@@ -65,7 +66,8 @@ export function WatchlistSelectionModal({
   const itemId = getMediaId(item);
   const itemTitle = getMediaTitle(item);
   const currentWatchlistId = item?.watchlistId;
-  // const queryClient = useQueryClient();
+  const qc = useQueryClient()
+
 
   const [showCreateForm, setShowCreateForm] = React.useState(false);
   const [newWatchlistTitle, setNewWatchlistTitle] = React.useState("");
@@ -78,7 +80,7 @@ export function WatchlistSelectionModal({
 
   const { data: watchlists, isLoading } = useLiveQuery((query) =>
     query.from({
-      watchlist: myWatchlistsCollection,
+      watchlist: myWatchlistsCollection(qc),
     })
   );
   type WatchlistItem = (typeof watchlists)[number];

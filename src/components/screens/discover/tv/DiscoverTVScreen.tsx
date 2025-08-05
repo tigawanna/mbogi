@@ -33,7 +33,7 @@ export function DiscoverTVScreen() {
           }),
         })
         //@ts-expect-error TODO confirm doing this with string on number isnt causing issues --- IGNORE ---
-        .join({ watchlist: myWatchlistsCollection }, ({ tv, watchlist }) => eq(tv.id, watchlist.id))
+        .join({ watchlist: myWatchlistsCollection(qc) }, ({ tv, watchlist }) => eq(tv.id, watchlist.id))
         .select(({ tv, watchlist }) => ({
           ...tv,
           watchListName: watchlist?.title,

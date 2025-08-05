@@ -17,6 +17,7 @@ import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
 export function DiscoverMoviesScreen() {
   const { colors } = useTheme();
   const { movieFilters } = useDiscoverFiltersStore();
+  const qc = useQueryClient();
 
   // Pagination state (removed pagination as per requirements)
   const currentPage = 1;
@@ -35,7 +36,7 @@ export function DiscoverMoviesScreen() {
             enabled: true,
           }),
         })
-        .join({ watchlist: myWatchlistsCollection }, ({ movies, watchlist }) =>
+        .join({ watchlist: myWatchlistsCollection(qc) }, ({ movies, watchlist }) =>
           //@ts-expect-error TODO confirm doing this with string on number isnt causing issues --- IGNORE ---
           eq(movies.id, watchlist.id)
         )
