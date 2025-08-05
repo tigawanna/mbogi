@@ -65,8 +65,8 @@ export function CommunityWatchlistScreen() {
   );
   const { data: pageOptions } = useQuery(
     getCommunityWatchlistPageOptionsQueryOptions({
-      keyword: searchQuery,
       qc,
+      keyword: searchQuery,
       page,
     })
   );
@@ -167,11 +167,6 @@ export function CommunityWatchlistScreen() {
             onDismiss={() => setModalVisible(false)}
             initialValues={editingWatchlist || undefined}
             onSubmit={(data) => {
-              // if (editingWatchlist) {
-              //   updateMutation.mutate(data);
-              // } else {
-              //   createMutation.mutate(data);
-              // }
               createOrUpdateWatchlist({
                 qc,
                 type: "community",
@@ -218,11 +213,12 @@ export function CommunityWatchlistScreen() {
         onDismiss={() => setModalVisible(false)}
         initialValues={editingWatchlist || undefined}
         onSubmit={(data) => {
-          if (editingWatchlist) {
-            updateMutation.mutate(data);
-          } else {
-            createMutation.mutate(data);
-          }
+          createOrUpdateWatchlist({
+            qc,
+            type: "community",
+            data,
+            editingWatchlist,
+          });
           setModalVisible(false);
           setEditingWatchlist(null);
         }}

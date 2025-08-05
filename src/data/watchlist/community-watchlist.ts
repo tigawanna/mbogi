@@ -112,35 +112,32 @@ function createCommunityWatchlistCollection({
       onInsert: async ({ transaction }) => {
         const { modified, metadata } = transaction.mutations[0];
         const parsedMetadata = collectionMetadataSchema.parse(metadata);
-        const forceRefetch = !!parsedMetadata && parsedMetadata.force_refetch;
         const localOnlyUpdate = parsedMetadata && parsedMetadata.update_type === "local";
         if (localOnlyUpdate) {
-          return { refetch: forceRefetch };
+          return { refetch: true };
         }
         await createWatchlist(modified);
-        return { refetch: forceRefetch };
+        return { refetch: true };
       },
       onUpdate: async ({ transaction }) => {
         const { modified, metadata } = transaction.mutations[0];
         const parsedMetadata = collectionMetadataSchema.parse(metadata);
-        const forceRefetch = !!parsedMetadata && parsedMetadata.force_refetch;
         const localOnlyUpdate = parsedMetadata && parsedMetadata.update_type === "local";
         if (localOnlyUpdate) {
-          return { refetch: forceRefetch };
+          return { refetch: true };
         }
         await updateWatchlist(modified);
-        return { refetch: forceRefetch };
+        return { refetch: true };
       },
       onDelete: async ({ transaction }) => {
         const { original, metadata } = transaction.mutations[0];
         const parsedMetadata = collectionMetadataSchema.parse(metadata);
-        const forceRefetch = !!parsedMetadata && parsedMetadata.force_refetch;
         const localOnlyUpdate = parsedMetadata && parsedMetadata.update_type === "local";
         if (localOnlyUpdate) {
-          return { refetch: forceRefetch };
+          return { refetch: true };
         }
         await deleteWatchlist(original.id);
-        return { refetch: forceRefetch };
+        return { refetch: true };
       },
     })
   );
@@ -214,30 +211,28 @@ function createCommunityWatchlistItemsCollection({
       onInsert: async ({ transaction }) => {
         const { modified, metadata } = transaction.mutations[0];
         const parsedMetadata = collectionMetadataSchema.parse(metadata);
-        const forceRefetch = !!parsedMetadata && parsedMetadata.force_refetch;
         const localOnlyUpdate = parsedMetadata && parsedMetadata.update_type === "local";
         if (localOnlyUpdate) {
-          return { refetch: forceRefetch };
+          return { refetch: true };
         }
         await addItemToWatchlist({
           watchlistId: watchlistId,
           watchlistItem: modified,
         });
-        return { refetch: forceRefetch };
+        return { refetch: true };
       },
       onDelete: async ({ transaction }) => {
         const { original, metadata } = transaction.mutations[0];
         const parsedMetadata = collectionMetadataSchema.parse(metadata);
         const localOnlyUpdate = parsedMetadata && parsedMetadata.update_type === "local";
-        const forceRefetch = !!parsedMetadata && parsedMetadata.force_refetch;
         if (localOnlyUpdate) {
-          return { refetch: forceRefetch };
+          return { refetch: true };
         }
         await removeItemFromWatchlist({
           itemId: original.id,
           watchlistId: watchlistId,
         });
-        return { refetch: forceRefetch };
+        return { refetch: true };
       },
     })
   );

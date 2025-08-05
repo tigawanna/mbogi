@@ -27,82 +27,95 @@ export function createOrUpdateWatchlist({
   type,
   data,
 }: CreateOrUpdateWatchlistProps) {
-  if (type === "mine") {
-    if (editingWatchlist) {
-      //  update my watchlist and call remote saving
-      myWatchlistsCollection(qc).update(
-        editingWatchlist.id,
-        {
-          //   metadata: {
-          //     update: "local",
-          //   },
-        },
-        (draft) => {
-          Object.assign(draft, data);
-        }
-      );
-      // mirror changes but don't call remote saving
-      communityWatchlistsCollection({ qc }).update(
-        editingWatchlist.id,
-        {
-          metadata: {
-            update: "local",
+  console.log(
+    "createOrUpdateWatchlist called with data: >> ",
+    data,
+    "type:",
+    type,
+    "editingWatchlist:",
+    editingWatchlist
+  );
+  try {
+    if (type === "mine") {
+      if (editingWatchlist) {
+        //  update my watchlist and call remote saving
+        myWatchlistsCollection(qc).update(
+          editingWatchlist.id,
+          {
+            //   metadata: {
+            //     update_type: "local",
+            //   },
           },
-        },
-        (draft) => {
-          Object.assign(draft, data);
-        }
-      );
-    } else {
-      //  create my watchlist and call remote saving
-      myWatchlistsCollection(qc).insert(data as any);
-      // mirror changes but don't call remote saving
-      communityWatchlistsCollection({ qc }).insert(data as any, {
-        metadata: {
-          update: "local",
-        },
-      });
-    }
-  }
-  if (type === "community") {
-    if (editingWatchlist) {
-      //  update community collection
-      myWatchlistsCollection(qc).update(
-        editingWatchlist.id,
-        {
-          metadata: {
-            update: "local",
+          (draft) => {
+            Object.assign(draft, data);
+          }
+        );
+        // mirror changes but don't call remote saving
+        communityWatchlistsCollection({ qc }).update(
+          editingWatchlist.id,
+          {
+            metadata: {
+              update_type: "local",
+            },
           },
-        },
-        (draft) => {
-          Object.assign(draft, data);
-        }
-      );
-      // mirror into my watchlist but don't call remote persistor (pocketbase save)
-      communityWatchlistsCollection({ qc }).update(
-        editingWatchlist.id,
-        {
-          //   metadata: {
-          //     update: "local",
-          //   },
-        },
-        (draft) => {
-          Object.assign(draft, data);
-        }
-      );
-    } else {
-      //  insert into community collection
-      communityWatchlistsCollection({ qc }).insert(data as any, {
-        // metadata: {
-        //   update: "local",
-        // },
-      });
-      // mirror into my watchlist but don't call remote persistor (pocketbase save)
-      myWatchlistsCollection(qc).insert(data as any, {
-        metadata: {
-          update: "local",
-        },
-      });
+          (draft) => {
+            Object.assign(draft, data);
+          }
+        );
+      } else {
+        //  create my watchlist and call remote saving
+        myWatchlistsCollection(qc).insert(data as any);
+        // mirror changes but don't call remote saving
+        communityWatchlistsCollection({ qc }).insert(data as any, {
+          metadata: {
+            update_type: "local",
+          },
+        });
+      }
     }
+    if (type === "community") {
+      if (editingWatchlist) {
+        //  update community collection
+        communityWatchlistsCollection({ qc }).update(
+          editingWatchlist.id,
+          {
+            // metadata: {
+            //   update_type: "local",
+            // },
+          },
+          (draft) => {
+            Object.assign(draft, data);
+          }
+        );
+        // mirror into my watchlist but don't call remote persistor (pocketbase save)
+        myWatchlistsCollection(qc).update(
+          editingWatchlist.id,
+          {
+            metadata: {
+              update_type: "local",
+            },
+          },
+          (draft) => {
+            Object.assign(draft, data);
+          }
+        );
+      } else {
+        //  insert into community collection
+        communityWatchlistsCollection({ qc }).insert(data as any, {
+          // metadata: {
+          //   update_type: "local",
+          // },
+        });
+        // mirror into my watchlist but don't call remote persistor (pocketbase save)
+        myWatchlistsCollection(qc).insert(data as any, {
+          metadata: {
+            update_type: "local",
+          },
+        });
+      }
+    }
+  } catch (error) {
+    console.error("Error in createOrUpdateWatchlist:", error);
+    throw error;
   }
 }

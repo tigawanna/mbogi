@@ -126,7 +126,12 @@ export function MyWatchlistScreen() {
             initialValues={editingWatchlist || undefined}
             onSubmit={(data) => {
               // create inserts only
-              myWatchlistsCollection(qc).insert(data as any);
+              createOrUpdateWatchlist({
+                qc,
+                type: "mine",
+                data,
+                editingWatchlist,
+              });
               setModalVisible(false);
               setEditingWatchlist(null);
             }}
@@ -163,19 +168,6 @@ export function MyWatchlistScreen() {
         }}
         initialValues={editingWatchlist || undefined}
         onSubmit={(data) => {
-          // if (editingWatchlist) {
-          //   myWatchlistsCollection(qc)
-          //   .update(editingWatchlist.id,
-          //     {metadata:{
-          //       update:"local-only"
-          //     }},
-          //     (draft) => {
-          //     Object.assign(draft, data);
-          //   });
-          // } else {
-          //   myWatchlistsCollection(qc).insert(data as any);
-          //   // myWatchlistsCollection.delete
-          // }
           createOrUpdateWatchlist({
             qc,
             type: "mine",
