@@ -1,7 +1,6 @@
 import { pb } from "@/lib/pb/client";
 import { WatchlistItemsCreate } from "@/lib/pb/types/pb-types";
 import {
-  FollowsCreateSchema,
   WatchlistCreate,
   WatchlistCreateSchema,
   WatchlistItemsCreateSchema,

@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useWatchlistSearch } from "../hooks";
 import { WatchlistCard } from "../shared/WatchlistCard";
 import { WatchlistFormModal } from "../shared/WatchlistFormModal";
+import { createOrUpdateWatchlist } from "@/data/watchlist/watchlist-collection-mutations";
 
 export function MyWatchlistScreen() {
   const qc = useQueryClient();
@@ -24,7 +25,6 @@ export function MyWatchlistScreen() {
   const [editingWatchlist, setEditingWatchlist] = useState<WatchlistResponse | null>(null);
   // const createMutation = useMutation(createWatchListMutationOptions())
   // const updateMutation = useMutation(updateWatchListMutationOptions())
- 
 
   const {
     data: watchlist,
@@ -163,20 +163,25 @@ export function MyWatchlistScreen() {
         }}
         initialValues={editingWatchlist || undefined}
         onSubmit={(data) => {
-          if (editingWatchlist) {
-            myWatchlistsCollection(qc)
-            .update(editingWatchlist.id, 
-              {metadata:{
-                update:"local-only"
-              }},
-              (draft) => {
-              Object.assign(draft, data);
-            });
-          } else {
-            myWatchlistsCollection(qc).insert(data as any);
-            // myWatchlistsCollection.delete
-
-          }
+          // if (editingWatchlist) {
+          //   myWatchlistsCollection(qc)
+          //   .update(editingWatchlist.id,
+          //     {metadata:{
+          //       update:"local-only"
+          //     }},
+          //     (draft) => {
+          //     Object.assign(draft, data);
+          //   });
+          // } else {
+          //   myWatchlistsCollection(qc).insert(data as any);
+          //   // myWatchlistsCollection.delete
+          // }
+          createOrUpdateWatchlist({
+            qc,
+            type: "mine",
+            data,
+            editingWatchlist,
+          });
           setModalVisible(false);
           setEditingWatchlist(null);
         }}

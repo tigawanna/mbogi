@@ -23,6 +23,7 @@ import {
 import type { WatchlistResponse } from "@/lib/pb/types/pb-types";
 import { WatchlistFormModal } from "../shared/WatchlistFormModal";
 import { CommunityListFooter } from "./CommunityListFooter";
+import { createOrUpdateWatchlist } from "@/data/watchlist/watchlist-collection-mutations";
 
 export function CommunityWatchlistScreen() {
   const qc = useQueryClient();
@@ -38,7 +39,6 @@ export function CommunityWatchlistScreen() {
   const [editingWatchlist, setEditingWatchlist] = useState<WatchlistResponse | null>(null);
   const createMutation = useMutation(createWatchListMutationOptions());
   const updateMutation = useMutation(updateWatchListMutationOptions());
-
 
   const {
     data: watchlist,
@@ -93,7 +93,11 @@ export function CommunityWatchlistScreen() {
               <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
                 Something went wrong
               </Text>
-              <Button mode="contained" onPress={onRefresh} loading={refreshing} style={{ marginTop: 16 }}>
+              <Button
+                mode="contained"
+                onPress={onRefresh}
+                loading={refreshing}
+                style={{ marginTop: 16 }}>
                 Refresh
               </Button>
             </View>
@@ -104,17 +108,19 @@ export function CommunityWatchlistScreen() {
               </View>
               <Text
                 variant="headlineSmall"
-                style={[styles.emptyTitle, { color: colors.onSurface }]}
-              >
+                style={[styles.emptyTitle, { color: colors.onSurface }]}>
                 Something went wrong
               </Text>
               <Text
                 variant="bodyMedium"
-                style={[styles.emptySubtitle, { color: colors.onSurfaceVariant }]}
-              >
+                style={[styles.emptySubtitle, { color: colors.onSurfaceVariant }]}>
                 Try adjusting your filters or search terms to discover more content
               </Text>
-              <Button mode="contained" onPress={onRefresh} loading={refreshing} style={{ marginTop: 16 }}>
+              <Button
+                mode="contained"
+                onPress={onRefresh}
+                loading={refreshing}
+                style={{ marginTop: 16 }}>
                 Refresh
               </Button>
             </View>
@@ -161,11 +167,17 @@ export function CommunityWatchlistScreen() {
             onDismiss={() => setModalVisible(false)}
             initialValues={editingWatchlist || undefined}
             onSubmit={(data) => {
-              if (editingWatchlist) {
-                updateMutation.mutate(data);
-              } else {
-                createMutation.mutate(data);
-              }
+              // if (editingWatchlist) {
+              //   updateMutation.mutate(data);
+              // } else {
+              //   createMutation.mutate(data);
+              // }
+              createOrUpdateWatchlist({
+                qc,
+                type: "community",
+                data,
+                editingWatchlist,
+              });
               setModalVisible(false);
               setEditingWatchlist(null);
             }}
