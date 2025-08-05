@@ -2,12 +2,22 @@ import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
 import { ilike } from "@tanstack/db";
 import { useLiveQuery } from "@tanstack/react-db";
 import React, { useState } from "react";
-import { FlatList, RefreshControl, StyleSheet, useWindowDimensions, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { Button, FAB, Searchbar, Text, useTheme } from "react-native-paper";
 
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
-
+import {
+  createOrUpdateWatchlist,
+  deleteWatchlistFromCollection,
+} from "@/data/watchlist/watchlist-collection-mutations";
 import { useRefreshControl } from "@/hooks/useRefreshControl";
 import type { WatchlistResponse } from "@/lib/pb/types/pb-types";
 import { useQueryClient } from "@tanstack/react-query";
@@ -15,7 +25,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useWatchlistSearch } from "../hooks";
 import { WatchlistCard } from "../shared/WatchlistCard";
 import { WatchlistFormModal } from "../shared/WatchlistFormModal";
-import { createOrUpdateWatchlist } from "@/data/watchlist/watchlist-collection-mutations";
 
 export function MyWatchlistScreen() {
   const qc = useQueryClient();
@@ -23,8 +32,8 @@ export function MyWatchlistScreen() {
   const { bottom } = useSafeAreaInsets();
   const [modalVisible, setModalVisible] = useState(false);
   const [editingWatchlist, setEditingWatchlist] = useState<WatchlistResponse | null>(null);
-  // const createMutation = useMutation(createWatchListMutationOptions())
-  // const updateMutation = useMutation(updateWatchListMutationOptions())
+
+
 
   const {
     data: watchlist,
@@ -42,6 +51,28 @@ export function MyWatchlistScreen() {
   const { refreshing, onRefresh } = useRefreshControl(() => {
     return qc.invalidateQueries({ queryKey: ["watchlist", "mine"] });
   });
+
+  // Delete handler with confirmation
+  const handleDelete = (watchlist: WatchlistResponse) => {
+    Alert.alert(
+      "Delete Watchlist",
+      `Are you sure you want to delete "${watchlist.title}"? This action cannot be undone.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => {
+            deleteWatchlistFromCollection({
+              qc,
+              watchlistId: watchlist.id,
+              type: "mine",
+            });
+          },
+        },
+      ]
+    );
+  };
 
   const { colors } = useTheme();
   // console.log("watchlist data", data);
@@ -154,6 +185,7 @@ export function MyWatchlistScreen() {
               setEditingWatchlist(item);
               setModalVisible(true);
             }}
+            onDelete={() => handleDelete(item)}
           />
         )}
         keyExtractor={(item) => item.id}

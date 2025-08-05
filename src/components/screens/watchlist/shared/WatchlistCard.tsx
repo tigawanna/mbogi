@@ -1,6 +1,8 @@
+import { viewerQueryOptions } from '@/data/viewer/query-options';
 import { WatchlistResponse } from '@/lib/pb/types/pb-types';
 import { WatchlistItemsResponse } from '@/lib/pb/types/pb-zod';
 import { analyzeWatchlistGenres } from '@/utils/genre-utils';
+import { useQuery } from '@tanstack/react-query';
 import { Link } from 'expo-router';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Card, Chip, IconButton, Text, useTheme } from 'react-native-paper';
@@ -19,6 +21,11 @@ interface WatchlistCardProps {
 
 export function WatchlistCard({ watchlist, community = false, onEdit, onDelete }: WatchlistCardProps) {
   const { colors } = useTheme();
+  
+  // Get current user to check permissions
+  const { data: viewer } = useQuery(viewerQueryOptions());
+  const currentUserId = viewer?.record?.id;
+  const isOwner = currentUserId === watchlist.user_id;
 
   const getVisibilityIcon = (visibility: string) => {
     switch (visibility) {
@@ -79,15 +86,24 @@ export function WatchlistCard({ watchlist, community = false, onEdit, onDelete }
                   icon={getVisibilityIcon(watchlist.visibility)}
                   iconColor={getVisibilityColor(watchlist.visibility)}
                   size={20}
-                  style={styles.visibilityIcon}
+                  style={styles.actionIcon}
                 />
-                {onEdit && (
+                {isOwner && onEdit && (
                   <IconButton
                     icon="pencil"
                     iconColor={colors.primary}
                     size={20}
-                    style={styles.visibilityIcon}
+                    style={styles.actionIcon}
                     onPress={onEdit}
+                  />
+                )}
+                {isOwner && onDelete && (
+                  <IconButton
+                    icon="delete"
+                    iconColor={colors.error}
+                    size={20}
+                    style={styles.actionIcon}
+                    onPress={onDelete}
                   />
                 )}
               </View>
@@ -164,6 +180,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   headerRight: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
   title: {
@@ -174,7 +191,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     opacity: 0.8,
   },
-  visibilityIcon: {
+  actionIcon: {
     margin: 0,
   },
   overview: {

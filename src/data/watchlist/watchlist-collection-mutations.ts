@@ -31,14 +31,14 @@ export function createOrUpdateWatchlist({
   keyword,
   page,
 }: CreateOrUpdateWatchlistProps) {
-  console.log(
-    "\n\ncreateOrUpdateWatchlist called with data: >> ",
-    data,
-    "\n\ntype:",
-    type,
-    "\n\neditingWatchlist:",
-    editingWatchlist
-  );
+  // console.log(
+  //   "\n\ncreateOrUpdateWatchlist called with data: >> ",
+  //   data,
+  //   "\n\ntype:",
+  //   type,
+  //   "\n\neditingWatchlist:",
+  //   editingWatchlist
+  // );
   try {
     if (type === "mine") {
       if (editingWatchlist) {
@@ -122,6 +122,44 @@ export function createOrUpdateWatchlist({
     }
   } catch (error) {
     console.error("Error in createOrUpdateWatchlist:", error);
+    throw error;
+  }
+}
+
+
+interface DeleteWatchlistFromCollectionProps {
+  qc: QueryClient;
+  watchlistId: string;
+  type: "mine" | "community";
+  keyword?: string;
+  page?: number;
+}
+export async function deleteWatchlistFromCollection({
+  qc,
+  watchlistId,
+  type,
+  keyword,
+  page,
+}: DeleteWatchlistFromCollectionProps) {
+  try {
+    if (type === "mine") {
+      await myWatchlistsCollection(qc).delete(watchlistId);
+      await communityWatchlistsCollection({ qc, keyword, page }).delete(watchlistId,{
+        metadata: {
+          update_type: "local",
+        },
+      });
+      
+    } else {
+      await communityWatchlistsCollection({ qc, keyword, page }).delete(watchlistId);
+      await myWatchlistsCollection(qc).delete(watchlistId,{
+        metadata: {
+          update_type: "local",
+        },
+      });
+    }
+  } catch (error) {
+    console.error("Error in deleteWatchlistFromCollection:", error);
     throw error;
   }
 }

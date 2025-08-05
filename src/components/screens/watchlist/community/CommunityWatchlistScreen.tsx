@@ -9,21 +9,25 @@ import { eq } from "@tanstack/db";
 import { useLiveQuery } from "@tanstack/react-db";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
-import { FlatList, RefreshControl, StyleSheet, useWindowDimensions, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { Button, FAB, Searchbar, Text, useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCommunityWatchlistPage, useWatchlistSearch } from "../hooks";
 import { WatchlistCard } from "../shared/WatchlistCard";
 // consolidated above
 import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
-import {
-  createWatchListMutationOptions,
-  updateWatchListMutationOptions,
-} from "@/data/watchlist/watchlist-mutions";
+import { createOrUpdateWatchlist, deleteWatchlistFromCollection } from "@/data/watchlist/watchlist-collection-mutations";
+import { deleteWatchlistMutationOptions } from "@/data/watchlist/watchlist-mutions";
 import type { WatchlistResponse } from "@/lib/pb/types/pb-types";
 import { WatchlistFormModal } from "../shared/WatchlistFormModal";
 import { CommunityListFooter } from "./CommunityListFooter";
-import { createOrUpdateWatchlist } from "@/data/watchlist/watchlist-collection-mutations";
 
 export function CommunityWatchlistScreen() {
   const qc = useQueryClient();
@@ -37,8 +41,31 @@ export function CommunityWatchlistScreen() {
   );
   const [modalVisible, setModalVisible] = useState(false);
   const [editingWatchlist, setEditingWatchlist] = useState<WatchlistResponse | null>(null);
-  const createMutation = useMutation(createWatchListMutationOptions());
-  const updateMutation = useMutation(updateWatchListMutationOptions());
+
+
+  // Delete handler with confirmation
+  const handleDelete = (watchlist: WatchlistResponse) => {
+    Alert.alert(
+      "Delete Watchlist",
+      `Are you sure you want to delete "${watchlist.title}"? This action cannot be undone.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => {
+            deleteWatchlistFromCollection({
+              qc,
+              watchlistId: watchlist.id,
+              type: "community",
+              keyword: searchQuery,
+              page,
+            });
+          },
+        },
+      ]
+    );
+  };
 
   const {
     data: watchlist,
@@ -197,6 +224,7 @@ export function CommunityWatchlistScreen() {
               setEditingWatchlist(item);
               setModalVisible(true);
             }}
+            onDelete={() => handleDelete(item)}
           />
         )}
         keyExtractor={(item) => item.id}
