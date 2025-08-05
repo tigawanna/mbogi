@@ -7,7 +7,6 @@ import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { discoverSearchCollection } from "@/data/discover/discover-query-collection";
 import { eq, useLiveQuery } from "@tanstack/react-db";
-import { useQueryClient } from "@tanstack/react-query";
 import { SearchResultsFlatList } from "./SearchResultsFlatList";
 import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
 
