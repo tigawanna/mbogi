@@ -4,6 +4,12 @@ import {
   getMediaTitle,
 } from "@/data/discover/discover-zod-schema";
 import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
+import {
+  addItemToWatchlistItemsCollection,
+  removeItemToWatchlistItemsCollection,
+  createOrUpdateWatchlist,
+  createWatchlistItemWithMetadata,
+} from "@/data/watchlist/watchlist-collection-mutations";
 import { addItemToWatchlist } from "@/data/watchlist/watchlist-mutions";
 // import {
 //   MutationSource,
@@ -66,8 +72,7 @@ export function WatchlistSelectionModal({
   const itemId = getMediaId(item);
   const itemTitle = getMediaTitle(item);
   const currentWatchlistId = item?.watchlistId;
-  const qc = useQueryClient()
-
+  const qc = useQueryClient();
 
   const [showCreateForm, setShowCreateForm] = React.useState(false);
   const [newWatchlistTitle, setNewWatchlistTitle] = React.useState("");
@@ -98,29 +103,24 @@ export function WatchlistSelectionModal({
         console.warn("User not authenticated");
         return;
       }
-      //  console.log("Adding item to watchlist:", listItem, mediaItem);
-      //   await addItemMutation.mutateAsync({ watchlistId, itemId });
-      // onDismiss();
-      addItemToWatchlist({
+      addItemToWatchlistItemsCollection({
+        qc,
         watchlistId: listItem.id,
-        watchlistItem: {
-          ...mediaItem,
-          id: String(mediaItem.id),
-          title: getMediaTitle(mediaItem),
-          tmdb_id: mediaItem.id,
-          added_by: userId,
-          poster_path: mediaItem.poster_path || undefined,
-          backdrop_path: mediaItem.backdrop_path || undefined,
-        },
+        watchlistItem: createWatchlistItemWithMetadata(mediaItem, userId),
       });
     } catch (error) {
       console.error("Failed to add item to watchlist:", error);
     }
   };
 
-  const handleRemoveFromWatchlist = async (watchlistId: string) => {
+  const handleRemoveFromWatchlist = async (watchlistId: string, watchlistItemId: string) => {
     try {
-      //   await removeItemMutation.mutateAsync({ watchlistId, itemId });
+      removeItemToWatchlistItemsCollection({
+        qc,
+        watchlistId,
+        watchlistItemId,
+      });
+
       onDismiss();
     } catch (error) {
       console.error("Failed to remove item from watchlist:", error);
@@ -131,22 +131,20 @@ export function WatchlistSelectionModal({
     if (!newWatchlistTitle.trim() || !userId) return;
 
     try {
-      //   const newWatchlist = await createWatchlistMutation.mutateAsync({
-      //     user_id: userId,
-      //     title: newWatchlistTitle.trim(),
-      //     visibility: "public",
-      //     overview: `Watchlist for ${itemTitle}`,
-      //   });
-
-      // Add the item to the newly created watchlist
-      //   await addItemMutation.mutateAsync({
-      //     watchlistId: newWatchlist.id,
-      //     itemId,
-      //   });
+      createOrUpdateWatchlist({
+        qc,
+        type: "mine",
+        data: {
+          title: newWatchlistTitle.trim(),
+          visibility: "public",
+          overview: `Watchlist for ${itemTitle}`,
+          user_id: userId,
+        },
+      });
 
       setShowCreateForm(false);
       setNewWatchlistTitle("");
-      onDismiss();
+      // onDismiss();
     } catch (error) {
       console.error("Failed to create watchlist:", error);
     }
@@ -160,7 +158,7 @@ export function WatchlistSelectionModal({
   const renderWatchlistItem = ({ item: watchlist }: { item: WatchlistItem }) => {
     const isInThisWatchlist = isItemInWatchlist(watchlist.id);
     const isCurrentWatchlist = currentWatchlistId === watchlist.id;
-
+    console.log("\n\nWatchlist ID:", JSON.stringify(watchlist, null, 2));
     return (
       <Card style={[styles.watchlistCard, { backgroundColor: colors.surface }]}>
         <Card.Content style={styles.cardContent}>
@@ -189,7 +187,7 @@ export function WatchlistSelectionModal({
                 icon="minus-circle"
                 mode="contained-tonal"
                 iconColor={colors.error}
-                onPress={() => handleRemoveFromWatchlist(watchlist.id)}
+                onPress={() => handleRemoveFromWatchlist(watchlist.id,String(item.id))}
                 // disabled={removeItemMutation.isPending}
               />
             ) : (

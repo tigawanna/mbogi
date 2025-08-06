@@ -557,7 +557,6 @@ export interface WatchlistItemsResponse extends BaseCollectionResponse {
 	genre_ids: Record<string, any> | Array<any> | null;
 	media_type: 'movie' | 'tv';
 	added_by: string;
-	personal_rating: number;
 	notes: string;
 	created: string;
 	updated: string;
@@ -575,7 +574,6 @@ export interface WatchlistItemsCreate extends BaseCollectionCreate {
 	genre_ids?: Record<string, any> | Array<any> | null;
 	media_type: 'movie' | 'tv';
 	added_by: string;
-	personal_rating?: number;
 	notes?: string;
 	created?: string | Date;
 	updated?: string | Date;
@@ -597,9 +595,6 @@ export interface WatchlistItemsUpdate extends BaseCollectionUpdate {
 	genre_ids?: Record<string, any> | Array<any> | null;
 	media_type: 'movie' | 'tv';
 	added_by: string;
-	personal_rating?: number;
-	'personal_rating+'?: number;
-	'personal_rating-'?: number;
 	notes?: string;
 	created?: string | Date;
 	updated?: string | Date;

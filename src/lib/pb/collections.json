@@ -1256,18 +1256,6 @@
         "type": "relation"
       },
       {
-        "hidden": false,
-        "id": "number738576949",
-        "max": null,
-        "min": null,
-        "name": "personal_rating",
-        "onlyInt": false,
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "number"
-      },
-      {
         "autogeneratePattern": "",
         "hidden": false,
         "id": "text18589324",
@@ -1306,7 +1294,7 @@
       "CREATE UNIQUE INDEX `idx_ug5F4Oim6O` ON `watchlist_items` (`tmdb_id`)"
     ],
     "created": "2025-07-25 21:36:38.759Z",
-    "updated": "2025-07-27 17:35:51.054Z",
+    "updated": "2025-08-06 09:37:31.229Z",
     "system": false
   },
   {

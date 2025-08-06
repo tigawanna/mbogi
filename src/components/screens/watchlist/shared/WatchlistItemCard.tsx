@@ -11,6 +11,7 @@ interface WatchlistItemCardProps {
 }
 
 export function WatchlistItemCard({ item, watchListName }: WatchlistItemCardProps) {
+  // console.log("\n\nWatchlistItemCard item:", item);
   const { colors } = useTheme();
 
   const posterUrl = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null;
@@ -109,20 +110,20 @@ export function WatchlistItemCard({ item, watchListName }: WatchlistItemCardProp
                       {formatRating(item.vote_average)} ⭐
                     </Text>
                   </View>
-                  {item.personal_rating > 0 && (
+                  {/* {item.rating > 0 && (
                     <View style={styles.metadataRow}>
                       <Text
                         variant="bodySmall"
                         style={[styles.metadataLabel, { color: colors.onSurfaceVariant }]}>
-                        My Rating:
+                        Rating:
                       </Text>
                       <Text
                         variant="bodySmall"
                         style={[styles.metadataValue, { color: colors.primary }]}>
-                        {item.personal_rating}/10 ⭐
+                        {item.rating}/10 ⭐
                       </Text>
                     </View>
-                  )}
+                  )} */}
                 </View>
                 <TouchableOpacity onPress={(e) => e.stopPropagation()}>
                   <DiscoverCardAction

@@ -83,7 +83,7 @@ export function WatchlistFormModal({
 
       // Reset form when modal opens
       reset({
-        id: initialValues?.id ?? pocketbaseFriendlyUUID(),
+        // id: initialValues?.id ?? pocketbaseFriendlyUUID(),
         user_id: currentUserId,
         title: initialValues?.title || "",
         overview: initialValues?.overview || "",

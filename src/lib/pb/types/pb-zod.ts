@@ -342,7 +342,6 @@ export const WatchlistItemsResponseSchema = baseResponseSchema.extend({
     genre_ids: z.union([z.record(z.string(), z.any()), z.array(z.any()), z.null()]).optional(),
     media_type: z.enum(['movie', 'tv']),
     added_by: z.string(),
-    personal_rating: z.number().optional(),
     notes: z.string().optional(),
     created: z.string().optional(),
     updated: z.string().optional()
@@ -360,7 +359,6 @@ export const WatchlistItemsCreateSchema = baseCreateSchema.extend({
     genre_ids: z.union([z.record(z.string(), z.any()), z.array(z.any()), z.null()]).optional(),
     media_type: z.enum(['movie', 'tv']),
     added_by: z.string(),
-    personal_rating: z.number().optional(),
     notes: z.string().optional(),
     created: z.union([z.string(), z.date()]).optional(),
     updated: z.union([z.string(), z.date()]).optional()
@@ -382,9 +380,6 @@ export const WatchlistItemsUpdateSchema = baseUpdateSchema.extend({
     genre_ids: z.union([z.record(z.string(), z.any()), z.array(z.any()), z.null()]).optional(),
     media_type: z.enum(['movie', 'tv']),
     added_by: z.string(),
-    personal_rating: z.number().optional(),
-    'personal_rating+': z.number().optional(),
-    'personal_rating-': z.number().optional(),
     notes: z.string().optional(),
     created: z.union([z.string(), z.date()]).optional(),
     updated: z.union([z.string(), z.date()]).optional()

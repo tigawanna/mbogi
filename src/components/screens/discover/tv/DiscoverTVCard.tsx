@@ -18,6 +18,7 @@ const listCardWidth = width - 32; // Account for horizontal padding
 export function DiscoverTVCard({ item, viewMode = "grid" }: DiscoverTVCardProps) {
   const { colors } = useTheme();
 
+
   const imageUrl = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null;
 
   const isGridView = viewMode === "grid";

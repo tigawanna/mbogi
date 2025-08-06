@@ -10,6 +10,8 @@ import {
 import { mutationOptions } from "@tanstack/react-query";
 import { z } from "zod";
 
+pb.autoCancellation(false);
+
 export async function createWatchlist(payload: WatchlistCreate) {
   try {
     const inputs = WatchlistCreateSchema.parse(payload);
@@ -74,7 +76,6 @@ export async function addItemToWatchlist(payload: AddToWatchlistItemsMutationPro
         watchlistItem: WatchlistItemsCreateSchema,
       })
       .parse(payload);
-    // Cast to any to allow multi-relation update operator
     await pb
       .from("watchlist_items")
       .create(inputs.watchlistItem)
