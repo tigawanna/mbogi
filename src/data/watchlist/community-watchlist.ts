@@ -199,7 +199,7 @@ export const communityWatchlistsCollection = ({
   
   // Return existing collection if present
   if (communityWatchlistCache.has(cacheKey)) {
-    console.log("🌟 Cache HIT for", cacheKey.toString());
+    // console.log("🌟 Cache HIT for", cacheKey.toString());
     return communityWatchlistCache.get(cacheKey)!;
   }
   
@@ -298,7 +298,7 @@ export const communityWatchlistItemsCollection = ({
   
   // Return existing collection if present
   if (communityWatchlistItemsCache.has(cacheKey)) {
-    console.log("💎 Cache HIT for", cacheKey.toString());
+    // console.log("💎 Cache HIT for", cacheKey.toString());
     return communityWatchlistItemsCache.get(cacheKey)!;
   }
   
@@ -309,33 +309,4 @@ export const communityWatchlistItemsCollection = ({
   return collection;
 };
 
-/*
-================================================================================
-ZUSTAND STORE (Commented out - moved to separate file)
-================================================================================
-*/
 
-// interface CommunityWatchlistFilters {
-//   keyword: string;
-//   page: number;
-//   setKeyword: (keyword: string) => void;
-//   setPage: (page: number) => void;
-//   resetFilters: () => void;
-// }
-
-// export const useCommunityFiltersStore = create<CommunityWatchlistFilters>()(
-//   devtools(
-//     persist(
-//       (set) => ({
-//         keyword: "",
-//         page: 1,
-//         setKeyword: (keyword: string) => set({ keyword, page: 1 }),
-//         setPage: (page: number) => set({ page }),
-//         resetFilters: () => set({ keyword: "", page: 1 }),
-//       }),
-//       {
-//         name: "community-watchlist-filters",
-//       }
-//     )
-//   )
-// );

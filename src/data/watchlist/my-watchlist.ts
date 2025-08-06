@@ -206,7 +206,7 @@ export const myWatchlistsCollection = (qc: QueryClient) => {
 
   // Return existing collection if present
   if (myWatchlistsCache.has(cacheKey)) {
-    console.log("🎯 Cache HIT for", cacheKey.toString());
+    // console.log("🎯 Cache HIT for", cacheKey.toString());
     return myWatchlistsCache.get(cacheKey)!;
   }
   
@@ -306,7 +306,7 @@ export const mySingleWatchlistItemsCollection = (qc: QueryClient, watchlistId: s
   
   // Return existing collection if present
   if (singleWatchlistItemsCache.has(cacheKey)) {
-    console.log("🎯 Cache HIT for", cacheKey.toString());
+    // console.log("🎯 Cache HIT for", cacheKey.toString());
     return singleWatchlistItemsCache.get(cacheKey)!;
   }
   console.log("⚡ Cache MISS for", cacheKey.toString());
