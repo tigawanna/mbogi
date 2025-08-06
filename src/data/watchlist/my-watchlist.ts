@@ -1,7 +1,6 @@
 import { pb } from "@/lib/pb/client";
 import { queryClient, TSQ_CACHE_TIME } from "@/lib/tanstack/query/client";
 
-import { logger } from "@/utils/logger";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/react-db";
 import { QueryClient } from "@tanstack/react-query";
@@ -48,6 +47,87 @@ export async function getUserWatchListFromQueryClient(qc: QueryClient, userId: s
     gcTime: TSQ_CACHE_TIME,
   });
   return response;
+}
+
+/*
+================================================================================
+MY WATCHLISTS COLLECTION (Main user watchlists with caching)
+================================================================================
+*/
+
+// Function that creates a new my watchlists collection instance
+// function createMyWatchlistsCollection(qc: QueryClient) {
+//   return createCollection(
+//     queryCollectionOptions({
+//       queryKey: ["watchlist", "mine", "collection"],
+//       queryFn: async () => {
+//         const user = await queryClient.fetchQuery(viewerQueryOptions());
+//         const userId = user?.record?.id;
+//         if (!userId) {
+//           throw new Error("User not authenticated");
+//         }
+//         const response = await getUserWatchListFromQueryClient(qc, userId);
+//         return response;
+//       },
+//       queryClient: queryClient,
+//       getKey: (item) => item.id,
+//       onInsert: async ({ transaction }) => {
+//         const { modified, metadata } = transaction.mutations[0];
+//         const parsedMetadata = collectionMetadataSchema.parse(metadata);
+//         const localOnlyUpdate = parsedMetadata && parsedMetadata.update_type === "local";
+//         if (localOnlyUpdate) {
+//           return { refetch: true };
+//         }
+//         await createWatchlist(modified);
+//         return { refetch: true };
+//       },
+//       onUpdate: async ({ transaction }) => {
+//         const { modified, metadata } = transaction.mutations[0];
+//         const parsedMetadata = collectionMetadataSchema.parse(metadata);
+//         const localOnlyUpdate = parsedMetadata && parsedMetadata.update_type === "local";
+//         if (localOnlyUpdate) {
+//           return { refetch: true };
+//         }
+//         await updateWatchlist(modified);
+//         return { refetch: true };
+//       },
+//       onDelete: async ({ transaction }) => {
+//         const { original, metadata } = transaction.mutations[0];
+//         const parsedMetadata = collectionMetadataSchema.parse(metadata);
+//         const localOnlyUpdate = parsedMetadata && parsedMetadata.update_type === "local";
+//         if (localOnlyUpdate) {
+//           return { refetch: true };
+//         }
+//         await deleteWatchlist(original.id);
+//         return { refetch: true };
+//       },
+//     })
+//   );
+// }
+
+/*
+================================================================================
+CACHE KEY CLASSES
+================================================================================
+*/
+
+export class MyWatchlistsKey {
+  constructor(public readonly qc: QueryClient) {}
+
+  toString() {
+    return `MyWatchlistsKey()`;
+  }
+}
+
+export class MySingleWatchlistItemsKey {
+  constructor(
+    public readonly qc: QueryClient,
+    public readonly watchlistId: string
+  ) {}
+
+  toString() {
+    return `MySingleWatchlistItemsKey(watchlistId: ${this.watchlistId})`;
+  }
 }
 
 /*
@@ -109,24 +189,40 @@ function createMyWatchlistsCollection(qc: QueryClient) {
 // Type for the my watchlists collection return type
 type MyWatchlistsCollection = ReturnType<typeof createMyWatchlistsCollection>;
 
-// Cache key object for my watchlists
-const myWatchlistsCacheKey = { type: "my-watchlists" };
+// Cache to store key instances to ensure object identity
+const myWatchlistsCacheKeyStore = new Map<string, MyWatchlistsKey>();
 
 // Cache to memoize my watchlists collections using WeakMap
-const myWatchlistsCache = new WeakMap<object, MyWatchlistsCollection>();
+const myWatchlistsCache = new WeakMap<MyWatchlistsKey, MyWatchlistsCollection>();
 
 export const myWatchlistsCollection = (qc: QueryClient) => {
-  // Return existing collection if present
-  if (myWatchlistsCache.has(myWatchlistsCacheKey)) {
-    return myWatchlistsCache.get(myWatchlistsCacheKey)!;
+  // Create a stable key for my watchlists (single instance per app)
+  const keyString = "my-watchlists";
+  let cacheKey = myWatchlistsCacheKeyStore.get(keyString);
+  if (!cacheKey) {
+    cacheKey = new MyWatchlistsKey(qc);
+    myWatchlistsCacheKeyStore.set(keyString, cacheKey);
   }
+
+  // Return existing collection if present
+  if (myWatchlistsCache.has(cacheKey)) {
+    console.log("🎯 Cache HIT for", cacheKey.toString());
+    return myWatchlistsCache.get(cacheKey)!;
+  }
+  
+  console.log("⚡ Cache MISS for", cacheKey.toString());
   // Otherwise, create and cache a new collection
   const collection = createMyWatchlistsCollection(qc);
-  myWatchlistsCache.set(myWatchlistsCacheKey, collection);
+  myWatchlistsCache.set(cacheKey, collection);
   return collection;
 };
 
 
+/*
+================================================================================
+SINGLE WATCHLIST ITEMS COLLECTION (Items within a specific user watchlist)
+================================================================================
+*/
 
 interface SingleWatchlistItemsCollectionProps {
   qc: QueryClient;
@@ -174,7 +270,7 @@ function createSingleWatchlistItemsCollection({
 
       onDelete: async ({ transaction }) => {
         const { original, metadata } = transaction.mutations[0];
-        console.log("Deleting item from watchlist:", original.id);
+        console.log("🗑️ Deleting item from watchlist:", original.id);
         const parsedMetadata = collectionMetadataSchema.parse(metadata);
         const localOnlyUpdate = parsedMetadata && parsedMetadata.update_type === "local";
         if (localOnlyUpdate) {
@@ -191,41 +287,29 @@ function createSingleWatchlistItemsCollection({
   );
 }
 
-export class MySingleWatchlistItemsKey {
-  constructor(
-    public readonly qc: QueryClient,
-    public readonly watchlistId: string
-  ) {}
-
-  // Override toString for debugging purposes
-  toString() {
-    return `MySingleWatchlistItemsKey(watchlistId: ${this.watchlistId})`;
-  }
-}
-
 // Type for the single watchlist items collection return type
 type SingleWatchlistItemsCollection = ReturnType<typeof createSingleWatchlistItemsCollection>;
 
 // Cache to store key instances by watchlistId to ensure object identity
-const cacheKeyStore = new Map<string, MySingleWatchlistItemsKey>();
+const singleWatchlistItemsCacheKeyStore = new Map<string, MySingleWatchlistItemsKey>();
 
 // Cache to memoize single watchlist items collections per watchlistId using WeakMap
 const singleWatchlistItemsCache = new WeakMap<MySingleWatchlistItemsKey, SingleWatchlistItemsCollection>();
 
 export const mySingleWatchlistItemsCollection = (qc: QueryClient, watchlistId: string) => {
   // Get or create a stable key instance for this watchlistId
-  let cacheKey = cacheKeyStore.get(watchlistId);
+  let cacheKey = singleWatchlistItemsCacheKeyStore.get(watchlistId);
   if (!cacheKey) {
     cacheKey = new MySingleWatchlistItemsKey(qc, watchlistId);
-    cacheKeyStore.set(watchlistId, cacheKey);
+    singleWatchlistItemsCacheKeyStore.set(watchlistId, cacheKey);
   }
   
   // Return existing collection if present
   if (singleWatchlistItemsCache.has(cacheKey)) {
-    console.log("\n\n cache hit", cacheKey.toString(), "\n");
+    console.log("🎯 Cache HIT for", cacheKey.toString());
     return singleWatchlistItemsCache.get(cacheKey)!;
   }
-  console.log("\n\n cache miss", cacheKey.toString(), "\n");
+  console.log("⚡ Cache MISS for", cacheKey.toString());
   
   // Otherwise, create and cache a new collection
   const collection = createSingleWatchlistItemsCollection({ qc, watchlistId });
