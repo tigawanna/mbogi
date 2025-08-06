@@ -5,12 +5,12 @@ import { createCollection } from "@tanstack/react-db";
 import { QueryClient, queryOptions } from "@tanstack/react-query";
 import { and, eq, like, or } from "@tigawanna/typed-pocketbase";
 import {
-  createWatchlist,
-  updateWatchlist,
-  deleteWatchlist,
-  addItemToWatchlist,
-  removeItemFromWatchlist,
-  collectionMetadataSchema,
+    addItemToWatchlist,
+    collectionMetadataSchema,
+    createWatchlist,
+    deleteWatchlist,
+    removeItemFromWatchlist,
+    updateWatchlist,
 } from "./watchlist-mutions";
 
 /*
@@ -147,32 +147,32 @@ function createCommunityWatchlistCollection({
 // Type for the collection return type
 type CommunityWatchlistCollection = ReturnType<typeof createCommunityWatchlistCollection>;
 
-// Cache to memoize collections per QueryClient and filters
-const communityWatchlistCache: WeakMap<
-  QueryClient,
-  Map<string, CommunityWatchlistCollection>
-> = new WeakMap();
+// Cache to store key objects by filter combination to ensure object identity
+const communityWatchlistCacheKeyStore = new Map<string, object>();
+
+// Cache to memoize collections per unique filter combination using WeakMap
+const communityWatchlistCache = new WeakMap<object, CommunityWatchlistCollection>();
 
 export const communityWatchlistsCollection = ({
   keyword,
   page = 1,
   qc,
 }: CommunityWatchlistCollectionProps) => {
-  // Use QueryClient as weak key to store per-client cache
-  let clientCache = communityWatchlistCache.get(qc);
-  if (!clientCache) {
-    clientCache = new Map();
-    communityWatchlistCache.set(qc, clientCache);
+  // Create a stable key for this filter combination
+  const keyString = `${keyword ?? ""}:${page}`;
+  let cacheKey = communityWatchlistCacheKeyStore.get(keyString);
+  if (!cacheKey) {
+    cacheKey = { type: "community-watchlists", keyword: keyword ?? "", page };
+    communityWatchlistCacheKeyStore.set(keyString, cacheKey);
   }
-  // Derive cache key from filters
-  const cacheKey = `${keyword ?? ""}:${page}`;
+  
   // Return existing collection if present
-  if (clientCache.has(cacheKey)) {
-    return clientCache.get(cacheKey)!;
+  if (communityWatchlistCache.has(cacheKey)) {
+    return communityWatchlistCache.get(cacheKey)!;
   }
   // Otherwise, create and cache a new collection
   const collection = createCommunityWatchlistCollection({ keyword, page, qc });
-  clientCache.set(cacheKey, collection);
+  communityWatchlistCache.set(cacheKey, collection);
   return collection;
 };
 
@@ -242,11 +242,11 @@ function createCommunityWatchlistItemsCollection({
 // Type for the items collection return type
 type CommunityWatchlistItemsCollection = ReturnType<typeof createCommunityWatchlistItemsCollection>;
 
-// Cache to memoize items collections per QueryClient and filters
-const communityWatchlistItemsCache: WeakMap<
-  QueryClient,
-  Map<string, CommunityWatchlistItemsCollection>
-> = new WeakMap();
+// Cache to store key objects by filter and watchlist combination to ensure object identity
+const communityWatchlistItemsCacheKeyStore = new Map<string, object>();
+
+// Cache to memoize items collections per unique filter and watchlist combination using WeakMap
+const communityWatchlistItemsCache = new WeakMap<object, CommunityWatchlistItemsCollection>();
 
 export const communityWatchlistItemsCollection = ({
   keyword,
@@ -254,21 +254,21 @@ export const communityWatchlistItemsCollection = ({
   qc,
   watchlistId,
 }: CommunityWatchlistItemsCollectionProps) => {
-  // Use QueryClient as weak key to store per-client cache
-  let clientCache = communityWatchlistItemsCache.get(qc);
-  if (!clientCache) {
-    clientCache = new Map();
-    communityWatchlistItemsCache.set(qc, clientCache);
+  // Create a stable key for this filter and watchlist combination
+  const keyString = `${keyword ?? ""}:${page}:${watchlistId}`;
+  let cacheKey = communityWatchlistItemsCacheKeyStore.get(keyString);
+  if (!cacheKey) {
+    cacheKey = { type: "community-watchlist-items", keyword: keyword ?? "", page, watchlistId };
+    communityWatchlistItemsCacheKeyStore.set(keyString, cacheKey);
   }
-  // Derive cache key from filters and watchlistId
-  const cacheKey = `${keyword ?? ""}:${page}:${watchlistId}`;
+  
   // Return existing collection if present
-  if (clientCache.has(cacheKey)) {
-    return clientCache.get(cacheKey)!;
+  if (communityWatchlistItemsCache.has(cacheKey)) {
+    return communityWatchlistItemsCache.get(cacheKey)!;
   }
   // Otherwise, create and cache a new collection
   const collection = createCommunityWatchlistItemsCollection({ keyword, page, qc, watchlistId });
-  clientCache.set(cacheKey, collection);
+  communityWatchlistItemsCache.set(cacheKey, collection);
   return collection;
 };
 

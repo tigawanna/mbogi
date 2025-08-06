@@ -18,6 +18,7 @@ import { addItemToWatchlist } from "@/data/watchlist/watchlist-mutions";
 //   useRemoveItemFromWatchlistMutation,
 // } from "@/data/watchlist/watchlist-muttions";
 import { pb } from "@/lib/pb/client";
+import { logger } from "@/utils/logger";
 import { useLiveQuery } from "@tanstack/react-db";
 import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
@@ -90,10 +91,8 @@ export function WatchlistSelectionModal({
   );
   type WatchlistItem = (typeof watchlists)[number];
 
-  const handleAddToWatchlist = async (
-    listItem: WatchlistItem,
-    mediaItem: DiscoverListResultItem
-  ) => {
+  const handleAddToWatchlist = async (watchlistId: string, mediaItem: DiscoverListResultItem) => {
+    logger.log(watchlistId, mediaItem);
     try {
       if (mediaItem.media_type === "person") {
         console.warn("Cannot add person to watchlist");
@@ -105,7 +104,7 @@ export function WatchlistSelectionModal({
       }
       addItemToWatchlistItemsCollection({
         qc,
-        watchlistId: listItem.id,
+        watchlistId,
         watchlistItem: createWatchlistItemWithMetadata(mediaItem, userId),
       });
     } catch (error) {
@@ -121,7 +120,7 @@ export function WatchlistSelectionModal({
         watchlistItemId,
       });
 
-      onDismiss();
+      // onDismiss();
     } catch (error) {
       console.error("Failed to remove item from watchlist:", error);
     }
@@ -158,7 +157,7 @@ export function WatchlistSelectionModal({
   const renderWatchlistItem = ({ item: watchlist }: { item: WatchlistItem }) => {
     const isInThisWatchlist = isItemInWatchlist(watchlist.id);
     const isCurrentWatchlist = currentWatchlistId === watchlist.id;
-    console.log("\n\nWatchlist ID:", JSON.stringify(watchlist, null, 2));
+
     return (
       <Card style={[styles.watchlistCard, { backgroundColor: colors.surface }]}>
         <Card.Content style={styles.cardContent}>
@@ -173,33 +172,33 @@ export function WatchlistSelectionModal({
 
           <View style={styles.actions}>
             {isCurrentWatchlist && (
-              <Chip
+              <IconButton
                 icon="playlist-check"
-                mode="flat"
                 style={[styles.currentChip, { backgroundColor: colors.primaryContainer }]}
-                textStyle={{ color: colors.onPrimaryContainer }}>
-                Current
-              </Chip>
+              />
             )}
 
-            {isInThisWatchlist ? (
-              <IconButton
-                icon="minus-circle"
-                mode="contained-tonal"
-                iconColor={colors.error}
-                onPress={() => handleRemoveFromWatchlist(watchlist.id,String(item.id))}
-                // disabled={removeItemMutation.isPending}
-              />
-            ) : (
-              <IconButton
-                icon="plus-circle"
-                mode="contained-tonal"
-                iconColor={colors.primary}
-                onPress={() => handleAddToWatchlist(watchlist, item)}
-                // onPress={() => handleAddToWatchlist(watchlist, dummyPayload as any)}
-                // disabled={addItemMutation.isPending}
-              />
-            )}
+              <View>
+                {isInThisWatchlist ? (
+                  <IconButton
+                    icon="minus-circle"
+                    mode="contained-tonal"
+                    iconColor={colors.error}
+                    onPress={() => handleRemoveFromWatchlist(watchlist.id, String(item.id))}
+                    // disabled={removeItemMutation.isPending}
+                  />
+                ) : (
+                  <IconButton
+                    icon="plus-circle"
+                    mode="contained-tonal"
+                    iconColor={colors.primary}
+                    onPress={() => handleAddToWatchlist(watchlist.id, item)}
+                    // onPress={() => handleAddToWatchlist(watchlist, dummyPayload as any)}
+                    // disabled={addItemMutation.isPending}
+                  />
+                )}
+              </View>
+
           </View>
         </Card.Content>
       </Card>

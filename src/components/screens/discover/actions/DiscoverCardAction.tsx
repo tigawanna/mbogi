@@ -6,7 +6,9 @@ import { Chip, IconButton, useTheme } from "react-native-paper";
 
 interface DiscoverCardActionProps {
   type: "movies" | "tv" | "person";
-  item: DiscoverListResultItem;
+  item: DiscoverListResultItem & {
+    watchlistId: string;
+  };
 }
 
 export function DiscoverCardAction({ type, item }: DiscoverCardActionProps) {

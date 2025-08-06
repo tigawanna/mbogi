@@ -51,7 +51,7 @@ export function MyWatchlistDetailScreen({ watchlistId }: MyWatchlistDetailScreen
   const items = watchlistItems;
   const isLoading = isLoadingWatchlist || isLoadingWatchlistData;
   const isError = isErrorWatchlist || isErrorWatchlistData;
-
+  console.log("This  Watchlist :>> ", watchlist.id,watchlistId);
   const getVisibilityIcon = (visibility: string) => {
     switch (visibility) {
       case "public":
@@ -206,13 +206,15 @@ export function MyWatchlistDetailScreen({ watchlistId }: MyWatchlistDetailScreen
     <View style={[styles.container, { backgroundColor: colors.background, paddingBottom: 16 }]}>
       <FlatList
         data={items}
-        renderItem={({ item,index }) => (
+        renderItem={({ item,index }) => {
+          console.log("Item in watchlist: ", item.id);
+          return(
           <WatchlistItemCard
             item={item}
-            // isMyWatchList={isMyWatchList}
             watchListName={watchlist.title}
+            watchlistId={watchlist.id}
           />
-        )}
+        )}}
         keyExtractor={(item) => item.id}
         ListHeaderComponent={ListHeader}
         ListEmptyComponent={ListEmpty}

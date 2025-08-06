@@ -213,17 +213,19 @@ export function removeItemToWatchlistItemsCollection({
 }: RemoveFromWatchlistItemsMutationProps) {
   logger.log("Removing item from watchlist:", watchlistId, watchlistItemId);
   // Remove from
-  mySingleWatchlistItemsCollection(qc, watchlistId).delete(watchlistItemId);
-  // myWatchlistsCollection(qc).update(watchlistId, (draft) => {
-  //   if (draft.items) {
-  //     draft.items = draft.items.filter((id) => id !== watchlistItemId);
-  //   }
-  // });
-  // communityWatchlistsCollection({ qc }).update(watchlistId, (draft) => {
-  //   if (draft.items) {
-  //     draft.items = draft.items.filter((id) => id !== watchlistItemId);
-  //   }
-  // });
+  const collection = mySingleWatchlistItemsCollection(qc, watchlistId)
+  console.log("\n\n Current watchlist items:", collection.keys())
+  collection.delete(watchlistItemId);
+  myWatchlistsCollection(qc).update(watchlistId, (draft) => {
+    if (draft.items) {
+      draft.items = draft.items.filter((id) => id !== watchlistItemId);
+    }
+  });
+  communityWatchlistsCollection({ qc }).update(watchlistId, (draft) => {
+    if (draft.items) {
+      draft.items = draft.items.filter((id) => id !== watchlistItemId);
+    }
+  });
 }
 
 // Clean type for TMDB items without watchlist metadata

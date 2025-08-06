@@ -8,9 +8,10 @@ import { DiscoverCardAction } from "../../discover/actions/DiscoverCardAction";
 interface WatchlistItemCardProps {
   item: WatchlistItemsResponse;
   watchListName: string;
+  watchlistId: string;
 }
 
-export function WatchlistItemCard({ item, watchListName }: WatchlistItemCardProps) {
+export function WatchlistItemCard({ item, watchListName, watchlistId }: WatchlistItemCardProps) {
   // console.log("\n\nWatchlistItemCard item:", item);
   const { colors } = useTheme();
 
@@ -132,6 +133,7 @@ export function WatchlistItemCard({ item, watchListName }: WatchlistItemCardProp
                     item={{
                       ...item,
                       watchlistTitle: watchListName,
+                      watchlistId: watchlistId,
                     }}
                   />
                 </TouchableOpacity>

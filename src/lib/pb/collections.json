@@ -1294,7 +1294,7 @@
       "CREATE UNIQUE INDEX `idx_ug5F4Oim6O` ON `watchlist_items` (`tmdb_id`)"
     ],
     "created": "2025-07-25 21:36:38.759Z",
-    "updated": "2025-08-06 09:37:31.229Z",
+    "updated": "2025-08-06 09:50:09.058Z",
     "system": false
   },
   {
