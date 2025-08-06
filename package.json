@@ -12,7 +12,7 @@
     "pb-types": "tsx src/lib/pb/scripts/typegen.ts",
     "pb-collections": "tsx src/lib/pb/scripts/get-collection-structure.ts",
     "poststart": "npm run pb-collections && npm run pb-types",
-    "ios": "expo start --ios",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint"
   },
