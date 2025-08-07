@@ -1,3 +1,4 @@
+import { getOptimizedImageUrl } from "@/data/discover/discover-sdk";
 import type { TMDBTVShow } from "@/data/discover/discover-zod-schema";
 import { ViewMode } from "@/store/view-preferences-store";
 import { Image } from "expo-image";
@@ -18,7 +19,7 @@ const listCardWidth = width - 32; // Account for horizontal padding
 export function DiscoverTVCard({ item, viewMode = "grid" }: DiscoverTVCardProps) {
   const { colors } = useTheme();
 
-  const imageUrl = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null;
+  const imageUrl = getOptimizedImageUrl(item.poster_path, "poster", "medium"); // w500 for consistency
 
   const isGridView = viewMode === "grid";
   const cardWidth = isGridView ? gridCardWidth : listCardWidth;

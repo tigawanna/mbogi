@@ -1,3 +1,4 @@
+import { getOptimizedImageUrl } from "@/data/discover/discover-sdk";
 import type { TMDBMovie } from "@/data/discover/discover-zod-schema";
 import { ViewMode } from "@/store/view-preferences-store";
 import { Image } from "expo-image";
@@ -19,7 +20,7 @@ const listCardWidth = width - 32; // Account for horizontal padding
 export function DiscoverMoviesCard({ item, viewMode = "grid" }: DiscoverMoviesCardProps) {
   const { colors } = useTheme();
 //  logger.log("DiscoverMoviesCard item: ", item);
-  const imageUrl = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null;
+  const imageUrl = getOptimizedImageUrl(item.poster_path, "poster", "medium"); // w500 for consistency
 
   const isGridView = viewMode === "grid";
   const cardWidth = isGridView ? gridCardWidth : listCardWidth;
@@ -85,7 +86,7 @@ export function DiscoverMoviesCard({ item, viewMode = "grid" }: DiscoverMoviesCa
         ) : (
           // List Layout (horizontal)
           <View style={styles.listContent}>
-            <Link href={`/movies/${item.id}`} asChild>
+            <Link href={`/movies/${item.id}?img=${imageUrl}`} asChild>
               <TouchableOpacity style={styles.listImageContainer}>
                 <Image
                   source={{
@@ -101,7 +102,7 @@ export function DiscoverMoviesCard({ item, viewMode = "grid" }: DiscoverMoviesCa
 
             <View style={styles.listTextContent}>
               <View style={styles.listHeader}>
-                <Link href={`/movies/${item.id}`} asChild>
+                <Link href={`/movies/${item.id}?img=${imageUrl}`} asChild>
                   <TouchableOpacity style={{ flex: 1 }}>
                     <Text
                       variant="titleMedium"

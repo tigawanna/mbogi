@@ -84,7 +84,7 @@ export function TVDetailScreen({ tvId, onAddToWatchlist }: TVDetailScreenProps) 
     );
   }
 
-  const posterUrl = getOptimizedImageUrl(tvShow.poster_path, "poster", "large");
+  const posterUrl = getOptimizedImageUrl(tvShow.poster_path, "poster", "medium"); // w500 to match list view
   const backdropUrl = getOptimizedImageUrl(tvShow.backdrop_path, "backdrop", "large");
 
   const formatDateRange = (): string => {
@@ -340,49 +340,50 @@ export function TVDetailScreen({ tvId, onAddToWatchlist }: TVDetailScreenProps) 
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   style={styles.similarScroll}>
-                  {tvShow.recommendations.results.slice(0, 10).map((similarShow) => (
-                    <Link
-                      key={similarShow.id}
-                      href={`/tv/${
-                        similarShow.id
-                      }?img=${`https://image.tmdb.org/t/p/w200${similarShow.poster_path}`}`}
-                      asChild>
-                      <TouchableOpacity style={styles.similarCard}>
-                        <Image
-                          source={{
-                            uri: similarShow.poster_path
-                              ? `https://image.tmdb.org/t/p/w200${similarShow.poster_path}`
-                              : require("@/assets/images/poster-placeholder.jpeg"),
-                          }}
-                          style={styles.similarPoster}
-                          contentFit="cover"
-                          placeholder={require("@/assets/images/poster-placeholder.jpeg")}
-                        />
-                        <Text
-                          variant="bodySmall"
-                          numberOfLines={2}
-                          style={[styles.similarTitle, { color: colors.onSurface }]}>
-                          {"title" in similarShow ? similarShow.title : similarShow.name}
-                        </Text>
-                        <Text
-                          variant="bodySmall"
-                          style={[styles.similarYear, { color: colors.onSurfaceVariant }]}>
-                          {"release_date" in similarShow
-                            ? similarShow.release_date
-                              ? new Date(similarShow.release_date).getFullYear()
-                              : "TBD"
-                            : similarShow.first_air_date
-                            ? new Date(similarShow.first_air_date).getFullYear()
-                            : "TBD"}
-                        </Text>
-                        <Text
-                          variant="bodySmall"
-                          style={[styles.similarRating, { color: colors.primary }]}>
-                          ⭐ {similarShow.vote_average.toFixed(1)}
-                        </Text>
-                      </TouchableOpacity>
-                    </Link>
-                  ))}
+                  {tvShow.recommendations.results.slice(0, 10).map((similarShow) => {
+                    const similarImageUrl = similarShow.poster_path
+                      ? `https://image.tmdb.org/t/p/w500${similarShow.poster_path}`
+                      : null;
+                    return (
+                      <Link
+                        key={similarShow.id}
+                        href={`/tv/${similarShow.id}?img=${similarImageUrl}`}
+                        asChild>
+                        <TouchableOpacity style={styles.similarCard}>
+                          <Image
+                            source={{
+                              uri: similarImageUrl || require("@/assets/images/poster-placeholder.jpeg"),
+                            }}
+                            style={styles.similarPoster}
+                            contentFit="cover"
+                            placeholder={require("@/assets/images/poster-placeholder.jpeg")}
+                          />
+                          <Text
+                            variant="bodySmall"
+                            numberOfLines={2}
+                            style={[styles.similarTitle, { color: colors.onSurface }]}>
+                            {"title" in similarShow ? similarShow.title : similarShow.name}
+                          </Text>
+                          <Text
+                            variant="bodySmall"
+                            style={[styles.similarYear, { color: colors.onSurfaceVariant }]}>
+                            {"release_date" in similarShow
+                              ? similarShow.release_date
+                                ? new Date(similarShow.release_date).getFullYear()
+                                : "TBD"
+                              : similarShow.first_air_date
+                              ? new Date(similarShow.first_air_date).getFullYear()
+                              : "TBD"}
+                          </Text>
+                          <Text
+                            variant="bodySmall"
+                            style={[styles.similarRating, { color: colors.primary }]}>
+                            ⭐ {similarShow.vote_average.toFixed(1)}
+                          </Text>
+                        </TouchableOpacity>
+                      </Link>
+                    );
+                  })}
                 </ScrollView>
               </View>
             ) : null}

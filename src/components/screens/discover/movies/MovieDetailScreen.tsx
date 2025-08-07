@@ -5,7 +5,6 @@ import { UnifiedMediaItem } from "@/data/discover/types/unified-media";
 import { useQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { Link, useLocalSearchParams } from "expo-router";
-import { parseQueryParams } from "expo-router/build/fork/getStateFromPath-forks";
 import React from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Card, Chip, Divider, Text, useTheme } from "react-native-paper";
@@ -86,7 +85,7 @@ export function MovieDetailScreen({ movieId, onAddToWatchlist }: MovieDetailScre
   }
 
   // const unifiedMovie = movieToUnified(movie);
-  const posterUrl = getOptimizedImageUrl(movie.poster_path, "poster", "large");
+  const posterUrl = getOptimizedImageUrl(movie.poster_path, "poster", "medium"); // w500 to match list view
   const backdropUrl = getOptimizedImageUrl(movie.backdrop_path, "backdrop", "large");
 
   const formatRuntime = (minutes: number | null): string => {
@@ -288,49 +287,48 @@ export function MovieDetailScreen({ movieId, onAddToWatchlist }: MovieDetailScre
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   style={styles.similarScroll}>
-                  {movie.recommendations.results.slice(0, 10).map((similarMovie) => (
-                    <Link
-                      key={similarMovie.id}
-                      href={`/movies/${
-                        similarMovie.id
-                      }?img=${`https://image.tmdb.org/t/p/w200${similarMovie.poster_path}`}`}
-                      asChild>
-                      <TouchableOpacity style={styles.similarCard}>
-                        <Image
-                          source={{
-                            uri: similarMovie.poster_path
-                              ? `https://image.tmdb.org/t/p/w200${similarMovie.poster_path}`
-                              : require("@/assets/images/poster-placeholder.jpeg"),
-                          }}
-                          style={styles.similarPoster}
-                          contentFit="cover"
-                          placeholder={require("@/assets/images/poster-placeholder.jpeg")}
-                        />
-                        <Text
-                          variant="bodySmall"
-                          numberOfLines={2}
-                          style={[styles.similarTitle, { color: colors.onSurface }]}>
-                          {"title" in similarMovie ? similarMovie.title : similarMovie.name}
-                        </Text>
-                        <Text
-                          variant="bodySmall"
-                          style={[styles.similarYear, { color: colors.onSurfaceVariant }]}>
-                          {"release_date" in similarMovie
-                            ? similarMovie.release_date
-                              ? new Date(similarMovie.release_date).getFullYear()
-                              : "TBD"
-                            : similarMovie.first_air_date
-                            ? new Date(similarMovie.first_air_date).getFullYear()
-                            : "TBD"}
-                        </Text>
-                        <Text
-                          variant="bodySmall"
-                          style={[styles.similarRating, { color: colors.primary }]}>
-                          ⭐ {similarMovie.vote_average.toFixed(1)}
-                        </Text>
-                      </TouchableOpacity>
-                    </Link>
-                  ))}
+                  {movie.recommendations.results.slice(0, 10).map((similarMovie) => {
+                    const similarImageUrl = getOptimizedImageUrl(similarMovie.poster_path, "poster", "medium");
+                    return (
+                      <Link
+                        key={similarMovie.id}
+                        href={`/movies/${similarMovie.id}?img=${similarImageUrl}`}
+                        asChild>
+                        <TouchableOpacity style={styles.similarCard}>
+                          <Image
+                            source={{
+                              uri: similarImageUrl || require("@/assets/images/poster-placeholder.jpeg"),
+                            }}
+                            style={styles.similarPoster}
+                            contentFit="cover"
+                            placeholder={require("@/assets/images/poster-placeholder.jpeg")}
+                          />
+                          <Text
+                            variant="bodySmall"
+                            numberOfLines={2}
+                            style={[styles.similarTitle, { color: colors.onSurface }]}>
+                            {"title" in similarMovie ? similarMovie.title : similarMovie.name}
+                          </Text>
+                          <Text
+                            variant="bodySmall"
+                            style={[styles.similarYear, { color: colors.onSurfaceVariant }]}>
+                            {"release_date" in similarMovie
+                              ? similarMovie.release_date
+                                ? new Date(similarMovie.release_date).getFullYear()
+                                : "TBD"
+                              : similarMovie.first_air_date
+                              ? new Date(similarMovie.first_air_date).getFullYear()
+                              : "TBD"}
+                          </Text>
+                          <Text
+                            variant="bodySmall"
+                            style={[styles.similarRating, { color: colors.primary }]}>
+                            ⭐ {similarMovie.vote_average.toFixed(1)}
+                          </Text>
+                        </TouchableOpacity>
+                      </Link>
+                    );
+                  })}
                 </ScrollView>
               </View>
             ) : null}
@@ -433,11 +431,6 @@ const styles = StyleSheet.create({
   },
   divider: {
     marginVertical: 16,
-  },
-  listPoster: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 8,
   },
   section: {
     marginBottom: 16,
