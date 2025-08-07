@@ -29,7 +29,7 @@ export function DiscoverTVCard({ item, viewMode = "grid" }: DiscoverTVCardProps)
         {isGridView ? (
           // Grid Layout (existing design)
           <View>
-            <Link href={`/tv/${item.id}`} asChild>
+            <Link href={`/tv/${item.id}?img=${imageUrl}`} asChild>
               <TouchableOpacity style={styles.imageContainer}>
                 <Image
                   source={{
@@ -44,7 +44,7 @@ export function DiscoverTVCard({ item, viewMode = "grid" }: DiscoverTVCardProps)
             </Link>
 
             <Card.Content style={styles.gridContent}>
-              <Link href={`/tv/${item.id}`} asChild>
+              <Link href={`/tv/${item.id}?img=${imageUrl}`} asChild>
                 <TouchableOpacity>
                   <Text
                     variant="titleSmall"
@@ -83,7 +83,7 @@ export function DiscoverTVCard({ item, viewMode = "grid" }: DiscoverTVCardProps)
         ) : (
           // List Layout (horizontal)
           <View style={styles.listContent}>
-            <Link href={`/tv/${item.id}`} asChild>
+            <Link href={`/tv/${item.id}?img=${imageUrl}`} asChild>
               <TouchableOpacity style={styles.listImageContainer}>
                 <Image
                   source={{
@@ -99,7 +99,7 @@ export function DiscoverTVCard({ item, viewMode = "grid" }: DiscoverTVCardProps)
 
             <View style={styles.listTextContent}>
               <View style={styles.listHeader}>
-                <Link href={`/tv/${item.id}`} asChild>
+                <Link href={`/tv/${item.id}?img=${imageUrl}`} asChild>
                   <TouchableOpacity style={{ flex: 1 }}>
                     <Text
                       variant="titleMedium"

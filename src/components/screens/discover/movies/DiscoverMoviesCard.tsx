@@ -30,7 +30,7 @@ export function DiscoverMoviesCard({ item, viewMode = "grid" }: DiscoverMoviesCa
         {isGridView ? (
           // Grid Layout (existing design)
           <View>
-            <Link href={`/movies/${item.id}`} asChild>
+            <Link href={`/movies/${item.id}?img=${imageUrl}`} asChild>
               <TouchableOpacity style={styles.imageContainer}>
                 <Image
                   source={{
@@ -58,7 +58,7 @@ export function DiscoverMoviesCard({ item, viewMode = "grid" }: DiscoverMoviesCa
             </Link>
 
             <Card.Content style={styles.gridContent}>
-              <Link href={`/movies/${item.id}`} asChild>
+              <Link href={`/movies/${item.id}?img=${imageUrl}`} asChild>
                 <TouchableOpacity>
                   <Text
                     variant="titleSmall"

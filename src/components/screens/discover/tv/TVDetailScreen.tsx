@@ -4,17 +4,10 @@ import { getOptimizedImageUrl } from "@/data/discover/discover-sdk";
 import { UnifiedMediaItem } from "@/data/discover/types/unified-media";
 import { useQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
-import { Link } from "expo-router";
+import { Link, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import {
-  Button,
-  Card,
-  Chip,
-  Divider,
-  Text,
-  useTheme,
-} from "react-native-paper";
+import { Button, Card, Chip, Divider, Text, useTheme } from "react-native-paper";
 
 interface TVDetailScreenProps {
   tvId: number;
@@ -23,7 +16,9 @@ interface TVDetailScreenProps {
 
 export function TVDetailScreen({ tvId, onAddToWatchlist }: TVDetailScreenProps) {
   const { colors } = useTheme();
-
+  const params = useLocalSearchParams() as { show: string; img?: string };
+  console.log(" == img url  == ", params);
+  const img = params?.img;
   const {
     data: tvShow,
     isLoading,
@@ -38,17 +33,22 @@ export function TVDetailScreen({ tvId, onAddToWatchlist }: TVDetailScreenProps) 
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.loadingContainer}>
-          <Card style={[styles.statusCard, { backgroundColor: colors.surface }]}>
-            <Card.Content style={styles.statusContent}>
-              <LoadingIndicatorDots />
-              <Text variant="titleMedium" style={[styles.statusTitle, { color: colors.onSurface }]}>
-                Loading TV Show Details
-              </Text>
-              <Text variant="bodyMedium" style={[styles.statusMessage, { color: colors.onSurfaceVariant }]}>
-                Please wait while we fetch the information...
-              </Text>
-            </Card.Content>
-          </Card>
+          <Image
+            source={{
+              uri: img ? img : require("@/assets/images/poster-placeholder.jpeg"),
+            }}
+            style={styles.loadingBackgroundImage}
+            contentFit="cover"
+            transition={200}
+            placeholder={require("@/assets/images/poster-placeholder.jpeg")}
+          />
+          <View style={styles.loadingOverlay}>
+            <Card style={[styles.statusCard, { backgroundColor: colors.surface }]}>
+              <Card.Content style={styles.statusContent}>
+                <LoadingIndicatorDots />
+              </Card.Content>
+            </Card>
+          </View>
         </View>
       </View>
     );
@@ -66,14 +66,15 @@ export function TVDetailScreen({ tvId, onAddToWatchlist }: TVDetailScreenProps) 
               <Text variant="titleLarge" style={[styles.statusTitle, { color: colors.error }]}>
                 Failed to load TV show details
               </Text>
-              <Text variant="bodyMedium" style={[styles.statusMessage, { color: colors.onSurfaceVariant }]}>
+              <Text
+                variant="bodyMedium"
+                style={[styles.statusMessage, { color: colors.onSurfaceVariant }]}>
                 {error?.message || "Unknown error occurred"}
               </Text>
-              <Button 
-                mode="outlined" 
+              <Button
+                mode="outlined"
                 onPress={() => window.location.reload()}
-                style={styles.retryButton}
-              >
+                style={styles.retryButton}>
                 Try Again
               </Button>
             </Card.Content>
@@ -340,7 +341,12 @@ export function TVDetailScreen({ tvId, onAddToWatchlist }: TVDetailScreenProps) 
                   showsHorizontalScrollIndicator={false}
                   style={styles.similarScroll}>
                   {tvShow.recommendations.results.slice(0, 10).map((similarShow) => (
-                    <Link key={similarShow.id} href={`/tv/${similarShow.id}`} asChild>
+                    <Link
+                      key={similarShow.id}
+                      href={`/tv/${
+                        similarShow.id
+                      }?img=${`https://image.tmdb.org/t/p/w200${similarShow.poster_path}`}`}
+                      asChild>
                       <TouchableOpacity style={styles.similarCard}>
                         <Image
                           source={{
@@ -393,8 +399,22 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    position: 'relative',
+  },
+  loadingBackgroundImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    height: '100%',
+  },
+  loadingOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     padding: 20,
   },
   errorContainer: {
@@ -409,19 +429,20 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   statusContent: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 20,
+    gap: 24,
   },
   statusIcon: {
     marginBottom: 16,
   },
   statusTitle: {
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 8,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   statusMessage: {
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 16,
     lineHeight: 18,
   },
@@ -527,7 +548,7 @@ const styles = StyleSheet.create({
   },
   detailValue: {
     flex: 1,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
   },
   externalLink: {
     marginTop: 8,

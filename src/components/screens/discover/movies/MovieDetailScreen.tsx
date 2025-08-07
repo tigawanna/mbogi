@@ -4,17 +4,11 @@ import { getOptimizedImageUrl } from "@/data/discover/discover-sdk";
 import { UnifiedMediaItem } from "@/data/discover/types/unified-media";
 import { useQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
-import { Link } from "expo-router";
+import { Link, useLocalSearchParams } from "expo-router";
+import { parseQueryParams } from "expo-router/build/fork/getStateFromPath-forks";
 import React from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import {
-  Button,
-  Card,
-  Chip,
-  Divider,
-  Text,
-  useTheme,
-} from "react-native-paper";
+import { Button, Card, Chip, Divider, Text, useTheme } from "react-native-paper";
 
 interface MovieDetailScreenProps {
   movieId: number;
@@ -23,7 +17,9 @@ interface MovieDetailScreenProps {
 
 export function MovieDetailScreen({ movieId, onAddToWatchlist }: MovieDetailScreenProps) {
   const { colors } = useTheme();
-
+  const params = useLocalSearchParams() as { movie: string; img?: string };
+  console.log(" == img url  == ", params);
+  const img = params.img;
   const {
     data: movie,
     isLoading,
@@ -38,17 +34,22 @@ export function MovieDetailScreen({ movieId, onAddToWatchlist }: MovieDetailScre
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.loadingContainer}>
-          <Card style={[styles.statusCard, { backgroundColor: colors.surface }]}>
-            <Card.Content style={styles.statusContent}>
-              <LoadingIndicatorDots />
-              <Text variant="titleMedium" style={[styles.statusTitle, { color: colors.onSurface }]}>
-                Loading Movie Details
-              </Text>
-              <Text variant="bodyMedium" style={[styles.statusMessage, { color: colors.onSurfaceVariant }]}>
-                Please wait while we fetch the information...
-              </Text>
-            </Card.Content>
-          </Card>
+          <Image
+            source={{
+              uri: img ? img : require("@/assets/images/poster-placeholder.jpeg"),
+            }}
+            style={styles.loadingBackgroundImage}
+            contentFit="cover"
+            transition={200}
+            placeholder={require("@/assets/images/poster-placeholder.jpeg")}
+          />
+          <View style={styles.loadingOverlay}>
+            <Card style={[styles.statusCard, { backgroundColor: colors.surface }]}>
+              <Card.Content style={styles.statusContent}>
+                <LoadingIndicatorDots />
+              </Card.Content>
+            </Card>
+          </View>
         </View>
       </View>
     );
@@ -66,14 +67,15 @@ export function MovieDetailScreen({ movieId, onAddToWatchlist }: MovieDetailScre
               <Text variant="titleLarge" style={[styles.statusTitle, { color: colors.error }]}>
                 Failed to load movie details
               </Text>
-              <Text variant="bodyMedium" style={[styles.statusMessage, { color: colors.onSurfaceVariant }]}>
+              <Text
+                variant="bodyMedium"
+                style={[styles.statusMessage, { color: colors.onSurfaceVariant }]}>
                 {error?.message || "Unknown error occurred"}
               </Text>
-              <Button 
-                mode="outlined" 
+              <Button
+                mode="outlined"
                 onPress={() => window.location.reload()}
-                style={styles.retryButton}
-              >
+                style={styles.retryButton}>
                 Try Again
               </Button>
             </Card.Content>
@@ -103,17 +105,10 @@ export function MovieDetailScreen({ movieId, onAddToWatchlist }: MovieDetailScre
   };
 
   return (
-    <ScrollView
-      style={[styles.container]}
-      showsVerticalScrollIndicator={false}
-    >
+    <ScrollView style={[styles.container]} showsVerticalScrollIndicator={false}>
       {/* Backdrop Image */}
       {backdropUrl ? (
-        <Image
-          source={{ uri: backdropUrl }}
-          style={styles.backdrop}
-          contentFit="cover"
-        />
+        <Image source={{ uri: backdropUrl }} style={styles.backdrop} contentFit="cover" />
       ) : null}
 
       {/* Main Content */}
@@ -145,8 +140,7 @@ export function MovieDetailScreen({ movieId, onAddToWatchlist }: MovieDetailScre
                 {movie.original_title !== movie.title ? (
                   <Text
                     variant="titleMedium"
-                    style={[styles.originalTitle, { color: colors.onSurfaceVariant }]}
-                  >
+                    style={[styles.originalTitle, { color: colors.onSurfaceVariant }]}>
                     {movie.original_title}
                   </Text>
                 ) : null}
@@ -154,8 +148,7 @@ export function MovieDetailScreen({ movieId, onAddToWatchlist }: MovieDetailScre
                 {movie.tagline ? (
                   <Text
                     variant="bodyMedium"
-                    style={[styles.tagline, { color: colors.onSurfaceVariant }]}
-                  >
+                    style={[styles.tagline, { color: colors.onSurfaceVariant }]}>
                     &ldquo;{movie.tagline}&rdquo;
                   </Text>
                 ) : null}
@@ -192,8 +185,7 @@ export function MovieDetailScreen({ movieId, onAddToWatchlist }: MovieDetailScre
                       key={genre.id}
                       mode="outlined"
                       style={styles.chip}
-                      textStyle={{ color: colors.onSurfaceVariant }}
-                    >
+                      textStyle={{ color: colors.onSurfaceVariant }}>
                       {genre.name}
                     </Chip>
                   ))}
@@ -228,7 +220,7 @@ export function MovieDetailScreen({ movieId, onAddToWatchlist }: MovieDetailScre
               <Text variant="titleMedium" style={styles.sectionTitle}>
                 Production Details
               </Text>
-              
+
               {movie.budget > 0 ? (
                 <View style={styles.detailRow}>
                   <Text variant="bodyMedium" style={styles.detailLabel}>
@@ -278,57 +270,62 @@ export function MovieDetailScreen({ movieId, onAddToWatchlist }: MovieDetailScre
                   onPress={() => {
                     // Handle external link
                   }}
-                  style={styles.externalLink}
-                >
+                  style={styles.externalLink}>
                   Visit Official Website
                 </Button>
               </View>
             ) : null}
 
             {/* Similar Movies */}
-            {movie.recommendations && movie.recommendations.results && movie.recommendations.results.length > 0 ? (
+            {movie.recommendations &&
+            movie.recommendations.results &&
+            movie.recommendations.results.length > 0 ? (
               <View style={styles.section}>
                 <Text variant="titleMedium" style={styles.sectionTitle}>
                   Similar Movies
                 </Text>
-                <ScrollView 
-                  horizontal 
+                <ScrollView
+                  horizontal
                   showsHorizontalScrollIndicator={false}
-                  style={styles.similarScroll}
-                >
+                  style={styles.similarScroll}>
                   {movie.recommendations.results.slice(0, 10).map((similarMovie) => (
-                    <Link key={similarMovie.id} href={`/movies/${similarMovie.id}`} asChild>
+                    <Link
+                      key={similarMovie.id}
+                      href={`/movies/${
+                        similarMovie.id
+                      }?img=${`https://image.tmdb.org/t/p/w200${similarMovie.poster_path}`}`}
+                      asChild>
                       <TouchableOpacity style={styles.similarCard}>
                         <Image
                           source={{
-                            uri: similarMovie.poster_path 
+                            uri: similarMovie.poster_path
                               ? `https://image.tmdb.org/t/p/w200${similarMovie.poster_path}`
-                              : require('@/assets/images/poster-placeholder.jpeg')
+                              : require("@/assets/images/poster-placeholder.jpeg"),
                           }}
                           style={styles.similarPoster}
                           contentFit="cover"
-                          placeholder={require('@/assets/images/poster-placeholder.jpeg')}
+                          placeholder={require("@/assets/images/poster-placeholder.jpeg")}
                         />
-                        <Text 
-                          variant="bodySmall" 
+                        <Text
+                          variant="bodySmall"
                           numberOfLines={2}
-                          style={[styles.similarTitle, { color: colors.onSurface }]}
-                        >
-                          {'title' in similarMovie ? similarMovie.title : similarMovie.name}
+                          style={[styles.similarTitle, { color: colors.onSurface }]}>
+                          {"title" in similarMovie ? similarMovie.title : similarMovie.name}
                         </Text>
-                        <Text 
-                          variant="bodySmall" 
-                          style={[styles.similarYear, { color: colors.onSurfaceVariant }]}
-                        >
-                          {'release_date' in similarMovie 
-                            ? similarMovie.release_date ? new Date(similarMovie.release_date).getFullYear() : 'TBD'
-                            : similarMovie.first_air_date ? new Date(similarMovie.first_air_date).getFullYear() : 'TBD'
-                          }
+                        <Text
+                          variant="bodySmall"
+                          style={[styles.similarYear, { color: colors.onSurfaceVariant }]}>
+                          {"release_date" in similarMovie
+                            ? similarMovie.release_date
+                              ? new Date(similarMovie.release_date).getFullYear()
+                              : "TBD"
+                            : similarMovie.first_air_date
+                            ? new Date(similarMovie.first_air_date).getFullYear()
+                            : "TBD"}
                         </Text>
-                        <Text 
-                          variant="bodySmall" 
-                          style={[styles.similarRating, { color: colors.primary }]}
-                        >
+                        <Text
+                          variant="bodySmall"
+                          style={[styles.similarRating, { color: colors.primary }]}>
                           ⭐ {similarMovie.vote_average.toFixed(1)}
                         </Text>
                       </TouchableOpacity>
@@ -352,6 +349,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    padding: 20,
+  },
+  loadingBackgroundImage: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: "100%",
+    height: "100%",
+  },
+  loadingOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     padding: 20,
   },
   errorContainer: {
@@ -421,6 +434,11 @@ const styles = StyleSheet.create({
   divider: {
     marginVertical: 16,
   },
+  listPoster: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 8,
+  },
   section: {
     marginBottom: 16,
   },
@@ -443,7 +461,7 @@ const styles = StyleSheet.create({
   },
   detailValue: {
     flex: 1,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
   },
   externalLink: {
     marginTop: 8,
@@ -454,19 +472,19 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   statusContent: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 20,
   },
   statusIcon: {
     marginBottom: 16,
   },
   statusTitle: {
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 8,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   statusMessage: {
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 16,
     lineHeight: 18,
   },
@@ -487,7 +505,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   similarTitle: {
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 4,
     lineHeight: 14,
   },

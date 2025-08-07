@@ -4,7 +4,7 @@ import { Surface } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function MediaDetails() {
-  const { show } = useLocalSearchParams() as { show: string };
+  const { show, img } = useLocalSearchParams() as { show: string ,img?: string};
   const { top, bottom } = useSafeAreaInsets();
   const mediaId = parseInt(show, 10);
 
