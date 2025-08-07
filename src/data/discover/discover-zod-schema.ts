@@ -154,7 +154,8 @@ export const TMDBMovieSchema = z.object({
   vote_average: z.number(),
   vote_count: z.number(),
   video: z.boolean(),
-  watchListName: z.string().optional(),
+  watchlistTitle: z.string().optional(),
+  watchlistId: z.string().optional(),
 });
 
 // ============================================================================
@@ -179,7 +180,8 @@ export const TMDBTVShowSchema = z.object({
   vote_count: z.number(),
   origin_country: z.array(z.string()),
   adult: z.boolean(),
-  watchListName: z.string().optional(),
+  watchlistTitle: z.string().optional(),
+  watchlistId: z.string().optional(),
 });
 
 // ============================================================================
@@ -361,7 +363,8 @@ export const TMDBPersonSchema = z.object({
   popularity: z.number(),
   known_for_department: z.string(),
   known_for: z.array(z.union([TMDBMovieSchema, TMDBTVShowSchema])),
-  watchListName: z.string().optional(),
+  watchlistTitle: z.string().optional(),
+  watchlistId: z.string().optional(),
 });
 
 /**

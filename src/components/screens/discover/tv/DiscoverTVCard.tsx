@@ -6,6 +6,7 @@ import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Card, Text, useTheme } from "react-native-paper";
 import { DiscoverCardAction } from "../actions/DiscoverCardAction";
 
+
 interface DiscoverTVCardProps {
   item: TMDBTVShow;
   viewMode?: ViewMode;
@@ -16,6 +17,7 @@ const gridCardWidth = (width - 48) / 2; // Account for padding and gap
 const listCardWidth = width - 32; // Account for horizontal padding
 
 export function DiscoverTVCard({ item, viewMode = "grid" }: DiscoverTVCardProps) {
+
   const { colors } = useTheme();
 
 

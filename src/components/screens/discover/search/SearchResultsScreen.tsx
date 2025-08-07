@@ -16,25 +16,40 @@ interface SearchResultsScreenProps {
 }
 export function SearchResultsScreen({ searchQuery }: SearchResultsScreenProps) {
   const qc = useQueryClient();
-  const { data, isLoading, isError } = useLiveQuery(
+
+  const { data: myWatchList } = useLiveQuery((query) => {
+    return query.from({
+      inwatchlist: myWatchlistsCollection(qc),
+    });
+  });
+
+  const {
+    data: queryResult,
+    isLoading,
+    isError,
+  } = useLiveQuery(
     (query) =>
-      query
-        .from({
-          results: discoverSearchCollection({
-            filters: { query: searchQuery },
-            enabled: true,
-          }),
-        })
-        .join({ watchlist: myWatchlistsCollection(qc) }, ({ results, watchlist }) =>
-          //@ts-expect-error TODO confirm doing this with string on number isnt causing issues --- IGNORE ---
-          eq(results.id, watchlist.id)
-        )
-        .select(({ results, watchlist }) => ({
-          ...results,
-          watchListName: watchlist?.title,
-        })),
+      query.from({
+        results: discoverSearchCollection({
+          filters: { query: searchQuery },
+          enabled: true,
+        }),
+      }),
+
     [searchQuery]
   );
+
+  // Extract movies data (no pagination as per requirements)
+  const data = queryResult.map((item) => {
+    const itemId = item.id.toString();
+    const watchLst = myWatchList?.find((wl) => wl.items.includes(itemId));
+    return {
+      ...item,
+      watchlistTitle: watchLst?.title,
+      watchlistId: watchLst?.id,
+    };
+  });
+
   const { colors } = useTheme();
   if (isLoading) {
     return (

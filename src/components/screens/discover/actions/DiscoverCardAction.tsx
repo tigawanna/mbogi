@@ -6,9 +6,7 @@ import { Chip, IconButton, useTheme } from "react-native-paper";
 
 interface DiscoverCardActionProps {
   type: "movies" | "tv" | "person";
-  item: DiscoverListResultItem & {
-    watchlistId: string;
-  };
+  item: DiscoverListResultItem;
 }
 
 export function DiscoverCardAction({ type, item }: DiscoverCardActionProps) {
@@ -19,7 +17,7 @@ export function DiscoverCardAction({ type, item }: DiscoverCardActionProps) {
     return null;
   }
 
-  const isInWatchlist = !!item.watchlistTitle;
+  const isInWatchlist = !!item.watchlistTitle
 
   return (
     <View style={styles.container}>

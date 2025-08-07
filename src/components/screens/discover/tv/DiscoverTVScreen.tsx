@@ -18,6 +18,12 @@ export function DiscoverTVScreen() {
   // Pagination state (removed pagination as per requirements)
   const currentPage = 1;
 
+  const { data: myWatchList } = useLiveQuery((query) => {
+    return query.from({
+      inwatchlist: myWatchlistsCollection(qc),
+    });
+  });
+
   // Fetch data using TanStack DB live query
   const {
     data: queryResult,
@@ -25,24 +31,25 @@ export function DiscoverTVScreen() {
     isError,
   } = useLiveQuery(
     (query) =>
-      query
-        .from({
-          tv: discoverTVCollection({
-            filters: tvFilters,
-            enabled: true,
-          }),
-        })
-        //@ts-expect-error TODO confirm doing this with string on number isnt causing issues --- IGNORE ---
-        .join({ watchlist: myWatchlistsCollection(qc) }, ({ tv, watchlist }) => eq(tv.id, watchlist.id))
-        .select(({ tv, watchlist }) => ({
-          ...tv,
-          watchListName: watchlist?.title,
-        })),
+      query.from({
+        tv: discoverTVCollection({
+          filters: tvFilters,
+          enabled: true,
+        }),
+      }),
     [currentPage, tvFilters]
   );
 
-  // Extract TV shows data
-  const data = queryResult || [];
+  // Extract movies data (no pagination as per requirements)
+  const data = queryResult.map((item) => {
+    const itemId = item.id.toString();
+    const watchLst = myWatchList?.find((wl) => wl.items.includes(itemId));
+    return {
+      ...item,
+      watchlistTitle: watchLst?.title,
+      watchlistId: watchLst?.id,
+    };
+  });
 
   if (isLoading) {
     return (

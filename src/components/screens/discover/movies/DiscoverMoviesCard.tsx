@@ -6,6 +6,7 @@ import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Card, Text, useTheme } from "react-native-paper";
 import { DiscoverCardAction } from "../actions/DiscoverCardAction";
 
+
 interface DiscoverMoviesCardProps {
   item: TMDBMovie;
   viewMode?: ViewMode;
@@ -17,7 +18,7 @@ const listCardWidth = width - 32; // Account for horizontal padding
 
 export function DiscoverMoviesCard({ item, viewMode = "grid" }: DiscoverMoviesCardProps) {
   const { colors } = useTheme();
-
+//  logger.log("DiscoverMoviesCard item: ", item);
   const imageUrl = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null;
 
   const isGridView = viewMode === "grid";
@@ -47,7 +48,6 @@ export function DiscoverMoviesCard({ item, viewMode = "grid" }: DiscoverMoviesCa
                     type="movies"
                     item={{
                       ...item,
-                      watchlistTitle: item.watchListName,
                       media_type: "movie" as const,
                     }}
                   />
@@ -129,7 +129,6 @@ export function DiscoverMoviesCard({ item, viewMode = "grid" }: DiscoverMoviesCa
                   type="movies"
                   item={{
                     ...item,
-                    watchlistTitle: item.watchListName,
                     media_type: "movie" as const,
                   }}
                 />

@@ -1,4 +1,4 @@
-import { eq, useLiveQuery } from "@tanstack/react-db";
+import { eq, useLiveQuery, inArray } from "@tanstack/react-db";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { StyleSheet, View } from "react-native";
@@ -12,6 +12,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useDiscoverFiltersStore } from "../filters/discover-fliters-store";
 import { DiscoverMoviesFlatList } from "./DiscoverMoviesFlatList";
 import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
+import { logger } from "@/utils/logger";
 // import { myWatchlistCollection } from "@/data/watchlist/collections";
 
 export function DiscoverMoviesScreen() {
@@ -22,6 +23,12 @@ export function DiscoverMoviesScreen() {
   // Pagination state (removed pagination as per requirements)
   const currentPage = 1;
 
+  const { data: myWatchList } = useLiveQuery((query) => {
+    return query.from({
+      inwatchlist: myWatchlistsCollection(qc),
+    });
+  });
+
   // Fetch data using TanStack DB live query
   const {
     data: queryResult,
@@ -29,27 +36,28 @@ export function DiscoverMoviesScreen() {
     isError,
   } = useLiveQuery(
     (query) =>
-      query
-        .from({
-          movies: discoverMoviesCollection({
-            filters: movieFilters,
-            enabled: true,
-          }),
-        })
-        .join({ watchlist: myWatchlistsCollection(qc) }, ({ movies, watchlist }) =>
-          //@ts-expect-error TODO confirm doing this with string on number isnt causing issues --- IGNORE ---
-          eq(movies.id, watchlist.id)
-        )
-        .select(({ movies, watchlist }) => ({
-          ...movies,
-          watchListName: watchlist?.title,
-        })),
+      query.from({
+        movies: discoverMoviesCollection({
+          filters: movieFilters,
+          enabled: true,
+        }),
+      }),
+
     [currentPage, movieFilters]
   );
 
   // Extract movies data (no pagination as per requirements)
-  const data = queryResult || [];
+  const data = queryResult.map((item) => {
+    const itemId = item.id.toString();
+    const watchLst = myWatchList?.find((wl) => wl.items.includes(itemId));
+    return {
+      ...item,
+      watchlistTitle: watchLst?.title,
+      watchlistId: watchLst?.id,
+    };
+  });
 
+  // logger.log(data);
   if (isLoading) {
     return (
       <DiscoverMoviesScreenScaffold>
