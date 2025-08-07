@@ -1,4 +1,4 @@
-import { eq, useLiveQuery } from "@tanstack/react-db";
+import { useLiveQuery } from "@tanstack/react-db";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { StyleSheet, View } from "react-native";
@@ -12,17 +12,16 @@ import { DiscoverTVFlatList } from "./DiscoverTVFlatList";
 import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
 
 export function DiscoverTVScreen() {
-  const qc = useQueryClient();
   const { colors } = useTheme();
   const { tvFilters } = useDiscoverFiltersStore();
-  // Pagination state (removed pagination as per requirements)
   const currentPage = 1;
+  // const qc = useQueryClient();
 
-  const { data: myWatchList } = useLiveQuery((query) => {
-    return query.from({
-      inwatchlist: myWatchlistsCollection(qc),
-    });
-  });
+  // const { data: myWatchList } = useLiveQuery((query) => {
+  //   return query.from({
+  //     inwatchlist: myWatchlistsCollection(qc),
+  //   });
+  // });
 
   // Fetch data using TanStack DB live query
   const {
@@ -41,15 +40,16 @@ export function DiscoverTVScreen() {
   );
 
   // Extract movies data (no pagination as per requirements)
-  const data = queryResult.map((item) => {
-    const itemId = item.id.toString();
-    const watchLst = myWatchList?.find((wl) => wl.items.includes(itemId));
-    return {
-      ...item,
-      watchlistTitle: watchLst?.title,
-      watchlistId: watchLst?.id,
-    };
-  });
+  // const data = queryResult.map((item) => {
+  //   const itemId = item.id.toString();
+  //   const watchLst = myWatchList?.find((wl) => wl.items.includes(itemId));
+  //   return {
+  //     ...item,
+  //     watchlistTitle: watchLst?.title,
+  //     watchlistId: watchLst?.id,
+  //   };
+  // });
+  const data = queryResult
 
   if (isLoading) {
     return (

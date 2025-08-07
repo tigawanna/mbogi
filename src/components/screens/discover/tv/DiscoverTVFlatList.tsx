@@ -1,6 +1,6 @@
 import type { TMDBTVShow } from "@/data/discover/discover-zod-schema";
 import { useDiscoverTVViewMode } from "@/store/view-preferences-store";
-import { FlatList, StyleSheet } from "react-native";
+import { FlatList, StyleSheet,View } from "react-native";
 import { DiscoverTVCard } from "./DiscoverTVCard";
 
 interface DiscoverTVFlatListProps {
@@ -9,9 +9,9 @@ interface DiscoverTVFlatListProps {
 
 export function DiscoverTVFlatList({ list }: DiscoverTVFlatListProps) {
   const { viewMode } = useDiscoverTVViewMode();
-  
+
   const renderItem = ({ item, index }: { item: TMDBTVShow; index: number }) => (
-    <DiscoverTVCard item={item} viewMode={viewMode} />
+      <DiscoverTVCard item={item} viewMode={viewMode} />
   );
 
   const keyExtractor = (item: TMDBTVShow) => item.id.toString();

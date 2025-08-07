@@ -6,7 +6,6 @@ import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Card, Text, useTheme } from "react-native-paper";
 import { DiscoverCardAction } from "../actions/DiscoverCardAction";
 
-
 interface DiscoverTVCardProps {
   item: TMDBTVShow;
   viewMode?: ViewMode;
@@ -17,9 +16,7 @@ const gridCardWidth = (width - 48) / 2; // Account for padding and gap
 const listCardWidth = width - 32; // Account for horizontal padding
 
 export function DiscoverTVCard({ item, viewMode = "grid" }: DiscoverTVCardProps) {
-
   const { colors } = useTheme();
-
 
   const imageUrl = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null;
 
@@ -27,127 +24,128 @@ export function DiscoverTVCard({ item, viewMode = "grid" }: DiscoverTVCardProps)
   const cardWidth = isGridView ? gridCardWidth : listCardWidth;
 
   return (
-    <Card style={[isGridView ? styles.gridContainer : styles.listContainer, { width: cardWidth }]}>
-      {isGridView ? (
-        // Grid Layout (existing design)
-        <>
-          <Link href={`/tv/${item.id}`} asChild>
-            <TouchableOpacity style={styles.imageContainer}>
-              <Image
-                source={{
-                  uri: imageUrl ? imageUrl : require("@/assets/images/poster-placeholder.jpeg"),
-                }}
-                style={styles.poster}
-                contentFit="cover"
-                transition={200}
-                placeholder={require("@/assets/images/poster-placeholder.jpeg")}
-              />
-            </TouchableOpacity>
-          </Link>
-
-          <Card.Content style={styles.gridContent}>
+      <Card
+        style={[isGridView ? styles.gridContainer : styles.listContainer, { width: cardWidth }]}>
+        {isGridView ? (
+          // Grid Layout (existing design)
+          <View>
             <Link href={`/tv/${item.id}`} asChild>
-              <TouchableOpacity>
-                <Text
-                  variant="titleSmall"
-                  numberOfLines={2}
-                  style={[styles.title, { color: colors.onSurface }]}>
-                  {item.name}
-                </Text>
+              <TouchableOpacity style={styles.imageContainer}>
+                <Image
+                  source={{
+                    uri: imageUrl ? imageUrl : require("@/assets/images/poster-placeholder.jpeg"),
+                  }}
+                  style={styles.poster}
+                  contentFit="cover"
+                  transition={200}
+                  placeholder={require("@/assets/images/poster-placeholder.jpeg")}
+                />
               </TouchableOpacity>
             </Link>
 
-            <Text variant="bodySmall" style={[styles.year, { color: colors.onSurfaceVariant }]}>
-              {item.first_air_date ? new Date(item.first_air_date).getFullYear() : "TBD"}
-            </Text>
-
-            {item.vote_average > 0 && (
-              <View style={styles.ratingContainer}>
-                <Text variant="bodySmall" style={[styles.rating, { color: colors.primary }]}>
-                  ⭐ {item.vote_average.toFixed(1)}
-                </Text>
-              </View>
-            )}
-            {/* Watchlist Action Overlay */}
-            <View style={styles.actionOverlay} pointerEvents="box-none">
-              <TouchableOpacity onPress={(e) => e.stopPropagation()}>
-                <DiscoverCardAction
-                  type="tv"
-                  item={{
-                    ...item,
-                    media_type: "tv" as const,
-                  }}
-                />
-              </TouchableOpacity>
-            </View>
-          </Card.Content>
-        </>
-      ) : (
-        // List Layout (horizontal)
-        <View style={styles.listContent}>
-          <Link href={`/tv/${item.id}`} asChild>
-            <TouchableOpacity style={styles.listImageContainer}>
-              <Image
-                source={{
-                  uri: imageUrl ? imageUrl : require("@/assets/images/poster-placeholder.jpeg"),
-                }}
-                style={styles.listPoster}
-                contentFit="cover"
-                transition={200}
-                placeholder={require("@/assets/images/poster-placeholder.jpeg")}
-              />
-            </TouchableOpacity>
-          </Link>
-
-          <View style={styles.listTextContent}>
-            <View style={styles.listHeader}>
+            <Card.Content style={styles.gridContent}>
               <Link href={`/tv/${item.id}`} asChild>
-                <TouchableOpacity style={{ flex: 1 }}>
+                <TouchableOpacity>
                   <Text
-                    variant="titleMedium"
+                    variant="titleSmall"
                     numberOfLines={2}
-                    style={[styles.listTitle, { color: colors.onSurface }]}>
+                    style={[styles.title, { color: colors.onSurface }]}>
                     {item.name}
                   </Text>
                 </TouchableOpacity>
               </Link>
-              <View style={styles.listActionContainer}>
-                <DiscoverCardAction
-                  type="tv"
-                  item={{
-                    ...item,
-                    media_type: "tv" as const,
-                  }}
-                />
-              </View>
-            </View>
 
-            <View style={styles.listMetadata}>
-              <Text
-                variant="bodyMedium"
-                style={[styles.listYear, { color: colors.onSurfaceVariant }]}>
+              <Text variant="bodySmall" style={[styles.year, { color: colors.onSurfaceVariant }]}>
                 {item.first_air_date ? new Date(item.first_air_date).getFullYear() : "TBD"}
               </Text>
 
               {item.vote_average > 0 && (
-                <Text variant="bodyMedium" style={[styles.listRating, { color: colors.primary }]}>
-                  ⭐ {item.vote_average.toFixed(1)}
+                <View style={styles.ratingContainer}>
+                  <Text variant="bodySmall" style={[styles.rating, { color: colors.primary }]}>
+                    ⭐ {item.vote_average.toFixed(1)}
+                  </Text>
+                </View>
+              )}
+              {/* Watchlist Action Overlay */}
+              <View style={styles.actionOverlay} pointerEvents="box-none">
+                <TouchableOpacity onPress={(e) => e.stopPropagation()}>
+                  <DiscoverCardAction
+                    type="tv"
+                    item={{
+                      ...item,
+                      media_type: "tv" as const,
+                    }}
+                  />
+                </TouchableOpacity>
+              </View>
+            </Card.Content>
+          </View>
+        ) : (
+          // List Layout (horizontal)
+          <View style={styles.listContent}>
+            <Link href={`/tv/${item.id}`} asChild>
+              <TouchableOpacity style={styles.listImageContainer}>
+                <Image
+                  source={{
+                    uri: imageUrl ? imageUrl : require("@/assets/images/poster-placeholder.jpeg"),
+                  }}
+                  style={styles.listPoster}
+                  contentFit="cover"
+                  transition={200}
+                  placeholder={require("@/assets/images/poster-placeholder.jpeg")}
+                />
+              </TouchableOpacity>
+            </Link>
+
+            <View style={styles.listTextContent}>
+              <View style={styles.listHeader}>
+                <Link href={`/tv/${item.id}`} asChild>
+                  <TouchableOpacity style={{ flex: 1 }}>
+                    <Text
+                      variant="titleMedium"
+                      numberOfLines={2}
+                      style={[styles.listTitle, { color: colors.onSurface }]}>
+                      {item.name}
+                    </Text>
+                  </TouchableOpacity>
+                </Link>
+                <View style={styles.listActionContainer}>
+                  <DiscoverCardAction
+                    type="tv"
+                    item={{
+                      ...item,
+                      media_type: "tv" as const,
+                    }}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.listMetadata}>
+                <Text
+                  variant="bodyMedium"
+                  style={[styles.listYear, { color: colors.onSurfaceVariant }]}>
+                  {item.first_air_date ? new Date(item.first_air_date).getFullYear() : "TBD"}
+                </Text>
+
+                {item.vote_average > 0 && (
+                  <Text variant="bodyMedium" style={[styles.listRating, { color: colors.primary }]}>
+                    ⭐ {item.vote_average.toFixed(1)}
+                  </Text>
+                )}
+              </View>
+
+              {item.overview && (
+                <Text
+                  variant="bodySmall"
+                  numberOfLines={3}
+                  style={[styles.listOverview, { color: colors.onSurfaceVariant }]}>
+                  {item.overview}
                 </Text>
               )}
             </View>
-
-            {item.overview && (
-              <Text
-                variant="bodySmall"
-                numberOfLines={3}
-                style={[styles.listOverview, { color: colors.onSurfaceVariant }]}>
-                {item.overview}
-              </Text>
-            )}
           </View>
-        </View>
-      )}
-    </Card>
+        )}
+      </Card>
   );
 }
 
