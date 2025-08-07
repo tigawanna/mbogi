@@ -1,10 +1,10 @@
-import { addPocketbaseMetadata, pb } from "@/lib/pb/client";
+import { addPocketbaseMetadata } from "@/lib/pb/client";
 import { WatchlistItemsResponse, WatchlistResponse } from "@/lib/pb/types/pb-types";
+import { logger } from "@/utils/logger";
 import { QueryClient } from "@tanstack/react-query";
 import { DiscoverListResultItem, getMediaTitle } from "../discover/discover-zod-schema";
 import { communityWatchlistsCollection } from "./community-watchlist";
-import { mySingleWatchlistItemsCollection, myWatchlistsCollection } from "./my-watchlist";
-import { logger } from "@/utils/logger";
+import { myWatchlistsCollection } from "./my-watchlist";
 
 type WatchlistFormData = {
   title: string;

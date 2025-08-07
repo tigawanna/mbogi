@@ -222,7 +222,7 @@ export const myWatchlistsCollection = (qc: QueryClient) => {
 
   // Return existing collection if present
   if (myWatchlistsCache.has(cacheKey)) {
-    console.log("🎯 Cache HIT for", cacheKey.toString());
+    // console.log("🎯 Cache HIT for", cacheKey.toString());
     return myWatchlistsCache.get(cacheKey)!;
   }
   

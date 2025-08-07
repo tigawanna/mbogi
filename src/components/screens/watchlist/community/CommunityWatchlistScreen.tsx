@@ -7,7 +7,7 @@ import {
 import { useRefreshControl } from "@/hooks/useRefreshControl";
 import { eq } from "@tanstack/db";
 import { useLiveQuery } from "@tanstack/react-db";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import {
   Alert,
@@ -24,7 +24,6 @@ import { WatchlistCard } from "../shared/WatchlistCard";
 // consolidated above
 import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
 import { createOrUpdateWatchlist, deleteWatchlistFromCollection } from "@/data/watchlist/watchlist-collection-mutations";
-import { deleteWatchlistMutationOptions } from "@/data/watchlist/watchlist-mutions";
 import type { WatchlistResponse } from "@/lib/pb/types/pb-types";
 import { WatchlistFormModal } from "../shared/WatchlistFormModal";
 import { CommunityListFooter } from "./CommunityListFooter";
