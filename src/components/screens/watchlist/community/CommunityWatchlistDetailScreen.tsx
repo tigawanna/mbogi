@@ -2,8 +2,7 @@ import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 
 import {
-  communityWatchlistItemsCollection,
-  communityWatchlistsCollection,
+  communityWatchlistsCollection
 } from "@/data/watchlist/community-watchlist";
 import { analyzeWatchlistGenres } from "@/utils/genre-utils";
 import { eq, useLiveQuery } from "@tanstack/react-db";
@@ -41,24 +40,26 @@ export function CommunityWatchlistDetailScreen({
     [watchlistId]
   );
 
-  const {
-    data: watchlistItemsData,
-    isLoading: isLoadingItems,
-    isError: isErrorItems,
-  } = useLiveQuery(
-    (query) =>
-      query.from({
-        watchlist: communityWatchlistItemsCollection({
-          qc,
-          watchlistId: watchlistId,
-        }),
-      }),
-    [watchlistId]
-  );
+  // const {
+  //   data: watchlistItemsData,
+  //   isLoading: isLoadingItems,
+  //   isError: isErrorItems,
+  // } = useLiveQuery(
+  //   (query) =>
+  //     query.from({
+  //       watchlist: communityWatchlistItemsCollection({
+  //         qc,
+  //         watchlistId: watchlistId,
+  //       }),
+  //     }),
+  //   [watchlistId]
+  // );
 
   // Prepare watchlist and its items
+  
+  
   const watchlist = watchlistData?.[0];
-  const items = watchlistItemsData || [];
+  const items = watchlist?.expand?.items || [];
 
   const getVisibilityIcon = (visibility: string) => {
     switch (visibility) {
@@ -91,7 +92,7 @@ export function CommunityWatchlistDetailScreen({
   };
 
   // Show loading if either data source is loading
-  if (isLoadingWatchlist || isLoadingItems) {
+  if (isLoadingWatchlist) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background, paddingTop: top }]}>
         <View style={styles.statesContainer}>
@@ -114,7 +115,7 @@ export function CommunityWatchlistDetailScreen({
   }
 
   // Show error if any query failed or watchlist missing
-  if (isErrorWatchlist || isErrorItems || !watchlist) {
+  if (isErrorWatchlist|| !watchlist) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background, paddingTop: top }]}>
         <View style={styles.statesContainer}>
@@ -219,8 +220,8 @@ export function CommunityWatchlistDetailScreen({
         renderItem={({ item }) => (
           <WatchlistItemCard
             item={item}
-            // isMyWatchList={isMyWatchList}
             watchListName={watchlist.title}
+            watchlistId={watchlist.id}
           />
         )}
         keyExtractor={(item) => item.id}

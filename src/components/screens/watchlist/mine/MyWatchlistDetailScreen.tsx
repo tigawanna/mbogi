@@ -1,6 +1,8 @@
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
-import { mySingleWatchlistItemsCollection, myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
+import {
+  myWatchlistsCollection
+} from "@/data/watchlist/my-watchlist";
 import { analyzeWatchlistGenres } from "@/utils/genre-utils";
 import { eq, useLiveQuery } from "@tanstack/react-db";
 import { useQueryClient } from "@tanstack/react-query";
@@ -14,7 +16,7 @@ interface MyWatchlistDetailScreenProps {
   watchlistId: string;
 }
 
-export function MyWatchlistDetailScreen({ watchlistId }: MyWatchlistDetailScreenProps) { 
+export function MyWatchlistDetailScreen({ watchlistId }: MyWatchlistDetailScreenProps) {
   const qc = useQueryClient();
   const { colors } = useTheme();
   const { top } = useSafeAreaInsets();
@@ -34,24 +36,23 @@ export function MyWatchlistDetailScreen({ watchlistId }: MyWatchlistDetailScreen
     [watchlistId]
   );
 
-  const {
-    data: watchlistItems,
-    isLoading: isLoadingWatchlistData,
-    isError: isErrorWatchlistData,
-  } = useLiveQuery(
-    (query) =>
-      query.from({
-        watchlist: mySingleWatchlistItemsCollection(qc, watchlistId),
-      }),
-    [watchlistId]
-  );
-
+  // const {
+  //   data: watchlistItems,
+  //   isLoading: isLoadingWatchlistData,
+  //   isError: isErrorWatchlistData,
+  // } = useLiveQuery(
+  //   (query) =>
+  //     query.from({
+  //       watchlist: mySingleWatchlistItemsCollection(qc, watchlistId),
+  //     }),
+  //   [watchlistId]
+  // );
 
   const watchlist = thisWatchlist?.[0];
-  const items = watchlistItems;
-  const isLoading = isLoadingWatchlist || isLoadingWatchlistData;
-  const isError = isErrorWatchlist || isErrorWatchlistData;
-  console.log("This  Watchlist :>> ", watchlist.id,watchlistId);
+  const items = watchlist?.expand?.items || [];
+  const isLoading = isLoadingWatchlist;
+  const isError = isErrorWatchlist;
+  console.log("This  Watchlist :>> ", watchlist.id, watchlistId);
   const getVisibilityIcon = (visibility: string) => {
     switch (visibility) {
       case "public":
@@ -156,9 +157,7 @@ export function MyWatchlistDetailScreen({ watchlistId }: MyWatchlistDetailScreen
 
           {/* Genre Analysis */}
           {items.length > 0 && (
-            <Text
-              variant="bodyMedium"
-              style={[styles.genreAnalysis, { color: colors.tertiary }]}>
+            <Text variant="bodyMedium" style={[styles.genreAnalysis, { color: colors.tertiary }]}>
               {analyzeWatchlistGenres(items)}
             </Text>
           )}
@@ -206,15 +205,15 @@ export function MyWatchlistDetailScreen({ watchlistId }: MyWatchlistDetailScreen
     <View style={[styles.container, { backgroundColor: colors.background, paddingBottom: 16 }]}>
       <FlatList
         data={items}
-        renderItem={({ item,index }) => {
-          console.log("Item in watchlist: ", item.id);
-          return(
-          <WatchlistItemCard
-            item={item}
-            watchListName={watchlist.title}
-            watchlistId={watchlist.id}
-          />
-        )}}
+        renderItem={({ item, index }) => {
+          return (
+            <WatchlistItemCard
+              item={item}
+              watchListName={watchlist.title}
+              watchlistId={watchlist.id}
+            />
+          );
+        }}
         keyExtractor={(item) => item.id}
         ListHeaderComponent={ListHeader}
         ListEmptyComponent={ListEmpty}
@@ -284,10 +283,10 @@ const styles = StyleSheet.create({
   },
   genreAnalysis: {
     fontSize: 14,
-    fontStyle: 'italic',
+    fontStyle: "italic",
     marginBottom: 12,
     opacity: 0.9,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   metadataContainer: {
     flexDirection: "row",

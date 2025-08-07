@@ -17,11 +17,11 @@ interface SearchResultsScreenProps {
 export function SearchResultsScreen({ searchQuery }: SearchResultsScreenProps) {
   const qc = useQueryClient();
 
-  // const { data: myWatchList } = useLiveQuery((query) => {
-  //   return query.from({
-  //     inwatchlist: myWatchlistsCollection(qc),
-  //   });
-  // });
+  const { data: myWatchList } = useLiveQuery((query) => {
+    return query.from({
+      inwatchlist: myWatchlistsCollection(qc),
+    });
+  });
 
   const {
     data: queryResult,
@@ -40,16 +40,16 @@ export function SearchResultsScreen({ searchQuery }: SearchResultsScreenProps) {
   );
 
   // Extract movies data (no pagination as per requirements)
-  // const data = queryResult.map((item) => {
-  //   const itemId = item.id.toString();
-  //   const watchLst = myWatchList?.find((wl) => wl.items.includes(itemId));
-  //   return {
-  //     ...item,
-  //     watchlistTitle: watchLst?.title,
-  //     watchlistId: watchLst?.id,
-  //   };
-  // });
-  const data = queryResult;
+  const data = queryResult.map((item) => {
+    const itemId = item.id.toString();
+    const watchLst = myWatchList?.find((wl) => wl.items.includes(itemId));
+    return {
+      ...item,
+      watchlistTitle: watchLst?.title,
+      watchlistId: watchLst?.id,
+    };
+  });
+  // const data = queryResult;
   const { colors } = useTheme();
   if (isLoading) {
     return (

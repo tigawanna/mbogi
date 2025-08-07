@@ -186,8 +186,22 @@ export function addItemToWatchlistItemsCollection({
   watchlistId,
   watchlistItem,
 }: AddToWatchlistItemsMutationProps) {
-  mySingleWatchlistItemsCollection(qc, watchlistId).insert(watchlistItem);
-  myWatchlistsCollection(qc).update(watchlistId, (draft) => {
+  // mySingleWatchlistItemsCollection(qc, watchlistId).insert(watchlistItem);
+
+  // create_item: z
+  //   .object({
+  //     watchlistId: z.string().nonempty("Watchlist ID is required"),
+  //     watchlistItem: WatchlistItemsCreateSchema,
+  //   })
+  
+  myWatchlistsCollection(qc).update(watchlistId, {
+    metadata: {
+      create_item: {
+        watchlistId,
+        watchlistItem,
+      },
+    },
+  }, (draft) => {
     if (!draft.items) {
       draft.items = [];
     }
@@ -213,14 +227,32 @@ export function removeItemToWatchlistItemsCollection({
 }: RemoveFromWatchlistItemsMutationProps) {
   logger.log("Removing item from watchlist:", watchlistId, watchlistItemId);
   // Remove from
-  const collection = mySingleWatchlistItemsCollection(qc, watchlistId)
-  console.log("\n\n Current watchlist items:", collection.keys())
-  collection.delete(watchlistItemId);
-  myWatchlistsCollection(qc).update(watchlistId, (draft) => {
-    if (draft.items) {
-      draft.items = draft.items.filter((id) => id !== watchlistItemId);
+  // const collection = mySingleWatchlistItemsCollection(qc, watchlistId)
+  // console.log("\n\n Current watchlist items:", collection.keys())
+  // collection.delete(watchlistItemId);
+    
+    // delete_item: z
+    //   .object({
+    //     watchlistId: z.string().nonempty("Watchlist ID is required"),
+    //     watchlistItemId: z.string().nonempty("Item ID is required"),
+    //   })
+
+  myWatchlistsCollection(qc).update(
+    watchlistId,
+    {
+      metadata: {
+        delete_item: {
+          watchlistId,
+          watchlistItemId,
+        },
+      },
+    },
+    (draft) => {
+      if (draft.items) {
+        draft.items = draft.items.filter((id) => id !== watchlistItemId);
+      }
     }
-  });
+  );
   communityWatchlistsCollection({ qc }).update(watchlistId, (draft) => {
     if (draft.items) {
       draft.items = draft.items.filter((id) => id !== watchlistItemId);

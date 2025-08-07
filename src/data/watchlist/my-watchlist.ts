@@ -169,6 +169,22 @@ function createMyWatchlistsCollection(qc: QueryClient) {
         if (localOnlyUpdate) {
           return { refetch: true };
         }
+        const crateItem = parsedMetadata?.create_item;
+        if (crateItem) {
+          await addItemToWatchlist({
+            watchlistId: crateItem.watchlistId,
+            watchlistItem: crateItem.watchlistItem,
+          });
+          return { refetch: true };
+        }
+        const deleteItem = parsedMetadata?.delete_item;
+        if (deleteItem) {
+          await removeItemFromWatchlist({
+            watchlistId: deleteItem.watchlistId,
+            itemId: deleteItem.watchlistItemId,
+          });
+          return { refetch: true };
+        }
         await updateWatchlist(modified);
         return { refetch: true };
       },
@@ -206,7 +222,7 @@ export const myWatchlistsCollection = (qc: QueryClient) => {
 
   // Return existing collection if present
   if (myWatchlistsCache.has(cacheKey)) {
-    // console.log("🎯 Cache HIT for", cacheKey.toString());
+    console.log("🎯 Cache HIT for", cacheKey.toString());
     return myWatchlistsCache.get(cacheKey)!;
   }
   
@@ -268,9 +284,8 @@ function createSingleWatchlistItemsCollection({
         return { refetch: true };
       },
 
-      onDelete: async ({ transaction }) => {
+      onDelete: async ({ transaction,collection }) => {
         const { original, metadata } = transaction.mutations[0];
-        console.log("🗑️ Deleting item from watchlist:", original.id);
         const parsedMetadata = collectionMetadataSchema.parse(metadata);
         const localOnlyUpdate = parsedMetadata && parsedMetadata.update_type === "local";
         if (localOnlyUpdate) {
@@ -306,7 +321,7 @@ export const mySingleWatchlistItemsCollection = (qc: QueryClient, watchlistId: s
   
   // Return existing collection if present
   if (singleWatchlistItemsCache.has(cacheKey)) {
-    // console.log("🎯 Cache HIT for", cacheKey.toString());
+    console.log("🎯 Cache HIT for", cacheKey.toString());
     return singleWatchlistItemsCache.get(cacheKey)!;
   }
   console.log("⚡ Cache MISS for", cacheKey.toString());

@@ -1,27 +1,27 @@
+import { EmptyRoadSVG } from "@/components/shared/svg/empty";
+import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
+import { discoverTVCollection } from "@/data/discover/discover-query-collection";
 import { useLiveQuery } from "@tanstack/react-db";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
-import { EmptyRoadSVG } from "@/components/shared/svg/empty";
-import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
-import { discoverTVCollection } from "@/data/discover/discover-query-collection";
-import { useQueryClient } from "@tanstack/react-query";
 import { useDiscoverFiltersStore } from "../filters/discover-fliters-store";
 import { DiscoverTVFlatList } from "./DiscoverTVFlatList";
 import { myWatchlistsCollection } from "@/data/watchlist/my-watchlist";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function DiscoverTVScreen() {
   const { colors } = useTheme();
   const { tvFilters } = useDiscoverFiltersStore();
   const currentPage = 1;
-  // const qc = useQueryClient();
+  const qc = useQueryClient();
 
-  // const { data: myWatchList } = useLiveQuery((query) => {
-  //   return query.from({
-  //     inwatchlist: myWatchlistsCollection(qc),
-  //   });
-  // });
+  const { data: myWatchList } = useLiveQuery((query) => {
+    return query.from({
+      inwatchlist: myWatchlistsCollection(qc),
+    });
+  });
 
   // Fetch data using TanStack DB live query
   const {
@@ -40,16 +40,16 @@ export function DiscoverTVScreen() {
   );
 
   // Extract movies data (no pagination as per requirements)
-  // const data = queryResult.map((item) => {
-  //   const itemId = item.id.toString();
-  //   const watchLst = myWatchList?.find((wl) => wl.items.includes(itemId));
-  //   return {
-  //     ...item,
-  //     watchlistTitle: watchLst?.title,
-  //     watchlistId: watchLst?.id,
-  //   };
-  // });
-  const data = queryResult
+  const data = queryResult.map((item) => {
+    const itemId = item.id.toString();
+    const watchLst = myWatchList?.find((wl) => wl.items.includes(itemId));
+    return {
+      ...item,
+      watchlistTitle: watchLst?.title,
+      watchlistId: watchLst?.id,
+    };
+  });
+  // const data = queryResult
 
   if (isLoading) {
     return (

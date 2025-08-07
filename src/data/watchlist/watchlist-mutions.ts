@@ -7,6 +7,7 @@ import {
   WatchlistUpdate,
   WatchlistUpdateSchema,
 } from "@/lib/pb/types/pb-zod";
+import { logger } from "@/utils/logger";
 import { mutationOptions } from "@tanstack/react-query";
 import { z } from "zod";
 
@@ -62,6 +63,16 @@ export function deleteWatchlistMutationOptions() {
 
 //  WATCHLIST ITEMS MUTATIONS
 
+export async function createWatchlistItem(payload: WatchlistItemsCreate) {
+  try {
+    const inputs = WatchlistItemsCreateSchema.parse(payload);
+    return await pb.from("watchlist_items").create(inputs);
+  } catch (error) {
+    console.log("Error creating watchlist item:", error);
+    throw error;
+  }
+}
+
 // Props for modifying items in a watchlist
 interface AddToWatchlistItemsMutationProps {
   watchlistId: string;
@@ -70,25 +81,23 @@ interface AddToWatchlistItemsMutationProps {
 
 export async function addItemToWatchlist(payload: AddToWatchlistItemsMutationProps) {
   try {
+    logger.log("Adding item to watchlist:>> ", payload);
     const inputs = z
       .object({
         watchlistId: z.string().nonempty("Watchlist ID is required"),
         watchlistItem: WatchlistItemsCreateSchema,
       })
       .parse(payload);
-    await pb
-      .from("watchlist_items")
-      .create(inputs.watchlistItem)
-      .catch((error) => {
-        const items_exists = error.data?.data?.tmdb_id?.code === "validation_not_unique";
-        if (items_exists) {
-          console.warn("Item already exists in watchlist items , adding directly to watchlist");
-          return pb
-            .from("watchlist")
-            .update(inputs.watchlistId, { "items+": [inputs.watchlistItem.id] } as any);
-        }
-        throw error;
-      });
+    await createWatchlistItem(inputs.watchlistItem).catch((error) => {
+      const items_exists = error.data?.data?.tmdb_id?.code === "validation_not_unique";
+      if (items_exists) {
+        console.warn("Item already exists in watchlist items , adding directly to watchlist");
+        return pb
+          .from("watchlist")
+          .update(inputs.watchlistId, { "items+": [inputs.watchlistItem.id] } as any);
+      }
+      throw error;
+    });
     return await pb
       .from("watchlist")
       .update(inputs.watchlistId, { "items+": [inputs.watchlistItem.id] } as any);
@@ -137,8 +146,21 @@ export function removeItemFromWatchlistMutationOptions() {
   });
 }
 
-
-export const collectionMetadataSchema = z.object({
-  update_type:z.enum(["local","both"]).optional(),
-  force_refetch:z.boolean().optional().default(false)
-}).optional()
+export const collectionMetadataSchema = z
+  .object({
+    update_type: z.enum(["local", "both"]).optional(),
+    force_refetch: z.boolean().optional().default(false),
+    create_item: z
+      .object({
+        watchlistId: z.string().nonempty("Watchlist ID is required"),
+        watchlistItem: WatchlistItemsCreateSchema,
+      })
+      .optional(),
+    delete_item: z
+      .object({
+        watchlistId: z.string().nonempty("Watchlist ID is required"),
+        watchlistItemId: z.string().nonempty("Item ID is required"),
+      })
+      .optional(),
+  })
+  .optional();
